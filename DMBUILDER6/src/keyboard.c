@@ -394,6 +394,8 @@ callChangeTarget ()
 
 void keyboard (unsigned char key, int x, int y)
 {
+//	printf("key/x/y = %d/%d/%d\n", key, x, y);
+
 	switch (getScreen ())
 	{
 		case screen_DM2AI:
@@ -442,107 +444,107 @@ void keyboard (unsigned char key, int x, int y)
 				callPlaceNewItem ();
 			else if (!isEditingTile ())
 			{
-			switch (key)
-			{
-			case 'A':getLevels()[getEditCursor(cursor_L)].header.xDim--;break;
-			case 'Z':getLevels()[getEditCursor(cursor_L)].header.xDim++;break;
-			case 'Q':getLevels()[getEditCursor(cursor_L)].header.yDim--;break;
-			case 'W':getLevels()[getEditCursor(cursor_L)].header.yDim++;break;
-
-			case 'B': getDungeon()->nLevels --;
-					if (getDungeon()->nLevels < 1)
-						getDungeon()->nLevels = 1;
-					break;
-			case 'N': getDungeon()->nLevels ++;
-					if (getDungeon()->nLevels > MAX_LEVELS)
-						getDungeon()->nLevels = MAX_LEVELS;
-					break;
-
-		//	case KEY_ESCAPE: // ESC est trop sujet aux dérapages
-			/*case 'X':
-				exit (0);
-				break;*/
-			case ControlKey('s'):
-				SKULLKEEP = !SKULLKEEP; break;
-			case ControlKey('e'):
-				exit (0); break;
-			case ControlKey('x'):
+				switch (key)
 				{
-					reference_p refp = getGroundReference (getEditCursor (cursor_X),
-						getEditCursor(cursor_Y), getEditCursor(cursor_L));
-					unsigned short *buffer = (unsigned short*) &cutpasteref;
-					if (*buffer == 0xFFFF) // le 0xFFFF ne passe pas forcément
+				case 'A':getLevels()[getEditCursor(cursor_L)].header.xDim--;break;
+				case 'Z':getLevels()[getEditCursor(cursor_L)].header.xDim++;break;
+				case 'Q':getLevels()[getEditCursor(cursor_L)].header.yDim--;break;
+				case 'W':getLevels()[getEditCursor(cursor_L)].header.yDim++;break;
+
+				case 'B': getDungeon()->nLevels --;
+						if (getDungeon()->nLevels < 1)
+							getDungeon()->nLevels = 1;
+						break;
+				case 'N': getDungeon()->nLevels ++;
+						if (getDungeon()->nLevels > MAX_LEVELS)
+							getDungeon()->nLevels = MAX_LEVELS;
+						break;
+
+			//	case KEY_ESCAPE: // ESC est trop sujet aux dérapages
+				/*case 'X':
+					exit (0);
+					break;*/
+				case ControlKey('s'):
+					SKULLKEEP = !SKULLKEEP; break;
+				case ControlKey('e'):
+					exit (0); break;
+				case ControlKey('x'):
 					{
-						unsigned short **refv = (unsigned short**) &refp;
-						if (**refv != 0xFFFE && **refv != 0xFFFF)
-						{	// copy tile on buffer
-							cutpasteref.category = refp->category;
-							cutpasteref.id = refp->id;
-							cutpasteref.position = refp->position;
-							**refv = 0xFFFE;
-							getTile (getEditCursor (cursor_X),
-						getEditCursor(cursor_Y), getEditCursor(cursor_L))->object = 0;
-							// set tile to nothing
+						reference_p refp = getGroundReference (getEditCursor (cursor_X),
+							getEditCursor(cursor_Y), getEditCursor(cursor_L));
+						unsigned short *buffer = (unsigned short*) &cutpasteref;
+						if (*buffer == 0xFFFF) // le 0xFFFF ne passe pas forcément
+						{
+							unsigned short **refv = (unsigned short**) &refp;
+							if (**refv != 0xFFFE && **refv != 0xFFFF)
+							{	// copy tile on buffer
+								cutpasteref.category = refp->category;
+								cutpasteref.id = refp->id;
+								cutpasteref.position = refp->position;
+								**refv = 0xFFFE;
+								getTile (getEditCursor (cursor_X),
+							getEditCursor(cursor_Y), getEditCursor(cursor_L))->object = 0;
+								// set tile to nothing
+							}
+							/*else
+							{	// target tile is nothing, then buffer becomes nothing
+								*refv = (short*) &cutpasteref;
+								**refv = 0xFFFF;
+							}*/
 						}
-						/*else
-						{	// target tile is nothing, then buffer becomes nothing
-							*refv = (short*) &cutpasteref;
-							**refv = 0xFFFF;
-						}*/
+					}
+					break;
+				case ControlKey('v'):
+				{
+					unsigned short *refv = (unsigned short*) &cutpasteref;
+					if (*refv != 0xFFFE && *refv != 0xFFFF)
+					{	// paste buffer into target tile
+						push_reference_in_stack (*refv, getEditCursor (cursor_X),
+							getEditCursor (cursor_Y), getEditCursor (cursor_L));
+						*refv = 0xFFFF;
+						getTile (getEditCursor (cursor_X),
+							getEditCursor(cursor_Y), getEditCursor(cursor_L))->object = 1;
 					}
 				}
-				break;
-			case ControlKey('v'):
-			{
-				unsigned short *refv = (unsigned short*) &cutpasteref;
-				if (*refv != 0xFFFE && *refv != 0xFFFF)
-				{	// paste buffer into target tile
-					push_reference_in_stack (*refv, getEditCursor (cursor_X),
-						getEditCursor (cursor_Y), getEditCursor (cursor_L));
-					*refv = 0xFFFF;
-					getTile (getEditCursor (cursor_X),
-						getEditCursor(cursor_Y), getEditCursor(cursor_L))->object = 1;
+					break;
+				case ' ':
+					switchTile (); break;
+				case 'p':
+					if ((getEditCursor (cursor_L) == 0)
+						&& (getEditCursor (cursor_X) == getDungeon()->x_start)
+							&& (getEditCursor (cursor_Y) == getDungeon()->y_start))
+								getDungeon()->f_start ++;
+					else getCurrentTile ()->type = tile_Pit;
+					break;
+				case 'f':
+					getCurrentTile ()->type = tile_Floor; break;
+				case 's':
+					getCurrentTile ()->type = tile_Stairs; break;
+				case 'i':
+					getCurrentTile ()->type = tile_Trickwall; break;
+				case 'S':
+				if (getEditCursor (cursor_L) == 0)
+				{
+					getDungeon()->x_start = getEditCursor (cursor_X);	
+					getDungeon()->y_start = getEditCursor (cursor_Y);	
+				} break;
+				case 'g': /* go target */
+					goTarget (getCurrentItemReference ());
+					break;
+				case KEY_RETURN:
+					switchEditingTile (); break;
+				case '+':
+					setSelectingNewItem (1); break;
+				case '-':
+					setSelectingNewItem (0); break;
+				case '1': switchTileFunction (getCurrentTile (), 1); break;
+				case '2': switchTileFunction (getCurrentTile (), 2); break;
+				case '4': switchTileFunction (getCurrentTile (), 4); break;
+				case '8': switchTileFunction (getCurrentTile (), 8); break;
+				case '9': getCurrentTile ()->type++; break;
+				default:
+					break;
 				}
-			}
-				break;
-			case ' ':
-				switchTile (); break;
-			case 'p':
-				if ((getEditCursor (cursor_L) == 0)
-					&& (getEditCursor (cursor_X) == getDungeon()->x_start)
-						&& (getEditCursor (cursor_Y) == getDungeon()->y_start))
-							getDungeon()->f_start ++;
-				else getCurrentTile ()->type = tile_Pit;
-				break;
-			case 'f':
-				getCurrentTile ()->type = tile_Floor; break;
-			case 's':
-				getCurrentTile ()->type = tile_Stairs; break;
-			case 'i':
-				getCurrentTile ()->type = tile_Trickwall; break;
-			case 'S':
-			if (getEditCursor (cursor_L) == 0)
-			{
-				getDungeon()->x_start = getEditCursor (cursor_X);	
-				getDungeon()->y_start = getEditCursor (cursor_Y);	
-			} break;
-			case 'g': /* go target */
-				goTarget (getCurrentItemReference ());
-				break;
-			case KEY_RETURN:
-				switchEditingTile (); break;
-			case '+':
-				setSelectingNewItem (1); break;
-			case '-':
-				setSelectingNewItem (0); break;
-			case '1': switchTileFunction (getCurrentTile (), 1); break;
-			case '2': switchTileFunction (getCurrentTile (), 2); break;
-			case '4': switchTileFunction (getCurrentTile (), 4); break;
-			case '8': switchTileFunction (getCurrentTile (), 8); break;
-			case '9': getCurrentTile ()->type++; break;
-			default:
-				break;
-			}
 			}
 			else /* editing object */
 			{
@@ -901,12 +903,17 @@ void keyboard (unsigned char key, int x, int y)
 		} break;
 
 	}
+#ifdef __MINGW__
+	glutDisplay();
+#else
 	glutPostRedisplay ();
+#endif
 }
 
 
 void arrow_keys (int a_keys, int x, int y)
 {
+	//printf("a_keys/x/y = %d/%d/%d\n", a_keys, x, y);
 	switch (getScreen ())
 	{
 
@@ -1153,5 +1160,10 @@ else if (selectFile > (char) (numberOfFilesToLoad()-1)) selectFile = numberOfFil
 
 
 	}
+#ifdef __MINGW__
+	glutDisplay();
+#else
 	glutPostRedisplay ();
+#endif
+
 }
