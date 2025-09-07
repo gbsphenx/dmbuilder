@@ -170,7 +170,7 @@ makeFreeItems (size_t number)
 }
 //------------------------------------------------------------------------------
 
-void saveRawData (FILE* fp, short *data, size_t datasize, size_t nItems)
+void saveRawData (FILE* fp, unsigned short *data, size_t datasize, size_t nItems)
 {
 	fwrite (data, datasize, nItems, fp);
 }
@@ -192,8 +192,8 @@ saveDungeonData (char *dungeonname)
 
 		getDungeon()->mapDataSize = mapsLength ();
 
-		RAWTEXTS = (short*) calloc (65535, sizeof (short));
-		REFERENCES = (short*) calloc (65535, sizeof (short));
+		RAWTEXTS = (unsigned short*) calloc (65535, sizeof (short));
+		REFERENCES = (unsigned short*) calloc (65535, sizeof (short));
 	
 
 	
@@ -224,19 +224,19 @@ saveDungeonData (char *dungeonname)
 		item_offsets = calculateOffsetsNumber ();
 		objectsOffsetsUpdate (item_offsets);
 		
-		saveRawData (fp, (short*) OFFSETS, 2, item_offsets);
-		saveRawData (fp, REFERENCES, 2, getDungeon()->itemListSize - nFreeItems);
+		saveRawData (fp, (unsigned short*) OFFSETS, 2, item_offsets);
+		saveRawData (fp, (unsigned short*)REFERENCES, 2, getDungeon()->itemListSize - nFreeItems);
 	
 		if (savecsum)
 		{
-			FREESPACE = makeFreeItems (nFreeItems);
-			saveRawData (fp, (short*) FREESPACE, 2, nFreeItems);
+			FREESPACE = (unsigned short*) makeFreeItems (nFreeItems);
+			saveRawData (fp, (unsigned short*) FREESPACE, 2, nFreeItems);
 		}
-		saveRawData (fp, RAWTEXTS, 2, coded_size);
+		saveRawData (fp, (unsigned short*) RAWTEXTS, 2, coded_size);
 	
 		convertToMasterTexts ();
 		for (i = 0; i < 16; i++)
-			saveRawData (fp, ITEMS[i], itemBytes[i], getDungeon()->nObjects[i]); 
+			saveRawData (fp, (unsigned short*) ITEMS[i], itemBytes[i], getDungeon()->nObjects[i]); 
 
 		convertToInternTexts ();
 		saveLevelsData (fp);

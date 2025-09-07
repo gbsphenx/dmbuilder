@@ -24,12 +24,14 @@ extern reference_p getNextItem (reference_p reference);
 extern short* getItem (reference_p reference);
 /* gives direct access to item data (not reference) */
 
+extern short* getItemContext (int iContext, reference_p reference);
+
 extern short* getReferenceItem (reference_p reference);
 /* gives pointer to referenced item (used for changing reference)*/
 
 
 extern short placeNewItem (char category, int type);
-
+extern short placeNewItemContext (int iContext, char category, int type);
 //extern int getCurrentItemType ();
 
 

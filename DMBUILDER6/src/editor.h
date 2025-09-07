@@ -166,6 +166,7 @@ extern dm_dungeon_header* getDungeon ();
 extern void updatePriorityColors ();
 
 void DMB_AutoEdit_CreateTestDungeon ();
+void DMB_AutoEdit_LoadSkullExe();
 
 void switchContext();
 void Context_Init();

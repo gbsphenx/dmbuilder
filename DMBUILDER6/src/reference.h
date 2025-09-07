@@ -8,24 +8,35 @@
 
 #ifndef REFERENCE_H
 #define REFERENCE_H
-
+/*
 typedef struct
 {
 	unsigned short id:10;
 	unsigned short category:4;
 	unsigned short position:2;	
 } dm_reference;
+*/
+typedef union {
+    struct {
+        unsigned short id:10;
+        unsigned short category:4;
+        unsigned short position:2;
+    };
+    unsigned short raw;
+} dm_reference;
+
 
 typedef dm_reference* reference_p;
 
-#define REFERENCE_NONE		-2
-#define REFERENCE_UNUSED	-1
+#define REFERENCE_NONE		(short) -2
+#define REFERENCE_UNUSED	(short) -1
 
 short* Ref_GetFloorsPointer();
 void Ref_SetFloorsPointer(short* pFloors);
 
 
 extern void startGroundReferences ();
+extern void startGroundReferencesKeepStacks ();
 extern reference_p getGroundReference (char x, char y, char level);
 extern void setGroundReference (char x, char y, char level, short reference);
 extern reference_p getStackReference (char position);

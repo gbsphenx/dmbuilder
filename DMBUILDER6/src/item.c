@@ -120,7 +120,7 @@ char* txtPotions[21] = {
 };*/
 
 
-short* ITEMS[16];
+unsigned short* ITEMS[16];
 // Principal pointer
 
 //------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ itemAllocate ()
 {
 	int i;
 	for (i = 0; i < 16; i++)
-		ITEMS[i] = (short*) calloc (maxItems[i]*itemBytes[i], 1);
+		ITEMS[i] = (unsigned short*) calloc (maxItems[i]*itemBytes[i], 1);
 }
 
 static void
@@ -174,7 +174,7 @@ startItems ()
 	{
 		int j;
 		for (j = 0; j < maxItems[i]; j++)
-			itemFlushData (ITEMS[i] + j*itemShorts[i], itemBytes[i]);
+			itemFlushData ((short*)ITEMS[i] + j*itemShorts[i], itemBytes[i]);
 	}
 }
 
@@ -204,7 +204,7 @@ searchFreeItemID (char category)
 		else // lastItem+1 < nItems
 		{
 			int i;
-			short* item = ITEMS[category];
+			short* item = (short*)ITEMS[category];
 			for (i = 0; i < maxItems[category]; i++)
 			{
 				if (itemIsUnused (item))
@@ -254,7 +254,7 @@ searchFreeItemIDContext (int iContext, char category)
 //	Items initialisation
 //------------------------------------------------------------------------------
 
-typedef void (*ITEM_INITIALISATION_FUNCTION) (short*, short);
+typedef void (*ITEM_INITIALISATION_FUNCTION) (short*, int);
 
 static void
 do_nothing (short *item, int type)
@@ -395,7 +395,7 @@ static ITEM_INITIALISATION_FUNCTION initializeItem[] =
 static short
 newItem (int id, char category, int type)
 {
-	short *item = ITEMS[category] + id*itemShorts[category];
+	short *item = (short*)ITEMS[category] + id*itemShorts[category];
 	assert (id > -1 && id < maxItems[category]);
 
 //	if (type == -1)	// not anymore, use the init instead
@@ -478,7 +478,7 @@ getItem (reference_p reference)
 	short **ref = (short **) &reference;
 	if (**ref == -2 || **ref == -1)
 		return &nullItem;
-	return ((ITEMS[reference->category] + reference->id*itemShorts[reference->category]) + 1);
+	return ((short*)(ITEMS[reference->category] + reference->id*itemShorts[reference->category]) + 1);
 }
 
 
@@ -497,7 +497,7 @@ getReferenceItem (reference_p reference)
 	short **ref = (short **) &reference;
 	if (**ref == -2 || **ref == -1)
 		return &nullItem;
-	return (ITEMS[reference->category] + reference->id*itemShorts[reference->category]);
+	return ((short*)ITEMS[reference->category] + reference->id*itemShorts[reference->category]);
 }
 
 void
@@ -506,7 +506,7 @@ deleteItem (reference_p refp)
 	short *item;
 	short **ref = (short**) &refp;
 	if ((**ref == -2) || (**ref == -1))
-		perror ("What are we deleting ??!");
+		perror ("What are we deleting ?!");
 	item = getReferenceItem (refp);
 	*item = -1;
 }

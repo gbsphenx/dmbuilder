@@ -11,8 +11,8 @@
 
 #include <dms.h>
 
-typedef int (*getObjectType) (short*);	// changed char to int to allow more than 127 values (SK extended)
-typedef void (*setObjectType) (short*, int);
+typedef unsigned int (*getObjectType) (short*);	// changed char to int to allow more than 127 values (SK extended)
+typedef void (*setObjectType) (short*, unsigned int);
 
 extern getObjectType getItemType[16];
 extern setObjectType setItemType[16];

@@ -134,13 +134,13 @@ setLetter (codon_p codon, size_t letter, char value)
 //------------------------------------------------------------------------------
 
 void
-extractLines (short* rawtexts)
+extractLines (unsigned short* rawtexts)
 {
 	static char buffer[255];
 	codon_p codon;
 	size_t read = 0; // Number of read codons
 	size_t text_i = 0; // Index of current row to be written
-	unsigned short *textp = rawtexts; // Codon pointer
+	unsigned short *textp = (unsigned short*) rawtexts; // Codon pointer
 
 	while (read < getDungeon()->textsDataSize)
 	{
@@ -171,7 +171,7 @@ extractLines (short* rawtexts)
 }
 
 size_t
-encodeTexts (short *rawtexts)
+encodeTexts (unsigned short *rawtexts)
 {
 //	FILE* debug;
 	
@@ -217,7 +217,7 @@ encodeTexts (short *rawtexts)
 
 
 void
-loadTexts (short *rawtexts)
+loadTexts (unsigned short *rawtexts)
 {
 	extractLines (rawtexts);
 	//findHeros ();

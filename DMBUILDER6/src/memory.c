@@ -72,7 +72,7 @@ MEMFREE (void* pointer)
 {
 	unsigned int deallocatedBytes;
 	unsigned int k;
-	((unsigned int*) pointer) --;
+	pointer = (unsigned int*)pointer - 1;
 	deallocatedBytes = ((unsigned int*)pointer)[0];
 
 	MemAllocated -= deallocatedBytes;

@@ -120,7 +120,7 @@ calculateOffsets ()
 		printf("[%02d] xDim = %d\n", i, getLevels()[i].header.xDim+1);
 		count += (getLevels()[i].header.xDim+1);
 	}
-	OFFSETS = (short*) calloc (count, sizeof (short));
+	OFFSETS = (unsigned short*) calloc (count, sizeof (short));
 	printf("maps = %d / cols = %d\n", getDungeon()->nLevels, count);
 	return count;
 }
@@ -171,7 +171,7 @@ loadLevelsData (FILE* fp)
 	}
 }
 
-void loadRawData (FILE* fp, short *data, size_t datasize, size_t nItems)
+void loadRawData (FILE* fp, unsigned short *data, size_t datasize, size_t nItems)
 {
 	fread (data, datasize, nItems, fp);
 }
@@ -331,17 +331,17 @@ loadDungeonData (char *dungeonname)
 	loadRawData (fp, OFFSETS, 2, mapcolumns);
 
 	printf("LOAD: Ground Refs @ %08x\n", ftell(fp)); 
-	REFERENCES = (short*) calloc (getDungeon()->itemListSize, sizeof (short));
+	REFERENCES = (unsigned short*) calloc (getDungeon()->itemListSize, sizeof (short));
 	loadRawData (fp, REFERENCES, 2, getDungeon()->itemListSize);
 	
 	printf("LOAD: Raw texts @ %08x\n", ftell(fp)); 
-	RAWTEXTS = (short*) calloc (getDungeon()->textsDataSize, sizeof (short));
+	RAWTEXTS = (unsigned short*) calloc (getDungeon()->textsDataSize, sizeof (short));
 	loadRawData (fp, RAWTEXTS, 2, getDungeon()->textsDataSize);
 
 	for (i = 0; i < 16; i++)
 	{
 		printf("LOAD: Item Data [%02d] @ %08x\n", i, ftell(fp)); 
-		loadRawData (fp, ITEMS[i], itemBytes[i], getDungeon()->nObjects[i]);
+		loadRawData (fp, (unsigned short*)ITEMS[i], itemBytes[i], getDungeon()->nObjects[i]);
 	}
 
 	//--- Special adjustment

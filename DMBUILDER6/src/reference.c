@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <reference.h>
 #include <item.h>
+#include <text.h>
 #include <editor.h>
 #include <level.h>
 #include <dm.h>
@@ -97,7 +98,7 @@ reference_p
 getGroundReference (char x, char y, char level)
 {
 	if (level < 0)
-		return &nullReference;
+		return (reference_p) &nullReference;
 	return (reference_p) &(floors[(size_t) x+(32*(size_t) y)+(1024*(size_t) level)]);
 }
 
@@ -151,7 +152,7 @@ importStack (char x, char y, char map)
 {
 	size_t i = 0;
 	reference_p currentref = NULL;
-	short **ref = REFERENCE_NONE;
+	short **ref = NULL;
 	
 	currentref = getGroundReference (x, y, map);
 	ref = (short **) &currentref;
@@ -231,14 +232,16 @@ copyStackNum (int stacknumsource, int stacknumdest)
 {
 	size_t i = 0;
 	size_t idest = 0;
-	short xRefNewItem = -2;
+	dm_reference xRefNewItem;
 	short* xItem = NULL;
 
 	reference_p currentref = (reference_p) &stackNum[stacknumsource][0];
 	short **ref = (short **) &currentref;
 	short *itemref;
+	reference_p pNewItemRef = (reference_p) &xRefNewItem;
 
-	reference_p pNewItemRef = &xRefNewItem;
+	xRefNewItem.raw = -2;
+
 
 	flushStackNum(stacknumdest);
 
@@ -250,9 +253,9 @@ copyStackNum (int stacknumsource, int stacknumdest)
 			xItem = getItem(currentref);
 			xDoor = (door_p) xItem;
 
-			xRefNewItem = -2;
-			xRefNewItem = placeNewItem (category_Door, xDoor->type);
-			if (xRefNewItem != -2)
+			xRefNewItem.raw = -2;
+			xRefNewItem.raw = placeNewItem (category_Door, xDoor->type);
+			if (xRefNewItem.raw != -2)
 			{	
 				short* xNewItem = getItem(&xRefNewItem);
 				door_p xNewDoor = (door_p) xNewItem;
@@ -274,9 +277,9 @@ copyStackNum (int stacknumsource, int stacknumdest)
 			xItem = getItem(currentref);
 			xText = (text_p) xItem;
 
-			xRefNewItem = -2;
-			xRefNewItem = placeNewItem (category_Text, xText->offset);
-			if (xRefNewItem != -2)
+			xRefNewItem.raw = -2;
+			xRefNewItem.raw = placeNewItem (category_Text, xText->offset);
+			if (xRefNewItem.raw != -2)
 			{	
 				short* xNewItem = getItem(&xRefNewItem);
 				text_p xNewText = (text_p) xNewItem;
@@ -299,9 +302,9 @@ copyStackNum (int stacknumsource, int stacknumdest)
 			xActuatorEffect = (actuator_effect_p) xItem+1;
 			xActuatorTarget = (actuator_target_p) xItem+2;
 
-			xRefNewItem = -2;
-			xRefNewItem = placeNewItem (category_Actuator, xActuator->type);
-			if (xRefNewItem != -2)
+			xRefNewItem.raw = -2;
+			xRefNewItem.raw = placeNewItem (category_Actuator, xActuator->type);
+			if (xRefNewItem.raw != -2)
 			{	
 				short* xNewItem = getItem(&xRefNewItem);
 				actuator_p xNewActuator = (actuator_p) xNewItem;
@@ -337,9 +340,9 @@ copyStackNum (int stacknumsource, int stacknumdest)
 			xItem = getItem(currentref);
 			xCreature = (monster_p) xItem;
 
-			xRefNewItem = -2;
-			xRefNewItem = placeNewItem (category_Monster, xCreature->type);
-			if (xRefNewItem != -2)
+			xRefNewItem.raw = -2;
+			xRefNewItem.raw = placeNewItem (category_Monster, xCreature->type);
+			if (xRefNewItem.raw != -2)
 			{	
 				short* xNewItem = getItem(&xRefNewItem);
 				monster_p xNewCreature = (monster_p) xNewItem;
@@ -372,7 +375,7 @@ copyStackNumContexts (int iContextSource, int stacknumsource, int iContextDest, 
 {
 	size_t i = 0;
 	size_t idest = 0;
-	short xRefNewItem = -2;
+	dm_reference xRefNewItem;
 	short* xItem = NULL;
 
 	reference_p currentref = (reference_p) &stackNum[stacknumsource][0];
@@ -380,6 +383,8 @@ copyStackNumContexts (int iContextSource, int stacknumsource, int iContextDest, 
 	short *itemref;
 
 	reference_p pNewItemRef = &xRefNewItem;
+
+	xRefNewItem.raw = -2;
 
 	flushStackNum(stacknumdest);
 
@@ -391,9 +396,9 @@ copyStackNumContexts (int iContextSource, int stacknumsource, int iContextDest, 
 			xItem = getItemContext(iContextSource, currentref);
 			xDoor = (door_p) xItem;
 
-			xRefNewItem = -2;
-			xRefNewItem = placeNewItemContext (iContextDest, category_Door, xDoor->type);
-			if (xRefNewItem != -2)
+			xRefNewItem.raw = -2;
+			xRefNewItem.raw = placeNewItemContext (iContextDest, category_Door, xDoor->type);
+			if (xRefNewItem.raw != -2)
 			{	
 				short* xNewItem = getItemContext(iContextDest, &xRefNewItem);
 				door_p xNewDoor = (door_p) xNewItem;
@@ -415,9 +420,9 @@ copyStackNumContexts (int iContextSource, int stacknumsource, int iContextDest, 
 			xItem = getItemContext(iContextSource, currentref);
 			xText = (text_p) xItem;
 
-			xRefNewItem = -2;
-			xRefNewItem = placeNewItemContext (iContextDest, category_Text, xText->offset);
-			if (xRefNewItem != -2)
+			xRefNewItem.raw = -2;
+			xRefNewItem.raw = placeNewItemContext (iContextDest, category_Text, xText->offset);
+			if (xRefNewItem.raw != -2)
 			{	
 				int iNewTextNum = 0;
 				short* xNewItem = getItemContext(iContextDest, &xRefNewItem);
@@ -444,9 +449,9 @@ copyStackNumContexts (int iContextSource, int stacknumsource, int iContextDest, 
 			xActuatorEffect = (actuator_effect_p) xItem+1;
 			xActuatorTarget = (actuator_target_p) xItem+2;
 
-			xRefNewItem = -2;
-			xRefNewItem = placeNewItemContext (iContextDest, category_Actuator, xActuator->type);
-			if (xRefNewItem != -2)
+			xRefNewItem.raw = -2;
+			xRefNewItem.raw = placeNewItemContext (iContextDest, category_Actuator, xActuator->type);
+			if (xRefNewItem.raw != -2)
 			{	
 				short* xNewItem = getItemContext(iContextDest, &xRefNewItem);
 				actuator_p xNewActuator = (actuator_p) xNewItem;
@@ -482,9 +487,9 @@ copyStackNumContexts (int iContextSource, int stacknumsource, int iContextDest, 
 			xItem = getItemContext(iContextSource, currentref);
 			xCreature = (monster_p) xItem;
 
-			xRefNewItem = -2;
-			xRefNewItem = placeNewItemContext (iContextDest, category_Monster, xCreature->type);
-			if (xRefNewItem != -2)
+			xRefNewItem.raw = -2;
+			xRefNewItem.raw = placeNewItemContext (iContextDest, category_Monster, xCreature->type);
+			if (xRefNewItem.raw != -2)
 			{	
 				short* xNewItem = getItemContext(iContextDest, &xRefNewItem);
 				monster_p xNewCreature = (monster_p) xNewItem;
@@ -521,12 +526,12 @@ void
 removeCategoryFromStack (int category)
 {
 	size_t i = 0;
-	reference_p currentref = REFERENCE_NONE;
+	reference_p currentref = (reference_p) REFERENCE_NONE;
 
 	for (i = 0; i < 65; i++)
 	{
 		currentref = (reference_p) &stack[i];
-		if (currentref != REFERENCE_NONE && currentref != REFERENCE_UNUSED && currentref->category == category)
+		if (*((short*)currentref) != REFERENCE_NONE && *((short*)currentref) != REFERENCE_UNUSED && currentref->category == category)
 		{
 			*((short*)&stack[i]) = REFERENCE_NONE;
 		}
@@ -586,7 +591,7 @@ push_reference_in_stack_facing (short reference, char x, char y, char l, char fa
 	reference_p xRefObject = (reference_p) (&reference);
 	short **ref = (short **) &curref;
 
-	if (xRefObject != -2)
+	if (*((short*)xRefObject) != (short)-2)
 	{
 		xRefObject->position = facing;
 	}

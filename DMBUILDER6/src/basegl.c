@@ -22,8 +22,6 @@
  *
  */
 
-#include <GL/glut.h>
-
 #include <skullexe.h>
 #include <editor.h>
 #include <keyboard.h>
@@ -32,6 +30,8 @@
 #include <version.h>
 #include <mouse.h>
 #include <string.h>
+
+#include <GL/glut.h>	// include glut last
 
 extern tSkullExe xSkullExe;
 
@@ -44,11 +44,11 @@ static int versionDebug = 1;
 static int versionDebug = 0;
 #endif
 
-static char *shorttitle = "DMBuilder";
-static char *apptitle = "Dungeon Master Builder";
-static char *writtenby = "written by Guillaume Bastard";
-static char *author = "Sphenx";
-static char *codeversion = "code version 6";
+static const char *shorttitle = "DMBuilder";
+static const char *apptitle = "Dungeon Master Builder";
+static const char *writtenby = "written by Guillaume Bastard";
+static const char *author = "Sphenx";
+static const char *codeversion = "code version 6";
 
 // WSXGA+
 int winW = 1680;
@@ -93,7 +93,7 @@ void glutAppInit (void)
 	glBlendFunc(GL_ONE, GL_ONE);
 }
 
-void main (void)
+int main (void)
 {
 	char appName[128];
 	char revision[64];
@@ -135,6 +135,7 @@ void main (void)
     glutAppInit ();
     
     glutMainLoop();
+	return 0;
 }
 
 

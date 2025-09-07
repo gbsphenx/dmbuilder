@@ -6,7 +6,6 @@
 // Display
 //------------------------------------------------------------------------------
 
-#include <GL/glut.h>
 #include <internalgfx.h>
 #include <display.h>
 #include <editor.h>
@@ -27,6 +26,8 @@
 #include <math.h>
 
 #include <gui.h>
+
+#include <GL/glut.h> // include glut last
 
 extern int winW;
 extern int winH;

@@ -6,10 +6,10 @@
 // Keyboard Management
 //------------------------------------------------------------------------------
 
-#include <GL/glut.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <memory.h>
 #include <displaytext.h>
 #include <keyboard.h>
 #include <editor.h>
@@ -32,6 +32,8 @@
 #include <skullexe.h>
 
 #include <fileop.h>
+
+#include <GL/glut.h>	// include glut last
 
 extern int msg_flag;
 

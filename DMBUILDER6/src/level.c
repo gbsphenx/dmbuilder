@@ -113,7 +113,7 @@ cycleLevelGraphics (int bank, char position, char step, char curlevel)
 		, dt_Ornate_Max
 		, dt_Door_Max
 	};
-	char doors[] = {level->header.door1, level->header.door2};
+	unsigned char doors[] = {level->header.door1, level->header.door2};
 	unsigned char* lists[] = {level->monsters, level->walls, level->floors, level->ornates, doors};
 
 	//--- Door max adjustment
@@ -140,7 +140,7 @@ modifyLevelNumberGraphics (int bank, char l, char add)
 	level_p level = (level_p) &(getLevels()[l]);
 	char number[] = { level->header.nMonsters, level->header.nWalls, level->header.nFloors,
 	level->header.nOrnates};
-	static max[] = { 15, 15, 15, 15};
+	static int max[] = { 15, 15, 15, 15};
 
 	if (bank > 3) return;
 	else

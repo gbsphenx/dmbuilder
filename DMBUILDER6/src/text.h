@@ -18,12 +18,12 @@ extern char* TEXTS[1024];
 extern size_t totalTexts;
 extern short adresses[1024];
 
-extern void loadTexts (short *rawtexts);
+extern void loadTexts (unsigned short *rawtexts);
 extern char* getText (unsigned int number);
 extern char* getTextContext (int iContext, unsigned int number);
 extern unsigned int getTextsNumber ();
 
-extern unsigned int encodeTexts (short *rawtexts);
+extern unsigned int encodeTexts (unsigned short *rawtexts);
 
 extern void exportText ();
 extern void importText ();
