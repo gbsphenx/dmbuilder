@@ -22,6 +22,11 @@
  *
  */
 
+#ifdef __MINWG__
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #include <skullexe.h>
 #include <editor.h>
 #include <keyboard.h>
@@ -31,7 +36,20 @@
 #include <mouse.h>
 #include <string.h>
 
-#include <GL/glut.h>	// include glut last
+#ifdef __MINGW__
+	#ifdef BOOL
+	#undef BOOL
+	#endif
+	#ifdef APIENTRY
+	#undef APIENTRY
+	#endif
+	#ifdef CALLBACK
+	#undef CALLBACK
+	#endif
+	#include <GL/freeglut.h>
+#else
+	#include <GL/glut.h>	// include glut last
+#endif
 
 extern tSkullExe xSkullExe;
 
@@ -93,7 +111,7 @@ void glutAppInit (void)
 	glBlendFunc(GL_ONE, GL_ONE);
 }
 
-int main (void)
+int main (int argc, char** argv)
 {
 	char appName[128];
 	char revision[64];
@@ -120,6 +138,7 @@ int main (void)
 	reinitTextStrings();
 
 //--- Init GL and run main
+	glutInit(&argc, argv);	// required by freeglut
     glutInitDisplayMode (GLUT_RGB | GLUT_DOUBLE);
     glutInitWindowSize (winW, winH);
     glutCreateWindow (appName);

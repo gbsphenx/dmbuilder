@@ -8,19 +8,22 @@
 
 #include <image.h>
 #include <image_tga.h>
+#include <memory.h>
 #include <stdlib.h>
 #include <assert.h>
 
 #include <stdio.h>
+#include <math.h>
 
-#include <memory.h>
+#ifdef __MINGW__
+	#undef GLenum
+#endif // __MINGW__
 
 #ifdef _WIN32
 #include <windows.h>
-#endif
+#endif // _WIN32
 #include <GL/gl.h>
 
-#include <math.h>
 
 /*
  * Table of Colors 16 - 256:
@@ -374,7 +377,7 @@ char*
 Image_GetCurrentEditedPixel (unsigned short x, unsigned short y)
 {
 	//return &TestImage[x][y];	
-	return &currentEditedImage->data[x+y*currentEditedImage->width];
+	return (char*)&currentEditedImage->data[x+y*currentEditedImage->width];
 }
 
 

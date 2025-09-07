@@ -37,16 +37,16 @@ void Ref_SetFloorsPointer(short* pFloors);
 
 extern void startGroundReferences ();
 extern void startGroundReferencesKeepStacks ();
-extern reference_p getGroundReference (char x, char y, char level);
-extern void setGroundReference (char x, char y, char level, short reference);
+extern reference_p getGroundReference (char x, char y, char map);
+extern void setGroundReference (char x, char y, char map, short reference);
 extern reference_p getStackReference (char position);
 
-extern void importStack (char x, char y, char level);
-extern void exportStack (char x, char y, char level);
+extern void importStack (char x, char y, char map);
+extern void exportStack (char x, char y, char map);
 extern void exportCurrentStack ();
 
-extern void importStackNum (char x, char y, char level);
-extern void exportStackNum (char x, char y, char level);
+extern void importStackNum (int stacknum, char x, char y, char map);
+extern void exportStackNum (int stacknum, char x, char y, char map);
 
 extern int getStackSize ();
 

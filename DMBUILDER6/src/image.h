@@ -9,10 +9,11 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#ifdef _WIN32
-#include <windows.h>
+#ifdef __MINGW__
+	#define GLenum unsigned int
+#else
+	typedef unsigned int GLenum;
 #endif
-#include <GL/gl.h>
 
 //------------------------------------------------------------------------------
 

@@ -7,13 +7,17 @@
 //------------------------------------------------------------------------------
 
 #include <mouse.h>
-#include <stdio.h>
-#include <GL/glut.h>
-
-
 #include <editor.h>
 #include <tile.h>
 #include <display.h>
+
+#include <stdio.h>
+
+#ifdef __MINGW__
+	#include <GL/freeglut.h>
+#else
+	#include <GL/glut.h>	// include glut last
+#endif
 
 
 mouse_t Mouse;

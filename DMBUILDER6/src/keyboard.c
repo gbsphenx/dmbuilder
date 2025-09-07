@@ -33,7 +33,11 @@
 
 #include <fileop.h>
 
-#include <GL/glut.h>	// include glut last
+//#ifdef __MINGW__
+//	#include <GL/freeglut.h>
+//#else
+	#include <GL/glut.h>	// include glut last
+//#endif
 
 extern int msg_flag;
 

@@ -17,6 +17,8 @@ typedef void (*setObjectType) (short*, unsigned int);
 extern getObjectType getItemType[16];
 extern setObjectType setItemType[16];
 
+extern int simpleActuatorGetGraphism (short *simpleactuator);
+
 extern unsigned int doorGetOrnate (short *door);
 extern void doorSetOrnate (short *door, unsigned int ornate);
 

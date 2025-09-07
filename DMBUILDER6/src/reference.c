@@ -95,18 +95,18 @@ startGroundReferencesKeepStacks () // for multi-dungeon work
 }
 
 reference_p
-getGroundReference (char x, char y, char level)
+getGroundReference (char x, char y, char map)
 {
-	if (level < 0)
+	if (map < 0)
 		return (reference_p) &nullReference;
-	return (reference_p) &(floors[(size_t) x+(32*(size_t) y)+(1024*(size_t) level)]);
+	return (reference_p) &(floors[(size_t) x+(32*(size_t) y)+(1024*(size_t) map)]);
 }
 
 void
-setGroundReference (char x, char y, char level, short reference)
+setGroundReference (char x, char y, char map, short reference)
 {
 	if (floors != NULL)
-		floors[(size_t) x+(32*(size_t) y)+(1024*(size_t) level)] = reference;
+		floors[(size_t) x+(32*(size_t) y)+(1024*(size_t) map)] = reference;
 }
 
 //------------------------------------------------------------------------------

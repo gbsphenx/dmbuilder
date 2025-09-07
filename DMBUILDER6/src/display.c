@@ -27,7 +27,21 @@
 
 #include <gui.h>
 
-#include <GL/glut.h> // include glut last
+#ifdef __MINGW__
+	#ifdef BOOL
+	#undef BOOL
+	#endif
+	#ifdef APIENTRY
+	#undef APIENTRY
+	#endif
+	#ifdef CALLBACK
+	#undef CALLBACK
+	#endif
+	#include <GL/freeglut.h>
+#else
+	#include <GL/glut.h>	// include glut last
+#endif
+#include <GL/glTexFont.h>
 
 extern int winW;
 extern int winH;
@@ -908,7 +922,7 @@ displayActivatorGfxBar (int wall, int value, float scale)
 		{ gl_x_Floors, level->header.nFloors+1},
 		{ gl_x_Walls, level->header.nWalls+1},
 	};
-	char *lists[] = { level->floors, level->walls };
+	unsigned char *lists[] = { level->floors, level->walls };
 
 	int half = graphisms[wall][1]/2;
 	int max = graphisms[wall][1];
@@ -1077,9 +1091,9 @@ drawStairs (int m, int x, int y, tile_p tile, float light)
 	if (iFacingNorthSouth == 1)	// north/south
 	{
 		if (y-1 >= 0)
-			iTileTypeLeftTop = (getTile (x, y-1, m))->type;
+			iTileTypeLeftTop = (int)(getTile (x, y-1, m))->type;
 		if (y+1 < 32)
-			iTileTypeRightBottom = (getTile (x, y+1, m))->type;
+			iTileTypeRightBottom = (int)(getTile (x, y+1, m))->type;
 
 		if (stairs->leading == 1 && iTileTypeRightBottom == tile_Wall && iTileTypeLeftTop != tile_Wall)
 			iRotation = 1;
@@ -1093,9 +1107,9 @@ drawStairs (int m, int x, int y, tile_p tile, float light)
 	else if (iFacingWestEast == 1)	// west/east
 	{
 		if (x-1 >= 0)
-			iTileTypeLeftTop = (getTile (x-1, y, m))->type;
+			iTileTypeLeftTop = (int)(getTile (x-1, y, m))->type;
 		if (x+1 < 32)
-			iTileTypeRightBottom = (getTile (x+1, y, m))->type;
+			iTileTypeRightBottom = (int)(getTile (x+1, y, m))->type;
 
 		if (stairs->leading == 1 && iTileTypeLeftTop == tile_Wall && iTileTypeRightBottom != tile_Wall)
 			iRotation = 2;
@@ -1109,7 +1123,7 @@ drawStairs (int m, int x, int y, tile_p tile, float light)
 
 	// Neighbors tile have to be tested to know on which direction to show the stairs!
 
-	drawPositionTile (gl_x_Tiles + tile->type, iRotation, light);
+	drawPositionTile ((int)(gl_x_Tiles + tile->type), (char)iRotation, light);
 	drawStairsArrow (stairs->leading);	// up = 1 / down = 0
 }
 
@@ -1524,7 +1538,7 @@ displayLevelWindow ()
 		, level->header.nOrnates
 	};
 	int glid[] = { gl_x_Monsters, gl_x_Walls, gl_x_Floors, gl_x_Ornates};
-	char doors[] = { level->header.door1, level->header.door2};
+	unsigned char doors[] = { level->header.door1, level->header.door2};
 	unsigned char* lists[] = {level->monsters, level->walls, level->floors, level->ornates, doors};
 	char randoms[] = { 0, level->header.rWalls, level->header.rFloors, 0};
 	static float gfxsize = 128;
@@ -1880,9 +1894,9 @@ displayActuatorsLists ()
 		iNbPerCol = 32;
 		iNbCols = 32;
 	}
-	for (j = 0; j < iNbCols; j++)
+	for (j = 0; j < (unsigned int) iNbCols; j++)
 	{
-		for (id = 0; id < iNbPerCol; id++)
+		for (id = 0; id < (unsigned int) iNbPerCol; id++)
 		{
 			actuator_p item = NULL;
 			ref.id = id+j*iNbPerCol;
@@ -2201,7 +2215,8 @@ redrawScreen ()
 			drawMapFrame (selectext);
 			drawMapObject (level, selectext);
 			if (level == 0 && !selectext)	// in DM the starting map is map zero .. and not saved in dungeon.dat
-				drawStartingCursor ((!selectext));
+				//drawStartingCursor ((!selectext));
+				drawStartingCursor ();
 			drawStack (getEditCursor (cursor_X), getEditCursor (cursor_Y), getEditCursor (cursor_L));
 			
 			if (!selectext)

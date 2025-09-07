@@ -35,6 +35,7 @@ void text_frame_misc (reference_p reference, int x, int y);
 void text_frame_scroll (reference_p reference, int x, int y);
 void text_frame_actuator (reference_p reference, int wall, int x, int y);
 void text_frame_simple_actuator (reference_p reference, int x, int y);
+void text_frame_text (reference_p reference, int x, int y);
 
 extern void printDungeonSpecificationsInfo ();
 extern void printLevelSpecificationsInfo ();

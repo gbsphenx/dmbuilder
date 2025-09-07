@@ -168,12 +168,20 @@ extern void updatePriorityColors ();
 void DMB_AutoEdit_CreateTestDungeon ();
 void DMB_AutoEdit_LoadSkullExe();
 
+// 13 args
+void DMB_Add_DM2_Actuator_CrossMapLink(int m, int x, int y, int facing, int absolutegfx, 
+									   int value, int effect, int delay, 
+									   int tm, int tx, int ty, int tf, int sw);
+
+
 void switchContext();
 void Context_Init();
 
+/*
 #include <stdio.h>
 extern short checksum (FILE* fp);
 extern long checksumSE (FILE* fp, long start, long end);
 extern short checksumS (FILE* fp, long start);
+*/
 #endif
 

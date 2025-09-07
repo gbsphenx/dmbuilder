@@ -10,6 +10,8 @@
 #ifndef TEXTS_H
 #define TEXTS_H
 
+#include <stdio.h>
+
 extern int SKULLKEEP;
 extern int THERONSQUEST;
 extern int TELOS;

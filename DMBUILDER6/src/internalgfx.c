@@ -6,12 +6,18 @@
 // Internal Graphics
 //------------------------------------------------------------------------------
 
-#include <GL/glut.h>
+
 #include <internalgfx.h>
 #include <gui.h>
 #include <version.h>
 
 #include <display.h>	// for define
+
+#ifdef __MINGW__
+	#include <GL/freeglut.h>
+#else
+	#include <GL/glut.h>	// include glut last
+#endif
 
 extern int tile;
 extern float scale;

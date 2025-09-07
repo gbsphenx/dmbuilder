@@ -10,8 +10,13 @@
 #define LOAD_GRAPHICS_H
 
 //------------------------------------------------------------------------------
+#include <image.h>
 
 extern void loadGraphics ();
+
+extern int loadArchive (char* archive, int glbank, unsigned int number);
+extern image_t* Image_LoadFromTGA (char *name, int vflip);
+extern int Image_LoadAndBind (char* name, int id);
 
 //------------------------------------------------------------------------------
 

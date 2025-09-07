@@ -21,6 +21,7 @@
 #include <string.h>
 #include <assert.h>
 #include <skullexe.h>
+#include <data.h>
 #include <math.h>
 
 extern int winW;
@@ -31,7 +32,7 @@ extern tSkullExe xSkullExe;
 #include <display.h>	// for define
 
 
-static char* txt_monsters[] = {
+static const char* txt_monsters[] = {
 	"Scorpion", "Slime", "Giggler", "Beholder",
 	"Rat", "Ruster", "Screamer", "Rockpile", "Ghost", 
 	"Stone Golem", "Mummy", "Black Flame", "Skeleton",
@@ -41,7 +42,7 @@ static char* txt_monsters[] = {
 	"Evil Lord", "Grey Lord",
 };
 
-static char* txt_monsters_csb[] = {
+static const char* txt_monsters_csb[] = {
 	"Scorpion", "Slime Devil", "Giggler", "Gazer",
 	"Hell Hound", "Ruster", "Screamer", "Rockpile", "Rive", 
 	"Stone Golem", "Mummy", "Black Flame", "Skeleton",
@@ -52,7 +53,7 @@ static char* txt_monsters_csb[] = {
 };
 
 
-static char* txt_monsters_sk[] = {
+static const char* txt_monsters_sk[] = {
 	"Thorn Demon", "Cavern Table", "Vortex", "Amplifier", // 00
 	"Bush", "Pillar", "Stalagmite", "Boulder", // 04
 	"Face Pillar", "Glop", "0A", "0B",	// 08
@@ -88,7 +89,7 @@ static float text_cat_colors[][3] =
 };
 
 
-static char* txt_dm2_ai_attributes[] =
+static const char* txt_dm2_ai_attributes[] =
 {
 	"FLAGS 00", "FLAGS 01", "ARMOR CLASS", "B03",
 	"BASE HP (LOW)", "BASE HP (HIGH)", "ATTACK STRENGTH", "POISON DAMAGE",
@@ -102,7 +103,7 @@ static char* txt_dm2_ai_attributes[] =
 };
 
 
-static char* txt_dm2_sact_extuse[] =
+static const char* txt_dm2_sact_extuse[] =
 {
 	"STILL IMAGE", "CREATURE TRANSFORMER", "ANIMATED IMAGE", "3?",
 	"ITEM TOGGLER", "ENGINE MONITOR", "LADDER (ENABLED)", "LADDER (OFF)",
@@ -116,7 +117,7 @@ static char* txt_dm2_sact_extuse[] =
 };
 
 
-static char* txt_generators[] =
+static const char* txt_generators[] =
 {
 	"CRASH!!", "1*", "2*", "3*",
 	"4*", "1?(2-3?)", "1?(2-3?)", "1?(2-3?)",
@@ -124,7 +125,7 @@ static char* txt_generators[] =
 	"1-4*", "1-4?", "1-4?", "1-4?"
 };
 
-static char* txt_objects[] =
+static const char* txt_objects[] =
 {
 	"Door", "Teleport", "Text", "Activator",
 	"Monster", "Weapon", "Clothing", "Scroll",
@@ -132,7 +133,7 @@ static char* txt_objects[] =
 	"-2", "-3", "Missile", "Cloud"
 };
 
-static char* txt_DM2_objects[] =
+static const char* txt_DM2_objects[] =
 {
 	"Door", "Teleport", "Ornate/Activator", "Activator",
 	"Monster/Object", "Weapon", "Clothing", "Scroll",
@@ -140,7 +141,7 @@ static char* txt_DM2_objects[] =
 	"-2", "-3", "Missile", "Cloud"
 };
 
-static char* txt_ObjectCategory_Display[] =
+static const char* txt_ObjectCategory_Display[] =
 {
 	"DOOR", "TELEPORT", "TXT/SIMPLE.ACT.", "ACTUATOR",
 	"MONSTER/OBJ.", "WEAPON", "CLOTHING", "SCROLL",
@@ -149,7 +150,7 @@ static char* txt_ObjectCategory_Display[] =
 };
 
 
-static char* txt_complete_wall_actuators[] =
+static const char* txt_complete_wall_actuators[] =
 {
 	"CHAMPION MIRROR",
 	"DISABLED (NOTHING)",	"PUSH BUTTON",	"ALCOVE ITEM",	"ITEM",
@@ -159,7 +160,7 @@ static char* txt_complete_wall_actuators[] =
 	"ACT. TOGGLER",	"EATER TOGGLER 2",	"END PAD",
 };
 
-static char* txt_complete_floor_actuators[] = 
+static const char* txt_complete_floor_actuators[] = 
 {
 	"Nothing",	"Activated by Everything",	"2?",	"Activated by Party",
 	"Activated by Item",	"5?",	"Monster Generator",	"Activated by Monster",
@@ -168,7 +169,7 @@ static char* txt_complete_floor_actuators[] =
 	"16?",	"17?",	"18?",	"19?",
 };
 
-static char* txt_dm2_wall_actuators[] = 
+static const char* txt_dm2_wall_actuators[] = 
 {
 	"Nothing", "1?", "2?", "Item Watcher",
 	"4?", "5?", "6?", "7?",
@@ -198,7 +199,7 @@ static char* txt_dm2_wall_actuators[] =
 
 
 
-static char* txt_dm2_floor_actuators[] = 
+static const char* txt_dm2_floor_actuators[] = 
 {
 	"Nothing", "Activated by Everything", "2?", "Activated by Party",
 	"Activated by Item", "5?", "6?", "Activated by Monster",
@@ -224,7 +225,7 @@ static char* txt_dm2_floor_actuators[] =
 
 };
 
-static char* txt_actuator_effect[] = {
+static const char* txt_actuator_effect[] = {
 	"STEP ON: OPEN/SET",
 	"STEP ON: CLOSE/CLEAR",
 	"STEP ON: TOGGLE",
@@ -235,23 +236,23 @@ static char* txt_actuator_effect[] = {
 	"STEP OUT: TOGGLE",
 	"STEP OUT: OPEN/SET / STEP ON: CLOSE/CLEAR"};
 
-static char* txt_position_ortho[] = {
+static const char* txt_position_ortho[] = {
 	"NORTH", "EAST", "SOUTH", "WEST" };
 
-static char* txt_position_quarter[] = {
+static const char* txt_position_quarter[] = {
 	"NORTH/WEST", "NORTH/EAST", "SOUTH/EAST", "SOUTH/WEST" };
 
 //char **txt_act_walls = (char**) &(txt_complete_wall_actuators[1]);
 //char **txt_act_floors = (char**) &(txt_complete_floor_actuators[0]);
 
-static char* txt_door_names [] = {
+static const char* txt_door_names [] = {
 	"IRON GRATE", "WOODEN DOOR", "METALLIC DOOR", "RA DOOR" };
 
-static char* txt_tileset_names [] = {
+static const char* txt_tileset_names [] = {
 	"VOID", "THICKET", "CAVE", "KEEP", "KEEP ROOF", "FOG THICKET" };
 
 
-static char* txt_skull_ai_groupnames [] = {
+static const char* txt_skull_ai_groupnames [] = {
 "TREE", "LAB. TABLE", "STONE ALTAR", "BUSH",
 "PILLARS / TABLE / ROD", "STALAGMITE", "BOULDER", "FOUNTAIN",
 "OBELISKS / TOMBSTONE", "WOOD TABLE", "MAGIK CAULDRON", "SKULL BRAZIER",
@@ -273,7 +274,7 @@ static char* txt_skull_ai_groupnames [] = {
 	};
 
 
-static char* txt_dm2_musics[] = {
+static const char* txt_dm2_musics[] = {
 	"NOSTALGIC (AXE GIANTS)", "ACTION THEME", "THE VAULT", "CAVES (BATS)",
 	"BATTERING RAMS", "SKULLKEEP MARCH", "UNDERGROUNDS (FIRE ORB)", "MYSTERIOUS CEMETERY",
 	"WORMS TRAP", "SUN CLAN WILDERNESS", "GUITAR THEME 1", "GUITAR THEME 2",
@@ -1003,14 +1004,14 @@ printDungeonSpecificationsInfo ()
 	for (i = 0; i < 16; i++)
 	{
 		unsigned char* xHexObjectNb = 0;
-		xHexObjectNb = &(xDungeonHeader->nObjects[i]);
+		xHexObjectNb = (unsigned char*) &(xDungeonHeader->nObjects[i]);
 
 		g = i%8;
 
-		B = 0;	// random seed
+		B = 0;
 		setTextProperties (iFntHexSize, text_cat_colors[i][0], text_cat_colors[i][1], text_cat_colors[i][2]);
 		fontDrawString (x+((iFntHexSize*2)+2)*(g*2+B), y,			"%02X", (xHexObjectNb[B]));
-		B = 1;	// random seed
+		B = 1;
 		setTextProperties (iFntHexSize, text_cat_colors[i][0], text_cat_colors[i][1], text_cat_colors[i][2]);
 		fontDrawString (x+((iFntHexSize*2)+2)*(g*2+B), y,			"%02X", (xHexObjectNb[B]));
 
