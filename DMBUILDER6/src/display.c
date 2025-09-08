@@ -27,6 +27,8 @@
 
 #include <gui.h>
 
+#include <stdio.h>
+
 #ifdef __MINGW__
 	#ifdef BOOL
 	#undef BOOL

@@ -117,11 +117,11 @@ calculateOffsets ()
 	unsigned short count = 0;
 	for (i = 0; i < getDungeon()->nLevels; i++)
 	{
-		printf("[%02d] xDim = %d\n", i, getLevels()[i].header.xDim+1);
+		//printf("[%02d] xDim = %d\n", i, getLevels()[i].header.xDim+1);
 		count += (getLevels()[i].header.xDim+1);
 	}
 	OFFSETS = (unsigned short*) calloc (count, sizeof (short));
-	printf("maps = %d / cols = %d\n", getDungeon()->nLevels, count);
+	//printf("maps = %d / cols = %d\n", getDungeon()->nLevels, count);
 	return count;
 }
 
@@ -205,6 +205,7 @@ initCompanionActuatorsTable()
 		xact->used = 0;
 		xact->wact = 0;
 	}
+	return 1;
 }
 
 
@@ -220,6 +221,10 @@ loadMusicList(char* sFilenameSongListDat)
 	iNbMaps = getDungeon()->nLevels;
 
 	fp = fopen (sFilenameSongListDat, "rb");
+	if (fp == NULL) {
+		printf("Can't load %s\n", sFilenameSongListDat);
+		return 0;
+	}
 	
 	for (i = 0; i < 64; i++)
 	{
@@ -232,7 +237,7 @@ loadMusicList(char* sFilenameSongListDat)
 	}
 
 	fclose(fp);
-
+	return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -366,25 +371,25 @@ loadDungeonData (char *dungeonname)
 
 	//mark "keep" bits for all present items.
 	itemnumber = getDungeon()->nObjects[5];
-	for (i = 0; i < itemnumber; i++)
+	for (i = 0; i < (unsigned int)itemnumber; i++)
 	{
 		weapon_p weapon = (weapon_p) ((short*)(ITEMS[5] + i*(itemBytes[5]>>1) + 1));
 		weapon->keep = 1;
 	}
 	itemnumber = getDungeon()->nObjects[6];
-	for (i = 0; i < itemnumber; i++)
+	for (i = 0; i < (unsigned int)itemnumber; i++)
 	{
 		clothing_p clothing = (clothing_p) ((short*)(ITEMS[6] + i*(itemBytes[6]>>1) + 1));
 		clothing->keep = 1;
 	}
 	itemnumber = getDungeon()->nObjects[8];
-	for (i = 0; i < itemnumber; i++)
+	for (i = 0; i < (unsigned int)itemnumber; i++)
 	{
 		potion_p potion = (potion_p) ((short*)(ITEMS[8] + i*(itemBytes[8]>>1) + 1));
 		potion->keep = 1;
 	}
 	itemnumber = getDungeon()->nObjects[10];
-	for (i = 0; i < itemnumber; i++)
+	for (i = 0; i < (unsigned int)itemnumber; i++)
 	{
 		misc_p misc = (misc_p) ((short*)(ITEMS[10] + i*(itemBytes[10]>>1) + 1));
 		misc->keep = 1;

@@ -78,7 +78,7 @@ simpleActuatorGetGraphism (short *simpleactuator)
 {
 	unsigned char igfx = 0;
 	simple_actuator_p sact = (simple_actuator_p) simpleactuator;
-	igfx = sact->Graphism;
+	igfx = (unsigned char)sact->Graphism;
 
 	return (int) (igfx);
 }

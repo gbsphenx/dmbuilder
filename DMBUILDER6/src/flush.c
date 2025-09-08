@@ -57,7 +57,7 @@ flushDungeonKeepStacks ()
 void
 flushMap(int map)
 {
-	flushLevelLayout(map);
-	flushLevelHeader(map);
+	flushLevelLayout((char)(map & 0xFF));
+	flushLevelHeader((char)(map & 0xFF));
 
 }

@@ -34,7 +34,9 @@
 #include <displaytext.h>
 #include <version.h>
 #include <mouse.h>
+
 #include <string.h>
+#include <stdio.h>
 
 #ifdef __MINGW__
 	#ifdef BOOL

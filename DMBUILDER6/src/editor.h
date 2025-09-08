@@ -11,6 +11,7 @@
 #define EDITOR_H
 
 #include <reference.h>
+#include <stdio.h>	// for FILE
 
 #define MSG_LOAD_FAILURE	0x0001
 #define MSG_SAVE_FAILURE	0x0002
@@ -177,11 +178,9 @@ void DMB_Add_DM2_Actuator_CrossMapLink(int m, int x, int y, int facing, int abso
 void switchContext();
 void Context_Init();
 
-/*
-#include <stdio.h>
 extern short checksum (FILE* fp);
 extern long checksumSE (FILE* fp, long start, long end);
 extern short checksumS (FILE* fp, long start);
-*/
+
 #endif
 

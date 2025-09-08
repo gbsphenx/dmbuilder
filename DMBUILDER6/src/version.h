@@ -7,7 +7,7 @@
 **
 *	DMB Version History
 *
-*	0.89.a		2025-09-05		Special revision for publishing code to GitHub
+*	0.88.g		2025-09-05		Special revision for publishing code to GitHub
 *	0.88.d		2024-12-15		Minor improvements for text info display
 *	0.88.c		2023-05-09		Revision of interface for standard 1920x1080 + precisions on actuator infos
 *	......		..........		Stuff happened... not logged
@@ -43,8 +43,8 @@
 #define DMB_CORE			6
 #define DMB_MONSTER			"Ruster"
 #define DMB_MAJOR			0
-#define DMB_MINOR			89
-#define DMB_REVISION		'a'
+#define DMB_MINOR			88
+#define DMB_REVISION		'g'
 
 #define PUBLIC
 #define CHECKOFF

@@ -224,6 +224,10 @@ SkullExe_Load(tSkullExe* xSkullExe, const char* sFilename)
 		return FALSE;
 
 	fp = fopen (sFilename, "rb");
+	if (fp == NULL) {
+		printf("Can't load %s\n", sFilename);
+		return FALSE;
+	}
 
 	fseek(fp, 0, SEEK_END);
 	iDataSize = ftell(fp);
@@ -237,7 +241,7 @@ SkullExe_Load(tSkullExe* xSkullExe, const char* sFilename)
 	if (!MVALID(xSkullExe->xExeData))
 		return FALSE;
 
-	//--- Locate different structures
+	//--- Locate different structures -- PCDOS
 	xSkullExe->xAI = (tSKEXE_AI_Definition*) &(xSkullExe->xExeData[0x72778]);
 	xSkullExe->xRuneCostTable = (tSKEXE_Rune_CostTable* ) &(xSkullExe->xExeData[0x765F0]);
 	xSkullExe->xSpells = (tSKEXE_Spell_Definition*) &(xSkullExe->xExeData[0x76612]);
@@ -622,7 +626,7 @@ SkullExe_GetAI(tSkullExe* xSkullExe, int iAIIndex)
 	if (!MVALID(xSkullExe) || !MVALID(xSkullExe->xAI))
 		return NULL;
 
-	if (iAIIndex < 0 || iAIIndex >= xSkullExe->iNumberOfAI)
+	if (iAIIndex < 0 || iAIIndex >= (int)xSkullExe->iNumberOfAI)
 		return NULL;
 
 	return &(xSkullExe->xAI[iAIIndex]);
@@ -635,7 +639,7 @@ SkullExe_GetSpell(tSkullExe* xSkullExe, int iSpellIndex)
 	if (!MVALID(xSkullExe) || !MVALID(xSkullExe->xSpells))
 		return NULL;
 
-	if (iSpellIndex < 0 || iSpellIndex >= xSkullExe->iNumberOfSpells)
+	if (iSpellIndex < 0 || iSpellIndex >= (int)xSkullExe->iNumberOfSpells)
 		return NULL;
 
 	return &(xSkullExe->xSpells[iSpellIndex]);
