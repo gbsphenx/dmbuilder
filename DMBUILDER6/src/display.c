@@ -2193,6 +2193,10 @@ redrawScreen ()
 	}
 	switch (getScreen ())
 	{
+	case screen_GeneralHelp:
+		
+		printGeneralHelpInfo ();
+		break;
 	case screen_Map:
 		{
 			int selectext = 

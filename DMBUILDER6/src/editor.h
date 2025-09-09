@@ -85,6 +85,7 @@ enum screenType
 	screen_DM2AI,
 	screen_LoadFile,
 	screen_SaveFile,
+	screen_GeneralHelp,
 };
 
 

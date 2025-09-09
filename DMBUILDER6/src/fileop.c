@@ -72,19 +72,20 @@ updateFileNamesFromDirEntries ()
 
 		GetCurrentDirectory (127, currentDir);
 
-		hfile = FindFirstFile ("*.dat", &fileinfo);
+		hfile = FindFirstFile ("dungeons\\*.dat", &fileinfo);
 		if (hfile == INVALID_HANDLE_VALUE)
 			return;
 		else
 		{	
-			do{
-			buffer = fileinfo.cFileName;
-		//	printf ("%s\n", buffer);
-			Files[i].filename = (char*) calloc (strlen (buffer)+1, sizeof (char));
-			strcpy (Files[i].filename, buffer);
-
-	//		Files[i].dungeontype = supposeDungeon (buffer);
-			i++;
+			do
+			{
+				buffer = fileinfo.cFileName;
+			//	printf ("%s\n", buffer);
+				Files[i].filename = (char*) calloc (strlen (buffer) + 1, sizeof (char));
+				//sprintf (Files[i].filename, "dungeons\\%s", buffer);
+				strcpy (Files[i].filename, buffer);
+		//		Files[i].dungeontype = supposeDungeon (buffer);
+				i++;
 			}
 			while (FindNextFile (hfile, &fileinfo));
 		}

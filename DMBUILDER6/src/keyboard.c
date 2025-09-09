@@ -194,8 +194,10 @@ void
 Call_LoadDungeon (char* dungeonname)
 {
 	int load;
+	char fulldungeonname[256];
 	currentFileName = dungeonname;
-	load = loadDungeonData (dungeonname);
+	sprintf(fulldungeonname, "dungeons\\%s", dungeonname);
+	load = loadDungeonData (fulldungeonname);
 	reinitTextStrings();
 	if (load == -1)
 		msg_flag += MSG_INVALID_DUNGEON;
@@ -249,9 +251,10 @@ Call_SaveDungeon (char *dungeonname)
 	else
 		msg_flag += MSG_SAVE_SG_SUCCESS;
 	saveDungeonData ("backupsave.dat");
-	saveDungeonData ("SKDMCD\\DATA\\DUNGEON.DAT");
-	if (SKULLKEEP)
+	if (SKULLKEEP) {
+		saveDungeonData ("SKDMCD\\DATA\\DUNGEON.DAT");
 		saveMusicList("SKDMCD\\DATA\\SONGLIST.DAT");
+	}
 }
 
 
@@ -398,12 +401,25 @@ void keyboard (unsigned char key, int x, int y)
 
 	switch (getScreen ())
 	{
+		case screen_GeneralHelp:
+		{
+			switch (key)
+			{
+				case KEY_ESCAPE:
+					Call_ChangeScreen (screen_Map);
+					break;
+			}
+		}
+		break;
 		case screen_DM2AI:
 		{
 			int iValue = 0;
 			iValue = SkullExe_GetAIValueAt(&xSkullExe, getEditCursor(cursor_AI_index), getEditCursor(cursor_AI_attribute));
 			switch (key)
 			{
+				case KEY_ESCAPE:
+					Call_ChangeScreen (screen_Map);
+					break;
 				case '0':
 					iValue = 0x00;
 					break;
@@ -446,6 +462,7 @@ void keyboard (unsigned char key, int x, int y)
 			{
 				switch (key)
 				{
+			//	case KEY_ESCAPE: break;
 				case 'A':getLevels()[getEditCursor(cursor_L)].header.xDim--;break;
 				case 'Z':getLevels()[getEditCursor(cursor_L)].header.xDim++;break;
 				case 'Q':getLevels()[getEditCursor(cursor_L)].header.yDim--;break;
@@ -460,14 +477,8 @@ void keyboard (unsigned char key, int x, int y)
 							getDungeon()->nLevels = MAX_LEVELS;
 						break;
 
-			//	case KEY_ESCAPE: // ESC est trop sujet aux dérapages
-				/*case 'X':
-					exit (0);
-					break;*/
 				case ControlKey('s'):
 					SKULLKEEP = !SKULLKEEP; break;
-				case ControlKey('e'):
-					exit (0); break;
 				case ControlKey('x'):
 					{
 						reference_p refp = getGroundReference (getEditCursor (cursor_X),
@@ -821,8 +832,8 @@ void keyboard (unsigned char key, int x, int y)
 			{
 				switch (key)
 				{
-					case 'X':
-						exit (0);
+					case KEY_ESCAPE:
+						Call_ChangeScreen (screen_Map);
 						break;
 					case KEY_RETURN:
 						switchEditingGraphics ();
@@ -875,11 +886,8 @@ void keyboard (unsigned char key, int x, int y)
 			} break;
 		case screen_ListsCreatures:
 			{
-				switch (key)
-				{
-					case 'X':exit (0);
-						break;
-				}
+				if (key == KEY_ESCAPE)
+					Call_ChangeScreen (screen_Map);
 			} break;
 		case screen_LoadFile:
 		{
@@ -914,6 +922,35 @@ void keyboard (unsigned char key, int x, int y)
 void arrow_keys (int a_keys, int x, int y)
 {
 	//printf("a_keys/x/y = %d/%d/%d\n", a_keys, x, y);
+
+	//-- Test first for Fn keys that would change screen
+	switch (a_keys)
+	{
+		case GLUT_KEY_F1: setScreen (screen_GeneralHelp); break;
+		case GLUT_KEY_F2: Call_ChangeScreen (screen_Level); break;
+		case GLUT_KEY_F3: setScreen (screen_ListsCreatures); break;
+		case GLUT_KEY_F4: setScreen (screen_ListsItems); break;
+		case GLUT_KEY_F5: setScreen (screen_ListsActuators); break;
+		case GLUT_KEY_F6: setScreen (screen_MainHeader); break;
+		case GLUT_KEY_F7:
+				DMB_AutoEdit_LoadSkullExe();
+				setScreen (screen_DM2AI);
+				break;
+		case GLUT_KEY_F8:
+			switchContext ();
+			break;
+		case GLUT_KEY_F9: 
+			updateFileNames ();
+			setScreen (screen_LoadFile);
+			break;
+		case GLUT_KEY_F10: exportText (); break;
+		case GLUT_KEY_F11: importText (); break;
+		case GLUT_KEY_F12: 
+			updateFileNames ();
+			setScreen (screen_SaveFile);
+			break;
+	}
+
 	switch (getScreen ())
 	{
 
@@ -966,11 +1003,12 @@ void arrow_keys (int a_keys, int x, int y)
 			
 		else{switch (a_keys)
 		{
+			case GLUT_KEY_F1: setScreen (screen_GeneralHelp); break;
 			case GLUT_KEY_F2: Call_ChangeScreen (screen_Level); break;
 			case GLUT_KEY_F3: setScreen (screen_ListsCreatures); break;
 			case GLUT_KEY_F4: setScreen (screen_ListsItems); break;
-			//case GLUT_KEY_F4: setScreen (screen_ListsActuators); break;
-			//case GLUT_KEY_F4: setScreen (screen_MainHeader); break;
+			case GLUT_KEY_F5: setScreen (screen_ListsActuators); break;
+			case GLUT_KEY_F6: setScreen (screen_MainHeader); break;
 			case GLUT_KEY_F7:
 					DMB_AutoEdit_LoadSkullExe();
 					setScreen (screen_DM2AI);
@@ -992,9 +1030,9 @@ void arrow_keys (int a_keys, int x, int y)
 				break;
 				// TODO: should make a CONFIRMATION screen before flush (if the user made changes before!!)
 			//case GLUT_KEY_F5: callFlushDungeon ();/*startGeneration ();*/ break;
-			case GLUT_KEY_F5: execTestDungeon ();/*startGeneration ();*/ break;
+			//case GLUT_KEY_F5: execTestDungeon ();/*startGeneration ();*/ break;
 			//case GLUT_KEY_F6: __TestRandomFloorsTiles (0); break;
-			case GLUT_KEY_F6: DMB_AutoEdit_CreateTestDungeon(); break;
+			//case GLUT_KEY_F6: DMB_AutoEdit_CreateTestDungeon(); break;
 
 			case GLUT_KEY_RIGHT: setEditCursor (cursor_X, (char) (getEditCursor (cursor_X) + 1)); break;
 			case GLUT_KEY_LEFT:	setEditCursor (cursor_X, (char) (getEditCursor (cursor_X) - 1)); break;

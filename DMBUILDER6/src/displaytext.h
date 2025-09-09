@@ -13,6 +13,7 @@
 
 extern void loadTextFont ();
 
+extern void printGeneralHelpInfo ();
 extern void printGeneralMapInfo ();
 
 extern void printGeneralMessage (char *message);

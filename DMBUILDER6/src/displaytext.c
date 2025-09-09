@@ -31,6 +31,16 @@ extern tSkullExe xSkullExe;
 
 #include <display.h>	// for define
 
+//------------------------------------------------------------------------------
+
+int iInfoX = 1200;
+int iInfoY = 925;
+int iInfoYNeg = 1050 - 925 + 30;
+int iInfoFntSize = 15;
+	//x = winW-370;
+	//y = winH/2;
+
+//------------------------------------------------------------------------------
 
 static const char* txt_monsters[] = {
 	"Scorpion", "Slime", "Giggler", "Beholder",
@@ -475,7 +485,13 @@ printCoordinates ()
 	unsigned char color = MColors[getEditCursor (cursor_L)];
 
 	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, winH-iStdFntSize, "DM MODE : (%d) [%s]",
+	fontDrawString (22, winH-iStdFntSize, "F1: HELP");
+
+	if (SKULLKEEP == 1)
+		setTextProperties (iStdFntSize, .5, .9, 1);
+	else
+		setTextProperties (iStdFntSize, .7, .7, .7);
+	fontDrawString (22 + (iStdFntSize*15), winH-iStdFntSize, "DM MODE : (%d) [%s]",
 		SKULLKEEP, (SKULLKEEP == 1) ? "SKULLKEEP" : "CLASSIC DM");
 	
 	setTextProperties (iStdFntSize, 1, 1, 1);
@@ -483,7 +499,7 @@ printCoordinates ()
 		getEditCursor (cursor_L), getEditCursor (cursor_X), getEditCursor (cursor_Y));
 	
 	setTextProperties (iStdFntSize, .8, .6, .95);
-	fontDrawString (22 + (21*iStdFntSize), winH-38, "A (%02d,%02d,%02d) / DEPTH: %02d",
+	fontDrawString (22 + (21*iStdFntSize), winH-38, " A (%02d,%02d,%02d) / DEPTH: %02d",
 		(getLevels()[getEditCursor (cursor_L)]).header.level,
 		(getLevels()[getEditCursor (cursor_L)]).header.xOffset + getEditCursor (cursor_X),
 		(getLevels()[getEditCursor (cursor_L)]).header.yOffset + getEditCursor (cursor_Y),
@@ -967,7 +983,7 @@ printDungeonSpecificationsInfo ()
 
 	setTextProperties (iFntSize, 1.0, 0.2, 0.2);
 	y -= iStepText;
-	fontDrawString (x, y, "NB. MAPS: %02d (x%01X) (MAX = 256?)", xDungeonHeader->nLevels, xDungeonHeader->nLevels);
+	fontDrawString (x, y, "NB. MAPS: %02d (x%01X) (MAX = 255?)", xDungeonHeader->nLevels, xDungeonHeader->nLevels);
 
 	setTextProperties (iFntSize, .9, .7, .7);
 	y -= iStepText;
@@ -1033,7 +1049,48 @@ printDungeonSpecificationsInfo ()
 	*/
 
 }
+void
+printGeneralHelpInfo ()
+{
+	int iLocalFntSize = 15;
+	int y = winH-iStdFntSize;
+	int iStepText = iLocalFntSize+2;
 
+	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "DMBUILDER GENERAL HELP");
+	y -= iStepText;
+	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "----------------------\n");
+
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F1 : General Help (this screen)\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F2 : Level Properties\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F3 : List of Items\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F4 : List of Creatures\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F5 : List of Actuators\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F6 : Main Header Dungeon Properties\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F7 : DM2 AI Table Values\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F8 : DM2 AI Table Values\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F9 : Invoke load dungeon screen");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F10 : Export text to file");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F11 : Import text to file");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "F12 : Invoke save dungeon screen");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "ESC : Back to main map editor screen");
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
+	fontDrawString (22, y, "How to quit DMBuilder ? close the window.\n");
+}
 
 void
 printLevelSpecificationsInfo ()
@@ -1218,14 +1275,6 @@ typedef struct
 
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
-int iInfoX = 1200;
-int iInfoY = 925;
-int iInfoYNeg = 1050 - 925 + 30;
-int iInfoFntSize = 15;
-	//x = winW-370;
-	//y = winH/2;
 
 void
 text_frame_simple_actuator (reference_p reference, int x, int y)
