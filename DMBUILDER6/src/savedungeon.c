@@ -14,12 +14,10 @@
 #include <reference.h>
 #include <text.h>
 
-unsigned short* OFFSETS;
-
-unsigned short* REFERENCES;
-unsigned short* RAWTEXTS;
-
-unsigned short* FREESPACE;
+extern unsigned short* OFFSETS;		// defined in loaddungeon
+extern unsigned short* REFERENCES;	// defined in loaddungeon
+extern unsigned short* RAWTEXTS;	// defined in loaddungeon
+extern unsigned short* FREESPACE;	// defined in loaddungeon
 
 extern short* ITEMS[16];
 extern int nItems[16]; 

@@ -546,6 +546,7 @@ void keyboard (unsigned char key, int x, int y)
 					switchEditingTile (); break;
 				case '+':
 					setSelectingNewItem (1); break;
+				case KEY_ESCAPE:
 				case '-':
 					setSelectingNewItem (0); break;
 				case '1': switchTileFunction (getCurrentTile (), 1); break;

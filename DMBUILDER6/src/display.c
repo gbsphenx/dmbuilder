@@ -43,7 +43,8 @@
 #else
 	#include <GL/glut.h>	// include glut last
 #endif
-#include <GL/glTexFont.h>
+
+#include <glTexFont.h>
 
 extern int winW;
 extern int winH;

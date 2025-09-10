@@ -21,9 +21,9 @@
 //------------------------------------------------------------------------------
 
 unsigned short* OFFSETS;
-
 unsigned short* REFERENCES;
 unsigned short* RAWTEXTS;
+unsigned short* FREESPACE;
 
 int SKULLKEEP = 0;			// It is a skullkeep map?
 int THERONSQUEST = 0;		// It is a Therons Quest map ? (special DM2+TQ tag)
@@ -34,6 +34,8 @@ extern int nItems[16];
 extern size_t itemBytes [16];
 
 extern unsigned int gfx_activation_items[];
+
+tCompanionActuator xActuatorTable[1024];
 
 void
 updateActivationItems(int iDM2Mode)

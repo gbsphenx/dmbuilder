@@ -11,6 +11,7 @@
 #define TEXTS_H
 
 #include <stdio.h>
+#include <stdlib.h>
 
 extern int SKULLKEEP;
 extern int THERONSQUEST;
@@ -25,7 +26,7 @@ extern char* getText (unsigned int number);
 extern char* getTextContext (int iContext, unsigned int number);
 extern unsigned int getTextsNumber ();
 
-extern unsigned int encodeTexts (unsigned short *rawtexts);
+extern size_t encodeTexts (unsigned short *rawtexts);
 
 extern void exportText ();
 extern void importText ();

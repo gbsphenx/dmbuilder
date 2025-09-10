@@ -8,6 +8,9 @@
 
 #ifndef REFERENCE_H
 #define REFERENCE_H
+
+#include <stdlib.h>
+
 /*
 typedef struct
 {
@@ -61,12 +64,12 @@ extern short* getCurrentSelectedItem ();
 
 extern void referenceID (reference_p refp, int n);
 
-extern int stackSwitch (unsigned int a, unsigned int b);
+extern int stackSwitch (size_t a, size_t b);
 
-extern void removeStackItem (unsigned int i);
-extern void removeStackItemIfCategory (unsigned int i, int iCategory);
+extern void removeStackItem (size_t i);
+extern void removeStackItemIfCategory (size_t i, int iCategory);
 
 extern void push_reference_in_stack (short reference, char x, char y, char l);
-void push_reference_in_stack_facing (short reference, char x, char y, char l, char facing);
+extern void push_reference_in_stack_facing (short reference, char x, char y, char l, char facing);
 
 #endif

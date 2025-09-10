@@ -12,7 +12,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifndef __LINUX__
 #include <windows.h>
+#endif
+
 #include <assert.h>
 
 #include <loaddungeon.h>
@@ -60,6 +64,7 @@ updateFileNamesFromListFile (char *s)
 void
 updateFileNamesFromDirEntries ()
 {
+#ifndef __LINUX__
 	static unsigned int checked = 0;
 	if (checked) return;
 	{
@@ -93,6 +98,7 @@ updateFileNamesFromDirEntries ()
 		nNames = i;
 		checked = 1;
 	}
+#endif // __LINUX__
 }
 
 

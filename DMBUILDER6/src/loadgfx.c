@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-GLenum texFormat;
+extern GLenum texFormat; // defined in tga
 
 #ifdef __MINGW__
 	#undef GLenum
@@ -211,6 +211,7 @@ void loadGraphics ()
 	loadArchive ("Tiles", gl_Tiles, xtile_Max);
 	loadArchive ("Gui", gl_Gui, gui_Max);
 	loadArchive ("Powers", gl_Powers, power_Max);
+#ifndef __LINUX__
 //------------------------------------------------------------------------------
 	Graphics_LoadSkullkeepImagesSet ("gfx\\SKDoors.tga", gl_StaticSkullkeep + gl_Doors, 64, 64);
 	Graphics_LoadSkullkeepImagesSet ("gfx\\SKDoorOrnates.tga", gl_StaticSkullkeep + gl_Ornates, 64, 64);
@@ -237,7 +238,34 @@ void loadGraphics ()
 	Graphics_LoadSkullkeepItems ("gfx\\SKBags.tga", 9);
 //	Graphics_LoadSkullkeepItems ("gfx\\SKMiscs.tga", 10);
 	Graphics_LoadSkullkeepItems ("gfx\\TORCMiscs.tga", 10);
+#else
+//------------------------------------------------------------------------------
+	Graphics_LoadSkullkeepImagesSet ("GFX/SKDoors.tga", gl_StaticSkullkeep + gl_Doors, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("GFX/SKDoorOrnates.tga", gl_StaticSkullkeep + gl_Ornates, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("GFX/SKTileset.tga", gl_SK_TilesSet, 16, 16);
+	Graphics_LoadSkullkeepImagesSet ("GFX/SKObjects.tga", gl_StaticSkullkeep + gl_Monsters, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("GFX/SKWallOrnates.tga", gl_StaticSkullkeep + gl_Walls, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("GFX/SKFloorOrnates.tga", gl_StaticSkullkeep + gl_Floors, 64, 64);
+//	Graphics_LoadSkullkeepImagesSet ("GFX/SKChampions.tga", gl_StaticSkullkeep + gl_Portraits, 32, 32);
+	Graphics_LoadSkullkeepImagesSet ("GFX/TORCChampions.tga", gl_StaticSkullkeep + gl_Portraits, 32, 32);
+	Graphics_LoadSkullkeepImagesSet ("GFX/SKTileSpecialFloors.tga", gl_StaticSkullkeep + gl_SpecialTiles, 16, 16);
+	Graphics_LoadSkullkeepImagesSet ("GFX/SKPotions.tga", gl_StaticSkullkeep + gl_Potions, 16, 16);
+	Graphics_LoadSkullkeepImagesSet ("GFX/SKContainers.tga", gl_StaticSkullkeep + gl_Containers, 16, 16);
 
+	Graphics_LoadSkullkeepImagesSet ("GFX/SKWActuators.tga", gl_StaticSkullkeep + gl_WActuators, 64, 64);
+
+	Graphics_LoadSkullkeepImagesSet ("GFX/TELOSObjects.tga", gl_StaticTELOS + gl_Monsters, 64, 64);
+
+	//Graphics_LoadSkullkeepImagesSet ("GFX/CSBChampions.tga", gl_StaticSkullkeep + gl_Champions, 32, 32);
+//	Graphics_LoadSkullkeepItems ("GFX/SKWeapons.tga", 5);
+	Graphics_LoadSkullkeepItems ("GFX/TORCWeapons.tga", 5);
+//	Graphics_LoadSkullkeepItems ("GFX/SKClothings.tga", 6);
+	Graphics_LoadSkullkeepItems ("GFX/TORCClothings.tga", 6);
+	Graphics_LoadSkullkeepItems ("GFX/SKPotions.tga", 8);
+	Graphics_LoadSkullkeepItems ("GFX/SKBags.tga", 9);
+//	Graphics_LoadSkullkeepItems ("GFX/SKMiscs.tga", 10);
+	Graphics_LoadSkullkeepItems ("GFX/TORCMiscs.tga", 10);
+#endif // __LINUX__
 //..............................................................................
 //..............................................................................
 //..............................................................................
@@ -288,7 +316,11 @@ int loadArchive (char* archive, int glbank, unsigned int number)
 	unsigned int i;
 	FILE* file;
 	char buf[] = "                    ";
+#ifdef __LINUX__
+	strcpy (buf, "GFX/");
+#else
 	strcpy (buf, "GFX\\");
+#endif
 	strcat (buf, archive);
 	strcat (buf, ".gfx");
 	file = fopen (buf, "r+bt");

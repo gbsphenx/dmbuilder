@@ -6,11 +6,13 @@
 // Display Text
 //------------------------------------------------------------------------------
 
-#include <GL/glTexFont.h>
+#include <glTexFont.h>
+#include <tga.h>
+
 #include <displaytext.h>
 #include <editor.h>
 #include <level.h>
-#include <tga.h>
+
 #include <item.h>
 #include <dm.h>
 #include <text.h>
