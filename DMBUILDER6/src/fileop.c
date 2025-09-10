@@ -84,7 +84,7 @@ updateFileNamesFromDirEntries ()
 				Files[i].filename = (char*) calloc (strlen (buffer) + 1, sizeof (char));
 				//sprintf (Files[i].filename, "dungeons\\%s", buffer);
 				strcpy (Files[i].filename, buffer);
-		//		Files[i].dungeontype = supposeDungeon (buffer);
+			//	Files[i].dungeontype = supposeDungeon (buffer);
 				i++;
 			}
 			while (FindNextFile (hfile, &fileinfo));

@@ -2275,35 +2275,64 @@ redrawScreen ()
 
 	case screen_LoadFile:
 		{
-			unsigned nFiles = numberOfFilesToLoad ();
-			unsigned i;
-			setTextProperties (16, .8, 1, .5); 
-			outputTextLineAt (200, winH-100, "SELECT A FILE TO LOAD");
+			unsigned int nFiles = numberOfFilesToLoad ();
+			unsigned int i;
+			int fontsize = 14;
+			int step = (fontsize + 2);
+			setTextProperties (32, .8, 1, .5); 
+			outputTextLineAt (200, winH-100, "SELECT A DUNGEON FILE TO LOAD");
+			if (nFiles <= 20)
+			{
+				fontsize = 24; step = (fontsize + 2);
+			}
+			else if (nFiles < 50)
+			{
+				fontsize = 19; step = (fontsize + 2);
+			}
+			else if (nFiles >= 50)
+			{
+				fontsize = 14; step = (fontsize + 2);
+			}
+
 			for (i = 0; i < nFiles; i++)
 			{
 				if (i == (unsigned) selectFile)
-					setTextProperties (14, 1, 1, 0); 
+					setTextProperties (fontsize, 1, 1, 0); 
 				else
-					setTextProperties (14, .7, .8, 1); 
+					setTextProperties (fontsize, .7, .8, 1); 
 				
-				outputTextLineAt (100, winH-150-16*i, getFileName (i));
+				outputTextLineAt (100, winH-150-step*i, getFileName (i));
 			}
 		}
 		break;
 	case screen_SaveFile:
 		{
-			unsigned nFiles = numberOfFilesToLoad ();
-			unsigned i;
-			setTextProperties (16, .5, 1, .8); 
-			outputTextLineAt (200, winH-100, "SELECT A FILE TO SAVE");
+			unsigned int nFiles = numberOfFilesToLoad ();
+			unsigned int i;
+			int fontsize = 14;
+			int step = (fontsize + 2);
+			setTextProperties (32, .8, 1, .5); 
+			outputTextLineAt (200, winH-100, "SELECT A FILE TO SAVE DUNGEON");
+			if (nFiles <= 20)
+			{
+				fontsize = 24; step = (fontsize + 2);
+			}
+			else if (nFiles < 50)
+			{
+				fontsize = 19; step = (fontsize + 2);
+			}
+			else if (nFiles >= 50)
+			{
+				fontsize = 14; step = (fontsize + 2);
+			}
 			for (i = 0; i < nFiles; i++)
 			{
 				if (i == (unsigned) selectFile)
-					setTextProperties (14, 1, 1, 0); 
+					setTextProperties (fontsize, 1, 1, 0); 
 				else
-					setTextProperties (14, .7, .8, 1); 
+					setTextProperties (fontsize, .7, .8, 1); 
 				
-				outputTextLineAt (100, winH-150-16*i, getFileName (i));
+				outputTextLineAt (100, winH-150-step*i, getFileName (i));
 			}
 		}
 		break;

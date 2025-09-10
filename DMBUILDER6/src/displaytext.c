@@ -493,6 +493,12 @@ printCoordinates ()
 		setTextProperties (iStdFntSize, .7, .7, .7);
 	fontDrawString (22 + (iStdFntSize*15), winH-iStdFntSize, "DM MODE : (%d) [%s]",
 		SKULLKEEP, (SKULLKEEP == 1) ? "SKULLKEEP" : "CLASSIC DM");
+
+	if (currentFileName != NULL) 
+	{
+		setTextProperties (iStdFntSize, 1, 1, .5);
+		fontDrawString (22 + (iStdFntSize*42), winH-iStdFntSize, "DUNGEON : [%s]", currentFileName);
+	}
 	
 	setTextProperties (iStdFntSize, 1, 1, 1);
 	fontDrawString (22, winH-38, "COORDS : R (%02d,%02d,%02d)",

@@ -130,6 +130,8 @@ typedef struct
 	int iIsTheronsQuest;
 	int iIsTELOS;
 
+	char* currentFileName;		// filename of current edited dungeon
+
 } t_DungeonContext;
 
 extern t_DungeonContext xTblDunSaveContexts[4];
