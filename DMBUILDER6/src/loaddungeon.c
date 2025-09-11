@@ -254,6 +254,7 @@ loadDungeonData (char *dungeonname)
 	char dummy = 0;
 
 	fp = fopen (dungeonname, "rb");
+	printf("LOAD: Starts loading dungeon \"%s\".\n", dungeonname); 
 
 	initCompanionActuatorsTable();
 
@@ -294,7 +295,7 @@ loadDungeonData (char *dungeonname)
 				// for Amiga WinUAE Save State (USS)
 				// map x34780
 
-				printf("LOAD: This looks not a DUNGEON.DAT. Trying to load as a SAVEGAME...\n"); 
+				printf("LOAD: This does not look like a DUNGEON.DAT. Trying to load as a SAVEGAME...\n"); 
 
 				while (searching && (tries < 32))
 				{

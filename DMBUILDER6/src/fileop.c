@@ -15,7 +15,12 @@
 
 #ifndef __LINUX__
 #include <windows.h>
+#else
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #endif
+
 
 #include <assert.h>
 
@@ -27,10 +32,10 @@ typedef struct
 	char dungeontype;
 } file_t;
 
-char *filenames[64];
+char *filenames[128];
 static unsigned int nNames = 0;
 
-file_t Files[64];
+file_t Files[128];
 
 
 struct dirent *currentFile;
@@ -61,10 +66,10 @@ updateFileNamesFromListFile (char *s)
 	checked = 1;
 }
 
+#ifndef __LINUX__
 void
 updateFileNamesFromDirEntries ()
 {
-#ifndef __LINUX__
 	static unsigned int checked = 0;
 	if (checked) return;
 	{
@@ -98,8 +103,47 @@ updateFileNamesFromDirEntries ()
 		nNames = i;
 		checked = 1;
 	}
-#endif // __LINUX__
 }
+#else
+void
+updateFileNamesFromDirEntries ()
+{
+	static unsigned int checked = 0;
+	if (checked) return;
+	{
+
+		struct dirent *entry;
+		DIR *dirp;
+		int i = 0;
+
+		dirp = opendir("dungeons");
+		if (dirp == NULL) {
+			return;
+		}
+
+		while ((entry = readdir(dirp)) != NULL) {
+			if (entry->d_type == DT_DIR)
+				continue;
+
+			const char *name = entry->d_name;
+			size_t len = strlen(name);
+			if (len > 4 && strcmp(name + len - 4, ".dat") == 0) 
+			{
+				Files[i].filename = calloc(len + 1, sizeof(char));
+				if (Files[i].filename) 
+				{
+					strcpy(Files[i].filename, name);
+					i++;
+				}
+			}
+		}
+		closedir(dirp);
+
+		nNames = i;
+		checked = 1;
+	}
+}
+#endif // __LINUX__
 
 
 

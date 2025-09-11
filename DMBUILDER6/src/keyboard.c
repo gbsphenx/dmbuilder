@@ -196,7 +196,11 @@ Call_LoadDungeon (char* dungeonname)
 	int load;
 	char fulldungeonname[256];
 	currentFileName = dungeonname;
+#ifndef __LINUX__
 	sprintf(fulldungeonname, "dungeons\\%s", dungeonname);
+#else
+	sprintf(fulldungeonname, "dungeons/%s", dungeonname);
+#endif
 	load = loadDungeonData (fulldungeonname);
 	reinitTextStrings();
 	if (load == -1)

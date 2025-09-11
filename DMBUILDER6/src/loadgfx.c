@@ -299,6 +299,7 @@ int extractTGA (FILE* s, int id)
         returnError (s, TGA_BAD_DATA);
     glBindTexture (GL_TEXTURE_2D, id);
     glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
+	texFormat = GL_RGB;
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
