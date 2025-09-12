@@ -1530,11 +1530,11 @@ static void
 displayLevelWindow ()
 {
 	int iAdjustX = 0;
-	char i = 0;
-	char j = 0;
+	unsigned char i = 0;
+	unsigned char j = 0;
 	int iFntSize = 20;
 	level_p level = (level_p) &(getLevels()[getEditCursor(cursor_L)]);
-	char maxtable[] = {
+	unsigned char maxtable[] = {
 		level->header.nMonsters
 		, level->header.nWalls
 		, level->header.nFloors
@@ -1543,7 +1543,8 @@ displayLevelWindow ()
 	int glid[] = { gl_x_Monsters, gl_x_Walls, gl_x_Floors, gl_x_Ornates};
 	unsigned char doors[] = { level->header.door1, level->header.door2};
 	unsigned char* lists[] = {level->monsters, level->walls, level->floors, level->ornates, doors};
-	char randoms[] = { 0, level->header.rWalls, level->header.rFloors, 0};
+	unsigned char* cattxt[] = { "CR", "WD", "FD", "DD", "DR" };
+	unsigned char randoms[] = { 0, level->header.rWalls, level->header.rFloors, 0};
 	static float gfxsize = 128;
 	static int conv[] = { 5, 3, 4, 2, 1};	// monsters, walls, floors, door ornates, door
 	char gc = getEditCursor(cursor_Graphics);
@@ -1551,12 +1552,18 @@ displayLevelWindow ()
 	int iMapID = getEditCursor(cursor_L);
 
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
-	outputTextLineAt (200, winH-40, "LEVEL INFO : #%02d", iMapID);
+	outputTextLineAt (100, winH-40, "F2:    MAP #%02d/%02d PROPERTIES", iMapID, getDungeon()->nLevels-1);
 
 	moveToUpperScreen ();
+	moveSize (0.5f, 0.5f, gfxsize);
 	//--- Display MONSTERS / WALLS / FLOORS / WALL ORNATES
 	for (j = 0; j < 4; j++)
 	{	
+		moveSize (-1.5f, 0, gfxsize);
+		setTextProperties (iFntSize, 1, 0, 0);
+		fontDrawString (iGLVirtualX+1+iAdjustX, iGLVirtualY-1, "%02s", cattxt[j]);
+		moveSize (1.5f, 0, gfxsize);
+
 		for (i = 0; i < maxtable[j]; i++)
 		{
 			int iObjectID = 0;
@@ -1570,11 +1577,24 @@ displayLevelWindow ()
 			fontDrawString (iGLVirtualX+1+iAdjustX, iGLVirtualY-1, "%02X", iObjectID);
 			setTextProperties (iFntSize, .9, .9, .9);
 			fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY, "%02X", iObjectID);
+			iAdjustX = 0;
 
+			moveSize (1, 0, gfxsize);
+		}
+		for (i = maxtable[j]; i < 15; i++)
+		{
+			drawFrame (gfxsize, .20, .20, .20);
 			moveSize (1, 0, gfxsize);
 		}
 		moveSize (-i, 1, gfxsize);
 	}
+	
+	// Door txt
+	moveSize (-1.5f, 0, gfxsize);
+	setTextProperties (iFntSize, 1, 0, 0);
+	fontDrawString (iGLVirtualX+1+iAdjustX, iGLVirtualY-1, "%02s", cattxt[4]);
+	moveSize (1.5f, 0, gfxsize);
+
 
 	//--- Display DOORS
 	drawSizeSquare (gl_x_Doors + level->header.door1, gfxsize, 1.0f);
@@ -1582,9 +1602,11 @@ displayLevelWindow ()
 	drawSizeSquare (gl_x_Doors + level->header.door2, gfxsize, 1.0f);
 
 	moveToUpperScreen ();
+	moveSize (0.5f, 0.5f, gfxsize);
 	moveSize (ic, gc, gfxsize);
 	if (isEditingGraphics())
-	{	drawFrame (gfxsize, .9, .25, .3);
+	{	
+		drawFrame (gfxsize, .9, .25, .3);
 		displaySelectionBar (conv[gc], lists[gc][ic], 2.);
 	}
 	else

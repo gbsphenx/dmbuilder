@@ -324,7 +324,7 @@ int loadArchive (char* archive, int glbank, unsigned int number)
 #endif
 	strcat (buf, archive);
 	strcat (buf, ".gfx");
-	file = fopen (buf, "r+bt");
+	file = fopen (buf, "r+b");
 	if (file != NULL)
 	{	
 		for (i = 0; i < number; i++)

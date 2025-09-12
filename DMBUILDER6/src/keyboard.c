@@ -858,17 +858,17 @@ void keyboard (unsigned char key, int x, int y)
 					case 'r':
 						{
 							char g = getEditCursor (cursor_Graphics);
-							if (g == 1)
+							if (g == 1 && getLevels()[getEditCursor(cursor_L)].header.rWalls < 15)
 								getLevels()[getEditCursor(cursor_L)].header.rWalls += 1;
-							else if (g == 2)
+							else if (g == 2 && getLevels()[getEditCursor(cursor_L)].header.rFloors < 15)
 								getLevels()[getEditCursor(cursor_L)].header.rFloors += 1;
 						} break;
 					case 'R':
 						{
 							char g = getEditCursor (cursor_Graphics);
-							if (g == 1)
+							if (g == 1 && getLevels()[getEditCursor(cursor_L)].header.rWalls > 0)
 								getLevels()[getEditCursor(cursor_L)].header.rWalls -= 1;
-							else if (g == 2)
+							else if (g == 2 && getLevels()[getEditCursor(cursor_L)].header.rFloors > 0)
 								getLevels()[getEditCursor(cursor_L)].header.rFloors -= 1;
 						} break;
 					case 't':
