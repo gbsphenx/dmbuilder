@@ -315,10 +315,10 @@ moveToUpperMap ()
 		scale = __TILE_SCALE__;
 		tileScale = (__TILE_GL_BASE__*scale);
 	}
-	else if (iMainScreen == screen_Level)
+	else if (iMainScreen == screen_Level) // display as mini map at top right
 	{
-		iStartX = -winW+(__DISP_MAP_START_X__*2)+(1000*2);
-		iStartY = winH-(__DISP_MAP_START_Y__*2);
+		iStartX = -winW+(__DISP_MAP_START_X__*2)+(1100*2);
+		iStartY = winH-(__DISP_MAP_START_Y__*0.75f);
 		scale = 0.75f;
 		tileScale = (__TILE_GL_BASE__*scale);
 	}
@@ -1543,7 +1543,7 @@ displayLevelWindow ()
 	int glid[] = { gl_x_Monsters, gl_x_Walls, gl_x_Floors, gl_x_Ornates};
 	unsigned char doors[] = { level->header.door1, level->header.door2};
 	unsigned char* lists[] = {level->monsters, level->walls, level->floors, level->ornates, doors};
-	unsigned char* cattxt[] = { "CR", "WD", "FD", "DD", "DR" };
+	unsigned char* cattxt[] = { "CR", "WL", "FL", "DD", "DR" };
 	unsigned char randoms[] = { 0, level->header.rWalls, level->header.rFloors, 0};
 	static float gfxsize = 128;
 	static int conv[] = { 5, 3, 4, 2, 1};	// monsters, walls, floors, door ornates, door
@@ -1555,6 +1555,14 @@ displayLevelWindow ()
 	outputTextLineAt (100, winH-40, "F2:    MAP #%02d/%02d PROPERTIES", iMapID, getDungeon()->nLevels-1);
 
 	moveToUpperScreen ();
+	moveSize (.25f, -.25f, gfxsize);
+	for (i = 0; i < 15; i++)
+	{
+		setTextProperties (iFntSize, .8, .8, .8);
+		fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY, "%1X", i+1);
+		moveSize (1, 0, gfxsize);
+	}
+	moveSize (-i-.25f, +.25f, gfxsize);
 	moveSize (0.5f, 0.5f, gfxsize);
 	//--- Display MONSTERS / WALLS / FLOORS / WALL ORNATES
 	for (j = 0; j < 4; j++)

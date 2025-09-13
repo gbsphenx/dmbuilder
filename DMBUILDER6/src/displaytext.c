@@ -1118,7 +1118,7 @@ printLevelSpecificationsInfo ()
 	int iMapEndOffset = 0;
 
 	int x = 75;//winW-370;
-	int y = winH/2;
+	int y = winH - 520;
 	int iRowText = 0;
 	int iStepText = iFntSize+2;
 	char cSep = '-';
@@ -1136,6 +1136,9 @@ printLevelSpecificationsInfo ()
 	iMapEndOffset = level->endoffset;
 
 	iMusicID = level->iMusicID;
+
+	setTextProperties (iFntHexSize, 1.0, 1.0, 1.0);
+	fontDrawString (x+((iFntHexSize*3)+2)*B, y+(15*5),"MAP HEADER 16 BYTES -- HEXA BREAKDOWN ");
 
 	for (B = 0; B < 16; B++)
 	{
@@ -1265,10 +1268,13 @@ printLevelSpecificationsInfo ()
 	getDoorName(sHelpObjectText, level->header.door2);
 	fontDrawString (x, y, "DOOR 2: %d (%s)", level->header.door2, sHelpObjectText);
 
-	if (iMusicID < 64)
-		strcpy(sMusicName, txt_dm2_musics[iMusicID]);
-	y -= iStepText;		setTextProperties (iFntSize, .6, 0.9, 1.0);
-	fontDrawString (x, y, "MUSIC : %d [%02X] %s", iMusicID, iMusicID, sMusicName);
+	if (SKULLKEEP)
+	{
+		if (iMusicID < 64)
+			strcpy(sMusicName, txt_dm2_musics[iMusicID]);
+		y -= iStepText;		setTextProperties (iFntSize, .6, 0.9, 1.0);
+		fontDrawString (x, y, "MUSIC : %d [%02X] %s", iMusicID, iMusicID, sMusicName);
+	}
 
 
 }
