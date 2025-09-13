@@ -1629,18 +1629,24 @@ void
 displayCreaturesLists ()
 {
 	dm_reference ref;
-	unsigned int max = getNumber (category_Monster);
+	reference_p refalive;
+	unsigned int nbmonsters = getNumber (category_Monster);
 	unsigned int id = 0;
 	unsigned int j = 0;
-	int iCounterPerType[128];
+	unsigned int maxid = 27;
+	int iCounterPerType[256];
 	float size = __STD_STACK_SIZE__*0.75f;
 	ref.category = category_Monster;
 	ref.position = 0;
 
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
-	outputTextLineAt (200, winH-40, "ALL CREATURES LIST : #%03d CREATURES", max);
+	if (SKULLKEEP)
+		outputTextLineAt (200, winH-40, "F3:  CREATURES & OBJECTS LIST : #%03d", nbmonsters);
+	else
+		outputTextLineAt (200, winH-40, "F3:    CREATURES LIST : #%03d", nbmonsters);
 
-	for (id = 0; id < 128; id++)
+
+	for (id = 0; id < 256; id++)
 		iCounterPerType[id] = 0;
 
 	moveToUpperMap ();
@@ -1653,8 +1659,17 @@ displayCreaturesLists ()
 			if (ref.id <= 1022)
 			{
 				monster = (monster_p) getItem (&ref);
+				refalive = getNextItem (&ref);
 				iCounterPerType[monster->type]++;
-				drawSizeSquare (gl_x_Monsters + monster->type, size, ((ref.id>max)?.01f:1.0f));
+				if (ref.id < nbmonsters)
+				{
+					printf("refalive[%d] = %04x\n", ref.id, refalive->raw);
+					drawSizeSquare (gl_x_Monsters + monster->type, size, ((refalive->raw == 0xFFFF)?0.25f:1.0f));
+					if (refalive->raw == 0xFFFF)
+						drawSizeSquare (gl_Gui + gui_Poisoned, size/2, .5f);
+				}
+				else
+					drawFrame (size, .10, .10, .10);
 			}
 			moveSize (0, 1, size);
 		}
@@ -1662,8 +1677,10 @@ displayCreaturesLists ()
 	}
 	//--- Display quantity per type
 	moveToUpperMap ();
-	moveSize (16, 0, size);
-	for (id = 0; id < 32; id++)
+	moveSize (18, 0, size);
+	if (SKULLKEEP)
+		maxid = 0x58;
+	for (id = 0; id < maxid; id++)
 	{
 		if (id%16 == 0 && id != 0)
 		{
@@ -1671,7 +1688,11 @@ displayCreaturesLists ()
 		}
 		drawSizeSquare (gl_x_Monsters + id, size, 1.0f);
 		moveSize (1, 0, size);
-		fontDrawString (iGLVirtualX, iGLVirtualY, "%02d", iCounterPerType[id]);
+		if (iCounterPerType[id] == 0)
+			setTextProperties (14, .3, .5, .4);
+		else
+			setTextProperties (14, .5, 1, .8);
+		fontDrawString (iGLVirtualX, iGLVirtualY-7, "%02d", iCounterPerType[id]);
 		moveSize (-1, 1, size);
 	}
 }

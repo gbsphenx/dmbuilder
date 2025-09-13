@@ -1086,7 +1086,7 @@ void arrow_keys (int a_keys, int x, int y)
 			{
 				case GLUT_KEY_F1: Call_ChangeScreen (screen_Map); break;
 				case GLUT_KEY_F3: setScreen (screen_ListsCreatures); break;
-				case GLUT_KEY_F4: setScreen (screen_ListsActuators); break;
+				//case GLUT_KEY_F4: setScreen (screen_ListsActuators); break;
 				case GLUT_KEY_F7: 
 					DMB_AutoEdit_LoadSkullExe();
 					setScreen (screen_DM2AI);
@@ -1148,7 +1148,7 @@ void arrow_keys (int a_keys, int x, int y)
 					case GLUT_KEY_F1: setScreen (screen_Map); break;
 					case GLUT_KEY_F2: setScreen (screen_Level); break;
 					case GLUT_KEY_F3: setScreen (screen_ListsCreatures); break;
-					case GLUT_KEY_F4: setScreen (screen_ListsActuators); break;
+					//case GLUT_KEY_F4: setScreen (screen_ListsActuators); break;
 				}
 			}
 			break;
@@ -1164,7 +1164,7 @@ void arrow_keys (int a_keys, int x, int y)
 					case GLUT_KEY_F1: setScreen (screen_Map); break;
 					case GLUT_KEY_F2: setScreen (screen_Level); break;
 					case GLUT_KEY_F3: setScreen (screen_ListsCreatures); break;
-					case GLUT_KEY_F4: setScreen (screen_ListsActuators); break;
+					//case GLUT_KEY_F4: setScreen (screen_ListsActuators); break;
 				
 				}			
 			}
