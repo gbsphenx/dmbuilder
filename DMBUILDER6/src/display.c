@@ -1663,7 +1663,6 @@ displayCreaturesLists ()
 				iCounterPerType[monster->type]++;
 				if (ref.id < nbmonsters)
 				{
-					printf("refalive[%d] = %04x\n", ref.id, refalive->raw);
 					drawSizeSquare (gl_x_Monsters + monster->type, size, ((refalive->raw == 0xFFFF)?0.25f:1.0f));
 					if (refalive->raw == 0xFFFF)
 						drawSizeSquare (gl_Gui + gui_Poisoned, size/2, .5f);
@@ -1734,22 +1733,30 @@ displayItemsLists ()
 	unsigned int iNbMaxCols = 16;
 	int iCounterPerType[128];
 	float size = __STD_STACK_SIZE__*0.75f;
+	float textcatsize = 12.f;
 	ref.category = category_Weapon;
 	ref.position = 0;
 
 	iNbTotalItems = iNbWeapons + iNbClothings + iNbScrolls + iNbPotions + iNbChests + iNbMiscs;
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
-	outputTextLineAt (200, winH-40, "ALL ITEMS LIST : #%03d ITEMS", iNbTotalItems);
+	outputTextLineAt (200, winH-40, "F4:    ITEMS LIST : #%03d", iNbTotalItems);
 
 	if (iNbTotalItems > 500)
+	{
 		size = __STD_STACK_SIZE__*0.5f;
+		textcatsize = 8.f;
+	}
 
 	for (id = 0; id < 128; id++)
 		iCounterPerType[id] = 0;
 
 	moveToUpperMap ();
+	moveSize (-1, 0, size);
+	setTextProperties (textcatsize, .8, .8, .2); 
+	fontDrawString (iGLVirtualX, iGLVirtualY-7, "SCROLLS");
+	moveSize (1, 0, size);
 
-
+	moveSize (0, 1, size);
 	iNbMaxCols = (iNbScrolls / 16) + 1;
 	ref.category = category_Scroll;
 	ref.position = 0;
@@ -1763,13 +1770,17 @@ displayItemsLists ()
 			{
 				item = (scroll_p) getItem (&ref);
 				//iCounterPerType[item->type]++;
-				drawSizeSquare (gl_Special + special_Scroll, size, ((ref.id>iNbScrolls)?.01f:1.0f));
+				drawSizeSquare (gl_Special + special_Scroll, size, ((ref.id>=iNbScrolls)?.01f:1.0f));
 			}
 			moveSize (0, 1, size);
 		}
 		moveSize (1, -16, size);
 	}
 
+	moveSize (0, -1, size);
+	setTextProperties (textcatsize, .8, .8, .2); 
+	fontDrawString (iGLVirtualX, iGLVirtualY-7, "WEAPONS");
+	moveSize (0, 1, size);
 
 	moveSize (1, 0, size);
 	iNbMaxCols = (iNbWeapons / 16) + 1;
@@ -1785,12 +1796,17 @@ displayItemsLists ()
 			{
 				item = (weapon_p) getItem (&ref);
 				iCounterPerType[item->type]++;
-				drawSizeSquare (gl_x_Weapons + item->type, size, ((ref.id>iNbWeapons)?.01f:1.0f));
+				drawSizeSquare (gl_x_Weapons + item->type, size, ((ref.id>=iNbWeapons)?.01f:1.0f));
 			}
 			moveSize (0, 1, size);
 		}
 		moveSize (1, -16, size);
 	}
+
+	moveSize (0, -1, size);
+	setTextProperties (textcatsize, .8, .8, .2); 
+	fontDrawString (iGLVirtualX, iGLVirtualY-7, "CLOTHINGS");
+	moveSize (0, 1, size);
 
 	moveSize (1, 0, size);
 	ref.category = category_Clothing;
@@ -1806,12 +1822,17 @@ displayItemsLists ()
 			{
 				item = (clothing_p) getItem (&ref);
 				iCounterPerType[item->type]++;
-				drawSizeSquare (gl_x_Clothes + item->type, size, ((ref.id>iNbClothings)?.01f:1.0f));
+				drawSizeSquare (gl_x_Clothes + item->type, size, ((ref.id>=iNbClothings)?.01f:1.0f));
 				moveSize (0, 1, size);
 			}
 		}
 		moveSize (1, -16, size);
 	}
+
+	moveSize (0, -1, size);
+	setTextProperties (textcatsize, .8, .8, .2); 
+	fontDrawString (iGLVirtualX, iGLVirtualY-7, "MISCS.");
+	moveSize (0, 1, size);
 
 	moveSize (1, 0, size);
 	ref.category = category_Miscs;
@@ -1827,12 +1848,17 @@ displayItemsLists ()
 			{
 				item = (misc_p) getItem (&ref);
 				iCounterPerType[item->type]++;
-				drawSizeSquare (gl_x_Miscs + item->type, size, ((ref.id>iNbMiscs)?.01f:1.0f));
+				drawSizeSquare (gl_x_Miscs + item->type, size, ((ref.id>=iNbMiscs)?.01f:1.0f));
 				moveSize (0, 1, size);
 			}
 		}
 		moveSize (1, -16, size);
 	}
+
+	moveSize (0, -1, size);
+	setTextProperties (textcatsize, .8, .8, .2); 
+	fontDrawString (iGLVirtualX, iGLVirtualY-7, "POTIONS");
+	moveSize (0, 1, size);
 
 	moveSize (1, 0, size);
 	ref.category = category_Potion;
@@ -1848,12 +1874,20 @@ displayItemsLists ()
 			{
 				item = (potion_p) getItem (&ref);
 				iCounterPerType[item->type]++;
-				drawSizeSquare (gl_x_Potions + item->type, size, ((ref.id>iNbPotions)?.01f:1.0f));
+				drawSizeSquare (gl_x_Potions + item->type, size, ((ref.id>=iNbPotions)?.01f:1.0f));
 				moveSize (0, 1, size);
 			}
 		}
 		moveSize (1, -16, size);
 	}
+
+	moveSize (0, -1, size);
+	setTextProperties (textcatsize, .8, .8, .2); 
+	if (SKULLKEEP)
+		fontDrawString (iGLVirtualX, iGLVirtualY-7, "CONT. & MAPS");
+	else
+		fontDrawString (iGLVirtualX, iGLVirtualY-7, "CHESTS");
+	moveSize (0, 1, size);
 
 	moveSize (1, 0, size);
 	ref.category = category_Chest;
@@ -1870,10 +1904,16 @@ displayItemsLists ()
 			if (ref.id <= 1022)
 			{
 				item = (chest_p) getItem (&ref);
-				type = objectContainerGetType((short*) item);
+				if (SKULLKEEP)
+					type = objectContainerGetType((short*) item);
+				else
+					type = 0;
 
 				iCounterPerType[type]++;
-				drawSizeSquare (gl_x_Containers + type, size, ((ref.id>iNbChests)?.01f:1.0f));
+				if (SKULLKEEP)
+					drawSizeSquare (gl_x_Containers + type, size, ((ref.id>=iNbChests)?.01f:1.0f));
+				else
+					drawSizeSquare (gl_Special + special_Chest, size, ((ref.id>=iNbChests)?.01f:1.0f));
 				moveSize (0, 1, size);
 			}
 		}
@@ -1893,7 +1933,11 @@ displayItemsLists ()
 		}
 		drawSizeSquare (gl_x_Weapons + id, size, 1.0f);
 		moveSize (1, 0, size);
-		fontDrawString (iGLVirtualX, iGLVirtualY, "%02d", iCounterPerType[id]);
+		if (iCounterPerType[id] == 0)
+			setTextProperties (14, .3, .5, .4);
+		else
+			setTextProperties (14, .5, 1, .8);
+		fontDrawString (iGLVirtualX, iGLVirtualY-7, "%02d", iCounterPerType[id]);
 		moveSize (-1, 1, size);
 	}
 }
