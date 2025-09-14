@@ -24,7 +24,10 @@
 #include <assert.h>
 #include <skullexe.h>
 #include <data.h>
+
 #include <math.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 extern int winW;
 extern int winH;
@@ -307,9 +310,6 @@ char **txt_act_floors = NULL;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-
-#include <stdarg.h>
-#include <stdio.h>
 
 int txtX, txtY;
 int line, column;
@@ -676,7 +676,7 @@ printAIDetailsInfos ()
 
 	iSizeOfAIDef = sizeof(tSKEXE_AI_Definition);
 
-	printf("SkullExe (print AI) : %08x\n", &xSkullExe);
+	//printf("SkullExe (print AI) : %08x\n", &xSkullExe);
 
 	if (iExeSizeLoaded > 0)
 	{
@@ -1475,6 +1475,7 @@ text_frame_scroll (reference_p reference, int x, int y)
 	}
 }
 
+int yreftextinfo = 24;
 
 void
 text_frame_text (reference_p reference, int x, int y)
@@ -1482,7 +1483,7 @@ text_frame_text (reference_p reference, int x, int y)
 	text_p text = (text_p) getItem (reference);
 	int iUseGDATText = 0;
 	x = iInfoX;
-	y = (winH - iInfoYNeg) - (y*__STD_STACK_SIZE__/2);
+	y = (winH - iInfoYNeg) - (y*__STD_STACK_SIZE__/2) + 4;
 
 	if (reference->category == category_Text)
 	{
@@ -1499,6 +1500,8 @@ text_frame_text (reference_p reference, int x, int y)
 		//	setTextProperties (iInfoFntSize, .1, .4, .4);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "FLAGS 2/3  : %d %d", text->flag2, text->flag3);
+		y -= iInfoFntSize;
+		yreftextinfo = y;
 	}
 }
 
@@ -1541,16 +1544,18 @@ void
 printSelectedText (reference_p refp)
 {
 	text_p text;
-	setTextProperties (14, 1, 1, 1);
+	int x = iInfoX;	// 100
+	int y = yreftextinfo;
+	setTextProperties (14, 0.8, 1.0, 1.0);
 	if (SKULLKEEP == 0 && refp->category == category_Text)
 	{	
 		text = (text_p) getItem (refp);
-		fontDrawString (100, 24, "Text: >%s<", converttexttobuffer (getText(text->offset)));
+		fontDrawString (x, y, "TEXT: \"%s\"", converttexttobuffer (getText(text->offset)));
 	}
 	else if (SKULLKEEP == 0 && refp->category == category_Scroll)
 	{	
 		scroll_p scroll = (scroll_p) getItem (refp);
-		fontDrawString (100, 24, "Scroll: >%s<", converttexttobuffer (getText(scroll->offset)));
+		fontDrawString (x, y, "SCROLL: \"%s\"", converttexttobuffer (getText(scroll->offset)));
 	}
 }
 
@@ -1558,14 +1563,15 @@ void
 displaySelectedTextList (unsigned int select)
 {
 	int t = 0;
+	float textsize = 18; // was 11 before
 	int size = (getTextsNumber()>=48)?48:getTextsNumber();
 	for (t = -24; t < 24; t++)
 	{
-		setTextProperties (11, .7, .8, .9);
+		setTextProperties (textsize, .7, .8, .9);
 		if (t == 0)
-			setTextProperties (11, 1, .9, .7);
+			setTextProperties (textsize, 1, .9, .7);
 		if (select + t >= 0 && select + t < getTextsNumber())
-		fontDrawString (32, winH - (64 + 10*(t+24)), "(%s)", converttexttobuffer (getText(select + t)));
+		fontDrawString (32, winH - (64 + (textsize-1)*(t+24)), "(%s)", converttexttobuffer (getText(select + t)));
 	}
 }
 
@@ -1978,6 +1984,193 @@ text_frame_actuator (reference_p reference, int wall, int x, int y)
 //------------------------------------------------------------------------------
 
 void
+printMainMapHelpInfo ()
+{
+	int basex = iTileInfo_OffsetX+40;
+	int basey = winH-iTileInfo_OffsetY-620;
+	int helptfsize = 13;
+
+	int x = basex;
+	int y = basey;
+	int ystep = helptfsize+2;
+
+	setTextProperties (helptfsize, 1, 1, 1);
+	fontDrawString (x, y, "ONLINE HELP");
+	y -= ystep;
+
+	if (! isEditingTile ())	// navigating through map, no object locked for edit
+	{
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "LEFT CLICK:  PAINT TILE WITH OPEN FLOOR");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "RIGHT CLICK: PAINT TILE WITH SOLID WALL");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "ENTER: LOCK OBJECT/STACK ON TILE FOR EDIT");
+
+		y -= ystep;
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH ITEM ID TYPE");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "UP - DOWN ARROW: CYCLE THROUGH ITEMS IN STACK");
+
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "PAGE UP - PAGE DOWN: NAVIGATE THROUGH MAPS");
+	}
+
+//--- If editing door, bring this help
+	if (isEditingTile ())
+	{
+		reference_p refp;
+		switch ((refp = getCurrentItemReference())->category)
+		{
+			case category_Door:
+				y -= ystep;
+				setTextProperties (helptfsize, .85, .85, .85);
+				fontDrawString (x, y, "DOOR EDITING:");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'B': SWITCH BUTTON");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'D': DESTROYABLE BY SPELLS");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'S': BASHABLE BY WEAPONS");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'O': OPENING (VERTICAL OR HORIZONTAL)");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "' ': DOOR TYPE (1 OR 2)");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH AVAILABLE DOOR ORNATES");
+			break;
+			case category_Monster:
+				y -= ystep;
+				setTextProperties (helptfsize, 1, .25, .25);
+				if (SKULLKEEP)
+					fontDrawString (x, y, "CREATURE/OBJECT EDITING:");
+				else
+					fontDrawString (x, y, "CREATURE EDITING:");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'1': DECREASE LEVEL");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'2': INCREASE LEVEL");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'4': DECREASE 10 LEVELS");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'5': INCREASE 10 LEVELS");
+
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'0': REROLL HIT POINTS");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'8': NOVICE MONSTER - LEVEL = 1");
+
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'M': CYCLE THROUGH NUMBER OF CREATURES (1 - 4)");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH MONSTER ID TYPE");
+			break;
+			case category_Weapon:
+				y -= ystep;
+				setTextProperties (helptfsize, 1, 1, 1);
+				fontDrawString (x, y, "WEAPON EDITING:");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'1': DECREASE CHARGE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'2': INCREASE CHARGE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'C': CURSED");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'O': POISONED");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'B': BROKEN");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH WEAPON ID TYPE");
+			break;
+			case category_Clothing:
+				y -= ystep;
+				setTextProperties (helptfsize, .8, .4, .2);
+				fontDrawString (x, y, "CLOTHING EDITING:");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'C': CURSED");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'B': BROKEN");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH CLOTHING ID TYPE");
+			break;
+			case category_Potion:
+				y -= ystep;
+				setTextProperties (helptfsize, .25, .25, 1);
+				fontDrawString (x, y, "POTION EDITING:");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'1': DECREASE POWER BY 1");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'2': INCREASE POWER BY 1");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'4': DECREASE POWER BY 40");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'5': INCREASE POWER BY 40");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH POTION ID TYPE");
+			break;
+/*
+							if (key == '1')
+								potion->power-=1;
+							else if (key == '2')
+								potion->power+=1;
+							else if (key == '4')
+								potion->power-=40;
+							else if (key == '5')
+								potion->power+=40;
+			
+*/
+		}
+
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .8, .9);
+		fontDrawString (x, y, "'P': CYCLE THROUGH TILE QUARTER POSITION");
+		y -= ystep;
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "ENTER: UNLOCK OBJECT/STACK");
+	}
+
+
+}
+
+//------------------------------------------------------------------------------
+
+void
 printNewItemStats ()
 {
 	setTextProperties (14, 1, 1, 1);
@@ -2000,4 +2193,5 @@ printGeneralMapInfo ()
 	printLevelStack ();
 	printTileValue ();
 	printReferenceValue ();
+	printMainMapHelpInfo();
 }

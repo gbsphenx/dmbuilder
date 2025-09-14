@@ -1447,6 +1447,16 @@ drawMap (unsigned char level, int edittext)
 //	
 //------------------------------------------------------------------------------
 
+static void
+drawMapHelpInfo ()
+{
+	moveToUpperScreen ();
+	moveSize (52, 32, 48);
+	drawFrameXY (1800, 700, .9, .9, .7);
+
+	printMainMapHelpInfo ();
+}
+
 static void 
 drawMapGraphics (char map)
 {
@@ -2329,6 +2339,7 @@ redrawScreen ()
 
 			drawMapGraphics (level);
 			printGeneralMapInfo ();
+			drawMapHelpInfo ();
 			{
 				reference_p refp = getStackReference (getEditCursor (cursor_Stack));
 				if (refp->category == category_Text || refp->category == category_Scroll)

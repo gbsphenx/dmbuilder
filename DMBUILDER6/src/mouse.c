@@ -132,7 +132,6 @@ void
 Mouse_Motion (int x, int y)
 {
 	//printf ("From Motion: x = %d, y = %d\n", x, y);
-	if (Mouse.tile_x != -1);
 	setEditCursor (cursor_X, (char)Mouse.tile_x);
 	setEditCursor (cursor_Y, (char)Mouse.tile_y);
 	Mouse_Handler (Mouse.button, Mouse.state, x, y);
@@ -150,7 +149,6 @@ Mouse_Motion_Passive (int x, int y)
 	{
 
 		Mouse_CheckCell();
-		//if (Mouse.tile_x != -1);
 		setEditCursor (cursor_X, (char)Mouse.tile_x);
 		setEditCursor (cursor_Y, (char)Mouse.tile_y);
 	}

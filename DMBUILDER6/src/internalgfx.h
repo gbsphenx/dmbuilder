@@ -10,6 +10,8 @@
 #define INTERNAL_GRAPHICS_H
 
 extern void drawFrame (float size, float r, float g, float b);
+extern void drawFrameXY (float sizex, float sizey, float r, float g, float b);
+
 extern void drawBasicTile (int id, float light);
 extern void drawSizeSquare (int id, float size, float light);
 extern void drawPositionTile (int id, char position, float light);

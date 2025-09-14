@@ -70,8 +70,8 @@ static const char *writtenby = "written by Guillaume Bastard";
 static const char *author = "Sphenx";
 static const char *codeversion = "code version 6";
 
-// WSXGA+
-int winW = 1680;
+// Full HD minus borders
+int winW = 1912;
 int winH = 1050;
 
 void glutDisplay (void)

@@ -62,6 +62,27 @@ drawFrame (float size, float r, float g, float b)
 	glTranslatef (size/2, -size/2, 0);
 }
 
+void
+drawFrameXY (float sizex, float sizey, float r, float g, float b)
+{
+	glTranslatef (-sizex/2, sizey/2, 0);
+	glLineWidth(2.0f);
+	fakeTexture ();
+	glColor4f (r, g, b, 1.f);
+	glBegin(GL_LINES);									
+		glVertex2d(0,0);								
+		glVertex2d(sizex, 0);								
+		glVertex2d(sizex, 0);								
+		glVertex2d(sizex, -sizey);								
+		glVertex2d(sizex, -sizey);								
+		glVertex2d(0, -sizey);								
+		glVertex2d(0, -sizey);								
+		glVertex2d(0, 0);								
+	glEnd();		
+	glTranslatef (sizex/2, -sizey/2, 0);
+}
+
+
 //------------------------------------------------------------------------------
 
 void
