@@ -1333,7 +1333,7 @@ text_frame_simple_actuator (reference_p reference, int x, int y)
 
 
 void
-text_frame_weapon (reference_p reference, int x, int y)
+text_frame_weapon (reference_p reference, int x, int y, float l)
 {
 	weapon_p weapon = (weapon_p) getItem (reference);
 	//x = winW-370;
@@ -1343,15 +1343,15 @@ text_frame_weapon (reference_p reference, int x, int y)
 
 	if (reference->category == category_Weapon)
 	{
-		setTextProperties (iInfoFntSize, .8, .9, .9);
+		setTextProperties (iInfoFntSize, .8*l, .9*l, .9*l);
 		fontDrawString (x, y, "WEAPON");
-		setTextProperties (iInfoFntSize, 1, .5, .4);
+		setTextProperties (iInfoFntSize, 1*l, .5*l, .4*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "TYPE: %02d (x%02X)", weapon->type, weapon->type);
-		setTextProperties (iInfoFntSize, 1, .5, .4);
+		setTextProperties (iInfoFntSize, 1*l, .5*l, .4*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "KEEP IT: %02d", weapon->keep);
-		setTextProperties (iInfoFntSize, 1, .5, .4);
+		setTextProperties (iInfoFntSize, 1*l, .5*l, .4*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "CHARGES: %02d", weapon->charges);
 	}
@@ -1987,7 +1987,7 @@ void
 printNewItemStats ()
 {
 	int basex = iTileInfo_OffsetX+40;
-	int basey = winH-iTileInfo_OffsetY-320;
+	int basey = winH-iTileInfo_OffsetY-420;
 	int helptfsize = 13;
 
 	int x = basex;
@@ -1996,7 +1996,9 @@ printNewItemStats ()
 
 	setTextProperties (helptfsize, 1, 1, 1);
 	y -= (__STD_STACK_SIZE__);
-
+	y += 15;
+	//y -= 15;
+/*
 	if (!SKULLKEEP)
 	fontDrawString (x, y, "USED %ss: %d (0x%03X)",
 		txt_objects[getEditCursor (cursor_NewItem)], getNumber (getEditCursor (cursor_NewItem)),
@@ -2005,14 +2007,17 @@ printNewItemStats ()
 	fontDrawString (x, y, "USED %ss: %d (0x%03X)",
 		txt_DM2_objects[getEditCursor (cursor_NewItem)], getNumber (getEditCursor (cursor_NewItem)),
 		getNumber (getEditCursor (cursor_NewItem)));
-	
+*/	
+	fontDrawString (x, y, "CURRENT ID FOR %s: %d (0x%03X)",
+		txt_ObjectCategory_Display[getEditCursor (cursor_NewItem)], getNumber (getEditCursor (cursor_NewItem)),
+			getNumber (getEditCursor (cursor_NewItem)));
 }
 
 void
 printNewObjectHelpInfo ()
 {
 	int basex = iTileInfo_OffsetX+40;
-	int basey = winH-iTileInfo_OffsetY-320;
+	int basey = winH-iTileInfo_OffsetY-420;
 	int helptfsize = 13;
 
 	int x = basex;

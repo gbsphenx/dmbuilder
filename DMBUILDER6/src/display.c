@@ -454,7 +454,7 @@ displaySelectNewItem ()
 	}
 
 	moveToUpperScreen ();
-	moveSize (52-16, 16, 48);
+	moveSize (52-16, 19.5, 48);
 	for (i = 0; i < 11; i++)
 	{
 		drawSizeSquare (symbol_item[i], __STD_STACK_SIZE__, 1.0f);
@@ -545,14 +545,14 @@ drawDestinationFromCurrent (char xdest, char ydest, float r, float g, float b, c
 //	Object displays while in stack
 //------------------------------------------------------------------------------
 
-typedef void (*displayObject) (reference_p);
+typedef void (*displayObject) (reference_p, float);
 
 static void
-displayNoObject (reference_p refp)
+displayNoObject (reference_p refp, float light)
 {;}
 
 static void
-displayDoorObject (reference_p refp)
+displayDoorObject (reference_p refp, float light)
 {
 	door_p door = (door_p) getItem (refp);
 	char lights[] = {door->button, 1, door->bashable, door->destroyable};
@@ -581,7 +581,7 @@ displayDoorObject (reference_p refp)
 }
 
 static void
-displayTeleportObject (reference_p refp)
+displayTeleportObject (reference_p refp, float light)
 {
 	teleport_p teleport = (teleport_p) getItem (refp);
 	tile_teleport_p teletile = (tile_teleport_p) getCurrentTile ();
@@ -604,7 +604,7 @@ displayTeleportObject (reference_p refp)
 }
 
 static void
-displayTextObject (reference_p refp)
+displayTextObject (reference_p refp, float light)
 {
 	int wall = 0;
 	int iGfxCreature = 0;
@@ -639,7 +639,7 @@ displayTextObject (reference_p refp)
 }
 
 static void
-displayActivatorObject (reference_p refp)
+displayActivatorObject (reference_p refp, float light)
 {
 	int iactid = refp->id;
 	int editact = 0;
@@ -771,7 +771,7 @@ displayActivatorObject (reference_p refp)
 }
 
 static void
-drawChested (reference_p refp)
+drawChested (reference_p refp, float light)
 {
 	short i = 0;
 	short** currentref = (short **) &refp;
@@ -786,16 +786,16 @@ drawChested (reference_p refp)
 }
 
 static void
-displayMonsterObject (reference_p refp)
+displayMonsterObject (reference_p refp, float light)
 {
 	monster_p monster = (monster_p) getItem (refp);
 	drawPositionStack (gl_x_Monsters + monster->type, 0, 1.0f);	
 	if (monster->chested != -2)
-		drawChested ((reference_p) &monster->chested);
+		drawChested ((reference_p) &monster->chested, light);
 }
 
 static void
-displayWeaponObject (reference_p refp)
+displayWeaponObject (reference_p refp, float light)
 {
 	int i;
 	weapon_p weapon = (weapon_p) getItem (refp);
@@ -803,20 +803,20 @@ displayWeaponObject (reference_p refp)
 	int glid[3] = {gl_Gui + gui_Cursed, gl_Gui + gui_Poisoned, gl_Gui + gui_Broken};
 	
 	if (!SKULLKEEP)
-		drawPositionStack (gl_Weapons + weapon->type, 0, 1.0f);
+		drawPositionStack (gl_Weapons + weapon->type, 0, 1.0f*light);
 	else if (SKULLKEEP)
-		drawPositionStack (gl_StaticSkullkeep + gl_Weapons + weapon->type, 0, 1.0f);
+		drawPositionStack (gl_StaticSkullkeep + gl_Weapons + weapon->type, 0, 1.0f*light);
 
 	for (i = 0; i < 3; i++)
 	{
 		moveStack (1, 0);
-		drawPositionStack (glid[i], 0, 0.4 + 0.6 * lights[i]);
+		drawPositionStack (glid[i], 0, (0.4 + 0.6 * lights[i]) * light);
 	}
 	moveStack ((char)-i, 0);
 }
 
 static void		
-displayClothingObject (reference_p refp)
+displayClothingObject (reference_p refp, float light)
 {
 	int i;
 	clothing_p clothing = (clothing_p) getItem (refp);
@@ -838,7 +838,7 @@ displayClothingObject (reference_p refp)
 }
 
 static void
-displayScrollObject (reference_p refp)
+displayScrollObject (reference_p refp, float light)
 {
 	drawPositionStack (gl_Special + special_Scroll, 0, 1.0f);
 }
@@ -851,7 +851,7 @@ find_potion_power (int value)
 }
 
 static void
-displayPotionObject (reference_p refp)
+displayPotionObject (reference_p refp, float light)
 {
 	potion_p potion = (potion_p) getItem (refp);
 	drawPositionStack (gl_x_Potions + potion->type, 0, 1.0f);
@@ -862,7 +862,7 @@ displayPotionObject (reference_p refp)
 
 
 static void
-displayChestObject (reference_p refp)
+displayChestObject (reference_p refp, float light)
 {
 	chest_p chest = (chest_p) getItem (refp);
 	if (SKULLKEEP)
@@ -873,12 +873,12 @@ displayChestObject (reference_p refp)
 	else
 		drawPositionStack (gl_Special + special_Chest, 0, 1.0f);
 	if (chest->chested != -2)
-		drawChested ((reference_p) &chest->chested);
+		drawChested ((reference_p) &chest->chested, light);
 }
 
 
 static void
-displayMiscellaneousObject (reference_p refp)
+displayMiscellaneousObject (reference_p refp, float light)
 {
 	misc_p misc = (misc_p) getItem (refp);
 
@@ -1151,6 +1151,7 @@ static void
 drawStack (char x, char y, unsigned char level)
 {
 	int iStackIndex = 0;
+	float fLightScale = 1.f;	// when some selection, light will be low to allow other panels over
 	static displayObject objectStats[] =
 	{ 
 		displayDoorObject, displayTeleportObject, displayTextObject, displayActivatorObject,
@@ -1167,16 +1168,21 @@ drawStack (char x, char y, unsigned char level)
 	while (**currentref != -2 && **currentref != -1)
 	{
 		short *item = getItem(refp);
+		if (iStackIndex >= 5 && isSelectingNewItem ())	// so that new panel is readable
+			fLightScale = 0.12f;
+		else if (iStackIndex >= 8) // so that online help panel is readable
+			fLightScale = 0.12f;
 		moveStack (-2, 0);
 		//printf("Stack = %d / X= %d / Y=%d\n", iStackIndex, iGLVirtualX, iGLVirtualY);
+		setTextProperties (12, fLightScale, fLightScale, fLightScale);
 		fontDrawString (iGLVirtualX, iGLVirtualY, "%02d", iStackIndex);
 		moveStack (1, 0);
-		drawPositionStack (gl_Gui + wall, (char) refp->position, 1.0f);
+		drawPositionStack (gl_Gui + wall, (char) refp->position, fLightScale);
 		moveStack (1, 0);
-		objectStats[refp->category](refp);
+		objectStats[refp->category](refp, fLightScale);
 
 		if (refp->category == category_Weapon)
-			text_frame_weapon (refp, 0, iStackIndex);
+			text_frame_weapon (refp, 0, iStackIndex, fLightScale);
 		else if (refp->category == category_Clothing)
 			text_frame_clothing (refp, 0, iStackIndex);
 		else if (refp->category == category_Potion)
@@ -1199,7 +1205,6 @@ drawStack (char x, char y, unsigned char level)
 				text_frame_simple_actuator(refp, 0, iStackIndex);
 			}
 		}
-
 
 		moveStack (0, 1);
 		refp = getNextItem (refp);
@@ -1295,7 +1300,7 @@ drawStack (char x, char y, unsigned char level)
 			text_frame_teleport (selected, 0, iEditStackIndex);
 		else if (selected->category == category_Weapon)
 		{
-			text_frame_weapon (selected, 0, iEditStackIndex);
+			text_frame_weapon (selected, 0, iEditStackIndex, fLightScale);
 			displaySelectionBar (conversion[selected->category],
 			getItemType[selected->category] (item), 1);
 		}
@@ -1461,8 +1466,8 @@ static void
 drawNewObjectSelectionInfo ()
 {
 	moveToUpperScreen ();
-	moveSize (52, 16, 48);
-	drawFrameXY (1800, 700, .9, .9, .7);
+	moveSize (52, 20, 48);
+	drawFrameXY (1800, 350, .9, .9, .7);
 }
 
 
