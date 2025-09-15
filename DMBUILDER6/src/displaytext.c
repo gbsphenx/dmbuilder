@@ -1654,7 +1654,7 @@ text_frame_teleport (reference_p reference, int x, int y)
 	teleport_p teleport = (teleport_p) getItem (reference);
 	
 	//x = winW-370; y = winH/2;
-	x = iInfoX;
+	x = iInfoX + (3*64);
 	y = (winH - iInfoYNeg) - (y*__STD_STACK_SIZE__/2);
 
 	setTextProperties (iInfoFntSize, .1, .7, .9);
@@ -1984,6 +1984,55 @@ text_frame_actuator (reference_p reference, int wall, int x, int y)
 //------------------------------------------------------------------------------
 
 void
+printNewItemStats ()
+{
+	int basex = iTileInfo_OffsetX+40;
+	int basey = winH-iTileInfo_OffsetY-320;
+	int helptfsize = 13;
+
+	int x = basex;
+	int y = basey;
+	int ystep = helptfsize+2;
+
+	setTextProperties (helptfsize, 1, 1, 1);
+	y -= (__STD_STACK_SIZE__);
+
+	if (!SKULLKEEP)
+	fontDrawString (x, y, "USED %ss: %d (0x%03X)",
+		txt_objects[getEditCursor (cursor_NewItem)], getNumber (getEditCursor (cursor_NewItem)),
+		getNumber (getEditCursor (cursor_NewItem)));
+	if (SKULLKEEP)
+	fontDrawString (x, y, "USED %ss: %d (0x%03X)",
+		txt_DM2_objects[getEditCursor (cursor_NewItem)], getNumber (getEditCursor (cursor_NewItem)),
+		getNumber (getEditCursor (cursor_NewItem)));
+	
+}
+
+void
+printNewObjectHelpInfo ()
+{
+	int basex = iTileInfo_OffsetX+40;
+	int basey = winH-iTileInfo_OffsetY-320;
+	int helptfsize = 13;
+
+	int x = basex;
+	int y = basey;
+	int ystep = helptfsize+2;
+
+	unsigned int iNewSelect = getEditCursor (cursor_NewItem);
+
+	setTextProperties (helptfsize, 1, 1, 1);
+	fontDrawString (x, y, "SELECT NEW OBJECT TYPE:");
+
+	x += (helptfsize * 24);
+	setTextProperties (helptfsize, text_cat_colors[iNewSelect][0], text_cat_colors[iNewSelect][1], text_cat_colors[iNewSelect][2]);
+	fontDrawString (x, y, "NEW %s", txt_ObjectCategory_Display[iNewSelect]);
+
+	x = basex;
+	y -= ystep;
+}
+
+void
 printMainMapHelpInfo ()
 {
 	int basex = iTileInfo_OffsetX+40;
@@ -2011,16 +2060,43 @@ printMainMapHelpInfo ()
 		fontDrawString (x, y, "ENTER: LOCK OBJECT/STACK ON TILE FOR EDIT");
 
 		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "'+': ADD NEW OBJECT ON TILE");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "'-': CANCEL NEW OBJECT");
+//		isSelectingNewItem
+
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "PAGE UP - PAGE DOWN: NAVIGATE THROUGH MAPS");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "SHIFT-'S': PLACE STARTING LOCATION (ONLY ON MAP 0)");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "' ': SWITCH WHAT IS ON TILE");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "SHIFT-'B': DECREASE NUMBER OF MAPS");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "SHIFT-'N': INCREASE NUMBER OF MAPS");
+
+		y -= ystep;
+		y -= ystep;
+		setTextProperties (helptfsize, 1, 1, 1);
+		fontDrawString (x, y, "OBJECT/STACK EDITING:");
 		y -= ystep;
 		setTextProperties (helptfsize, .7, .7, .7);
 		fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH ITEM ID TYPE");
 		y -= ystep;
 		setTextProperties (helptfsize, .7, .7, .7);
 		fontDrawString (x, y, "UP - DOWN ARROW: CYCLE THROUGH ITEMS IN STACK");
-
 		y -= ystep;
 		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "PAGE UP - PAGE DOWN: NAVIGATE THROUGH MAPS");
+		fontDrawString (x, y, "PAGE UP - PAGE DOWN: MOVE ITEM WITHIN STACK");
+
 	}
 
 //--- If editing door, bring this help
@@ -2143,16 +2219,57 @@ printMainMapHelpInfo ()
 				setTextProperties (helptfsize, .7, .7, .7);
 				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH POTION ID TYPE");
 			break;
+			case category_Miscs:
+				y -= ystep;
+				setTextProperties (helptfsize, .25, 1, .25);
+				fontDrawString (x, y, "MISC. ITEM EDITING:");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'1': DECREASE CHARGE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'2': INCREASE CHARGE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH MISC. ID TYPE");
+			break;
+			case category_Teleport:
+				y -= ystep;
+				setTextProperties (helptfsize, .25, .8, 1);
+				fontDrawString (x, y, "TELEPORTER EDITING:");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "' ': ACTIVATE / DEACTIVATE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'H': VISIBLE BLUE HAZE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'O': MAKE SOUND");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'A': ABSOLUTE ROTATION / RELATIVE ROTATION");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'R': HOW MUCH ROTATION (0 - 3)");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'S': CYCLE THROUGH SCOPE : ");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'1': DECREASE TARGET MAP DESTINATION");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'2': INCREASE TARGET MAP DESTINATION");
+				y -= ystep;
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'T': SELECT TARGET TILE => CAN CHANGE TARGET MAP WITH PAGE UP / PAGE DOWN");
+
+
+			break;
 /*
-							if (key == '1')
-								potion->power-=1;
-							else if (key == '2')
-								potion->power+=1;
-							else if (key == '4')
-								potion->power-=40;
-							else if (key == '5')
-								potion->power+=40;
-			
+
 */
 		}
 
@@ -2169,22 +2286,6 @@ printMainMapHelpInfo ()
 }
 
 //------------------------------------------------------------------------------
-
-void
-printNewItemStats ()
-{
-	setTextProperties (14, 1, 1, 1);
-
-	if (!SKULLKEEP)
-	fontDrawString (winW/4, winH - 75, "Used %ss: %d (0x%03X)",
-		txt_objects[getEditCursor (cursor_NewItem)], getNumber (getEditCursor (cursor_NewItem)),
-		getNumber (getEditCursor (cursor_NewItem)));
-	if (SKULLKEEP)
-	fontDrawString (winW/4, winH - 75, "Used %ss: %d (0x%03X)",
-		txt_DM2_objects[getEditCursor (cursor_NewItem)], getNumber (getEditCursor (cursor_NewItem)),
-		getNumber (getEditCursor (cursor_NewItem)));
-	
-}
 
 void
 printGeneralMapInfo ()

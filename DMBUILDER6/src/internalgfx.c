@@ -43,6 +43,26 @@ fakeTexture ()
 }
 
 void
+drawFrameLW (float size, float r, float g, float b, float linewidth)
+{
+	glTranslatef (-size/2, size/2, 0);
+	glLineWidth(linewidth);
+	fakeTexture ();
+	glColor4f (r, g, b, 1.f);
+	glBegin(GL_LINES);									
+		glVertex2d(0,0);								
+		glVertex2d(size, 0);								
+		glVertex2d(size, 0);								
+		glVertex2d(size, -size);								
+		glVertex2d(size, -size);								
+		glVertex2d(0, -size);								
+		glVertex2d(0, -size);								
+		glVertex2d(0, 0);								
+	glEnd();		
+	glTranslatef (size/2, -size/2, 0);
+}
+
+void
 drawFrame (float size, float r, float g, float b)
 {
 	glTranslatef (-size/2, size/2, 0);

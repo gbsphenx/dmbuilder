@@ -60,6 +60,8 @@ float stack_object_size = __STD_STACK_SIZE__;
 
 int iFntSizeBigTitle = 32;
 
+int angle = 0;	// for blinking cursor
+
 // attempt to track the position of current gltranslatef
 int iGLVirtualX = 0;
 int iGLVirtualY = 0;
@@ -451,27 +453,25 @@ displaySelectNewItem ()
 
 	}
 
-	moveToUp ();
-
-	//iGLVirtualX += (-32*16);
-	//iGLVirtualY += (0);
-	//glTranslatef (-32*16, 0, 0);
-	_GL_Translatef (-32*16, 0, 0);
-
+	moveToUpperScreen ();
+	moveSize (52-16, 16, 48);
 	for (i = 0; i < 11; i++)
 	{
 		drawSizeSquare (symbol_item[i], __STD_STACK_SIZE__, 1.0f);
-		//iGLVirtualX += (70);
-		//iGLVirtualY += (0);
-		//glTranslatef (70, 0, 0);
-		_GL_Translatef (70, 0, 0);
+		if (i == (unsigned int) getEditCursor (cursor_NewItem))
+		{
+			double fsinv = 0;
+			double rad = 0;
+			if (angle > 360)
+				angle = angle%360;
+			rad = ((double)angle) / 360 * (2*3.1415f) * 1;
+			fsinv = (double)cos(rad);
+			fsinv = (fsinv/2) + 0.5f;
+			drawFrame (__STD_STACK_SIZE__, 0, .5, 1);
+			drawFrameLW (__STD_STACK_SIZE__, 1.*fsinv, 1.*fsinv, -.5*fsinv, 4.f);
+		}
+		moveSize (1, 0, __STD_STACK_SIZE__);
 	}
-	moveToUp ();
-	//iGLVirtualX += (-32*(16 - getEditCursor (cursor_NewItem)*2) + 6*getEditCursor (cursor_NewItem));
-	//iGLVirtualY += (0);
-	//glTranslatef (-32*(16 - getEditCursor (cursor_NewItem)*2) + 6*getEditCursor (cursor_NewItem), 0, 0);
-	_GL_Translatef (-32*(16 - getEditCursor (cursor_NewItem)*2) + 6*getEditCursor (cursor_NewItem), 0, 0);
-	drawFrame (__STD_STACK_SIZE__, 0, .7, 1);
 
 	printNewItemStats ();
 
@@ -508,7 +508,6 @@ drawActivator (reference_p refp, int wall, unsigned char level)
 	}
 }
 
-int angle = 0;
 
 static void
 drawDestinationFromCurrent (char xdest, char ydest, float r, float g, float b, char target, int edit)
@@ -593,6 +592,7 @@ displayTeleportObject (reference_p refp)
 		gl_Gui + gui_Sound};
 	int second[] = {0, teletile->open, 0, teleport->rotation, 0};
 	unsigned int i = 0;
+	drawPositionStack (gl_Gui + tele_BlueHaze, 0, 1.0f);
 	for (i = 0; i < 5; i++)
 	{
 		moveStack (1, 0);
@@ -1211,9 +1211,19 @@ drawStack (char x, char y, unsigned char level)
 		int iEditStackIndex = getEditCursor (cursor_Stack);
 		reference_p selected = (getStackReference (getEditCursor (cursor_Stack)));
 		short *item = getItem(selected);
+
+		double fsinv = 0;
+		double rad = 0;
+		if (angle > 360)
+			angle = angle%360;
+		rad = ((double)angle) / 360 * (2*3.1415f) * 1;
+		fsinv = (double)cos(rad);
+		fsinv = (fsinv/2) + 0.5f;
+
 		moveToStackUpper ();
 		moveStack ((char) isSecondFunction(), getEditCursor (cursor_Stack));
-		drawFrame (__STD_STACK_SIZE__, 1, 1, .1);
+		drawFrameLW (__STD_STACK_SIZE__, 1, 1, .1, 3.f);
+		drawFrameLW (__STD_STACK_SIZE__, -.25*fsinv, 1.*fsinv, 1.*fsinv, 4.f);
 		if (selected->category == category_Actuator)
 		{
 			if (isSecondFunction())
@@ -1448,14 +1458,31 @@ drawMap (unsigned char level, int edittext)
 //------------------------------------------------------------------------------
 
 static void
+drawNewObjectSelectionInfo ()
+{
+	moveToUpperScreen ();
+	moveSize (52, 16, 48);
+	drawFrameXY (1800, 700, .9, .9, .7);
+}
+
+
+static void
 drawMapHelpInfo ()
 {
+	//--- bottom right, to display online help
 	moveToUpperScreen ();
 	moveSize (52, 32, 48);
 	drawFrameXY (1800, 700, .9, .9, .7);
 
 	printMainMapHelpInfo ();
+
+	if (isSelectingNewItem ())
+	{
+		drawNewObjectSelectionInfo ();
+		printNewObjectHelpInfo ();
+	}
 }
+
 
 static void 
 drawMapGraphics (char map)
