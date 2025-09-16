@@ -85,7 +85,7 @@ extern unsigned tileset;
 void
 Mouse_Handler (int button, int state, int x, int y)
 {
-	printf ("Button = %d / State = %d / (x,y) = (%d,%d) \n", button, state, x, y);
+	//printf ("Button = %d / State = %d / (x,y) = (%d,%d) \n", button, state, x, y);
 	Mouse.state = state;
 	Mouse.button = button;
 	Mouse.x = x;

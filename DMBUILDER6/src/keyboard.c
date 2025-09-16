@@ -228,14 +228,29 @@ Call_LoadDungeon (char* dungeonname)
 static void
 callSaveDungeon ()
 {
+	char fulldungeonname[256];
 	readFileNames ();
-	if (!saveDungeonData (getSaveDungeonName ()))
+#ifndef __LINUX__
+	sprintf(fulldungeonname, "dungeons\\%s", getSaveDungeonName ());
+#else
+	sprintf(fulldungeonname, "dungeons/%s", getSaveDungeonName ());
+#endif
+	if (!saveDungeonData (fulldungeonname))
 		msg_flag += MSG_SAVE_FAILURE;
 	else
 		msg_flag += MSG_SAVE_SUCCESS;
-	saveDungeonData ("backupsave.dat");
+#ifndef __LINUX__
+	sprintf(fulldungeonname, "dungeons\\%s", "backupsave.dat");
+#else
+	sprintf(fulldungeonname, "dungeons/%s", "backupsave.dat");
+#endif
+	saveDungeonData (fulldungeonname);
 	if (SKULLKEEP)
-		saveMusicList("SONGLIST.DAT");
+#ifndef __LINUX__
+		saveMusicList("SKDMCD\\DATA\\SONGLIST.DAT");
+#else
+		saveMusicList("SKDMCD/DATA/SONGLIST.DAT");
+#endif
 
 }
 
@@ -245,19 +260,35 @@ static void
 Call_SaveDungeon (char *dungeonname)
 {
 	int save;
+	char fulldungeonname[256];
 //	readFileNames ();
 	currentFileName = dungeonname;
-	save = saveDungeonData (dungeonname);
+#ifndef __LINUX__
+	sprintf(fulldungeonname, "dungeons\\%s", currentFileName);
+#else
+	sprintf(fulldungeonname, "dungeons/%s", currentFileName);
+#endif
+	save = saveDungeonData (fulldungeonname);
 	if (save == 0)
 		msg_flag += MSG_SAVE_FAILURE;
 	else if (save == 1)
 		msg_flag += MSG_SAVE_SUCCESS;
 	else
 		msg_flag += MSG_SAVE_SG_SUCCESS;
-	saveDungeonData ("backupsave.dat");
+#ifndef __LINUX__
+	sprintf(fulldungeonname, "dungeons\\%s", "backupsave.dat");
+#else
+	sprintf(fulldungeonname, "dungeons/%s", "backupsave.dat");
+#endif
+	saveDungeonData (fulldungeonname);
 	if (SKULLKEEP) {
+#ifndef __LINUX__
 		saveDungeonData ("SKDMCD\\DATA\\DUNGEON.DAT");
 		saveMusicList("SKDMCD\\DATA\\SONGLIST.DAT");
+#else
+		saveDungeonData ("SKDMCD/DATA/DUNGEON.DAT");
+		saveMusicList("SKDMCD/DATA/SONGLIST.DAT");
+#endif
 	}
 }
 

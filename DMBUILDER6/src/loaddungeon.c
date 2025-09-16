@@ -57,7 +57,10 @@ updateActivationItems(int iDM2Mode)
 			gfx_activation_items[0x01E0 + i] = gl_StaticSkullkeep + gl_Potions + i;
 		for (i = 0; i < 1; i++)
 			gfx_activation_items[0x01FC + i] = gl_StaticSkullkeep + gl_Special + special_Scroll + i;
-
+	}
+	else if (iDM2Mode == 0)
+	{
+		; // TODO, revert back to original DM1 activation list
 	}
 
 }
@@ -71,19 +74,21 @@ loadGeneralInfo (FILE* fp)
 	// DM-PC : 00 63	DM-KID : 00 63
 	// CSB-Prison-PC : 08 00
 	// CSB-PC : 0D 00
-	//
+	// DM2 : 00 00
+	// DM2 (Demo2) : 00 06
 
 	fread (getDungeon(), 44, 1, fp);
-	if (getDungeon()->randomGraphicsSeed == 0)
+	/*if (getDungeon()->randomGraphicsSeed == 0)
 	{
 		SKULLKEEP = 1;
 		updateActivationItems(SKULLKEEP);
 	}
-	else if (getDungeon()->randomGraphicsSeed == 0x5154)	// "TQ"
+	*/
+	if (getDungeon()->randomGraphicsSeed == 0x5154)	// "TQ"
 	{
 		THERONSQUEST = 1;
-		SKULLKEEP = 1;
-		updateActivationItems(SKULLKEEP);
+		SKULLKEEP = 1;	// ?
+		updateActivationItems(SKULLKEEP); // ?
 
 	}
 	else if (getDungeon()->randomGraphicsSeed == 0x5853)	// "SX"	= TELOS
@@ -104,9 +109,20 @@ loadGeneralInfo (FILE* fp)
 static void
 loadLevelSpecifications (FILE* fp)
 {
-	unsigned char i;
+	unsigned char i = 0;
+	unsigned int tssum = 0;
 	for (i = 0; i < getDungeon()->nLevels; i++)
+	{
 		fread (&(getLevels()[i].header), 16, 1, fp);
+		tssum += getLevels()[i].header.tileset;
+	}
+	//-- Check if it would seem to be a DM2 dungeon : if tilesets are not all zeros
+	if (tssum > 0)
+	{
+		THERONSQUEST = 0;
+		SKULLKEEP = 1;
+		updateActivationItems(SKULLKEEP);
+	}
 }
 
 //------------------------------------------------------------------------------
