@@ -265,8 +265,8 @@ Call_SaveDungeon (char *dungeonname)
 
 
 
-static void
-callPlaceNewItem ()
+void
+callPlaceNewItem (int keepnew)
 {
 	short ref = placeNewItem (getEditCursor (cursor_NewItem), -1);
 	if (ref != -2)
@@ -276,7 +276,8 @@ callPlaceNewItem ()
 		getCurrentTile ()->object = 1;
 		exportCurrentStack ();
 	}
-	setSelectingNewItem (0);
+	if (keepnew <= 0)
+		setSelectingNewItem (0);
 }
 
 static void
@@ -461,7 +462,7 @@ void keyboard (unsigned char key, int x, int y)
 		case screen_Map:
 		{
 			if (isSelectingNewItem () && (key == KEY_RETURN))
-				callPlaceNewItem ();
+				callPlaceNewItem (0);
 			else if (!isEditingTile ())
 			{
 				switch (key)

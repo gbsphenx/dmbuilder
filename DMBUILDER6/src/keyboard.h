@@ -14,5 +14,6 @@ extern void arrow_keys (int a_keys, int x, int y);
 
 extern void fastInit ();
 
+extern void callPlaceNewItem (int keepnew);
 
 #endif

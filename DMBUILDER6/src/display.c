@@ -61,6 +61,7 @@ float stack_object_size = __STD_STACK_SIZE__;
 int iFntSizeBigTitle = 32;
 
 int angle = 0;	// for blinking cursor
+float globalfsinv = 0;
 
 // attempt to track the position of current gltranslatef
 int iGLVirtualX = 0;
@@ -1031,9 +1032,11 @@ displaySelectionBar (int bank, int value, float scale)
 	half = graphisms[bank][1]/2;
 	max = graphisms[bank][1];
 
-	moveToBottom ();
-	
+	//moveToBottom ();
+	moveToUpperScreen ();
+	moveSize (14.25f, 8.5f, __STD_STACK_SIZE__*scale);
 	moveSize (-half, 0, __STD_STACK_SIZE__*scale);
+	drawFrameXY (100, 100, .9, .9, .7);
 	for (i = 0; i < max; i++)
 	{
 		if (bank == bank_Activators)
@@ -1041,8 +1044,10 @@ displaySelectionBar (int bank, int value, float scale)
 		drawSizeSquare (graphisms[bank][0] + (i + value - half + max)%max, __STD_STACK_SIZE__*scale, 1.0f);
 		moveSize (1, 0, __STD_STACK_SIZE__*scale);
 	}	
-	moveToBottom ();
+	moveToUpperScreen ();
+	moveSize (14.25f, 8.5f, __STD_STACK_SIZE__*scale);
 	drawFrame (__STD_STACK_SIZE__*scale, .5, 1, .5);
+	drawFrameLW (__STD_STACK_SIZE__, 1.*globalfsinv, 1.*globalfsinv, 0.25*globalfsinv, 4.f);
 
 }
 
@@ -1224,6 +1229,7 @@ drawStack (char x, char y, unsigned char level)
 		rad = ((double)angle) / 360 * (2*3.1415f) * 1;
 		fsinv = (double)cos(rad);
 		fsinv = (fsinv/2) + 0.5f;
+		globalfsinv = fsinv;
 
 		moveToStackUpper ();
 		moveStack ((char) isSecondFunction(), getEditCursor (cursor_Stack));
@@ -1534,10 +1540,22 @@ drawMapCursor (int stat)
 {
 	static float cursor_colors[][3] =
 	{ {.4, 1, .6}, {1, .3, .2}};
+	float blink = 1.f;
+
+	double fsinv = 0;
+	double rad = 0;
+	if (angle > 360)
+		angle = angle%360;
+	rad = ((double)angle) / 360 * (2*3.1415f) * 1;
+	fsinv = (double)cos(rad);
+	fsinv = (fsinv/2) + 0.75f;
+	if (isSelectingNewItem ())
+		blink = fsinv;
+
 	moveToUpperMap ();
 	move (getEditCursor (cursor_X), getEditCursor (cursor_Y));
 	//if (getEditCursor (cursor_L) == getEditCursor (cursor_TM))
-	drawFrame (tileScale, cursor_colors[stat][0], cursor_colors[stat][1], cursor_colors[stat][2]);
+	drawFrame (tileScale, cursor_colors[stat][0]*blink, cursor_colors[stat][1]*blink, cursor_colors[stat][2]*blink);
 }
 
 static void
@@ -1773,6 +1791,8 @@ displayItemsLists ()
 	unsigned int j = 0;
 	unsigned int iNbTotalItems = 0;
 	unsigned int iNbMaxCols = 16;
+	unsigned int iNbPerCol = 16;
+	float fNbPerCol = 16.f;
 	int iCounterPerType[128];
 	float size = __STD_STACK_SIZE__*0.75f;
 	float textcatsize = 12.f;
@@ -1783,10 +1803,19 @@ displayItemsLists ()
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
 	outputTextLineAt (200, winH-40, "F4:    ITEMS LIST : #%03d", iNbTotalItems);
 
-	if (iNbTotalItems > 500)
+	if (iNbTotalItems > 512)
 	{
 		size = __STD_STACK_SIZE__*0.5f;
 		textcatsize = 8.f;
+		iNbPerCol = 24;
+		fNbPerCol = 24.f;
+	}
+	if (iNbTotalItems >= 1024)
+	{
+		size = __STD_STACK_SIZE__*0.25f;
+		textcatsize = 6.f;
+		iNbPerCol = 32;
+		fNbPerCol = 32.f;
 	}
 
 	for (id = 0; id < 128; id++)
@@ -1799,16 +1828,16 @@ displayItemsLists ()
 	moveSize (1, 0, size);
 
 	moveSize (0, 1, size);
-	iNbMaxCols = (iNbScrolls / 16) + 1;
+	iNbMaxCols = (iNbScrolls / iNbPerCol) + 1;
 	ref.category = category_Scroll;
 	ref.position = 0;
 	for (j = 0; j < iNbMaxCols; j++)
 	{
-		for (id = 0; id < 16; id++)
+		for (id = 0; id < iNbPerCol; id++)
 		{
 			scroll_p item;
-			ref.id = id+j*16;
-			if (ref.id <= 1022)
+			ref.id = id+j*iNbPerCol;
+			if (ref.id <= 1023)
 			{
 				item = (scroll_p) getItem (&ref);
 				//iCounterPerType[item->type]++;
@@ -1816,7 +1845,7 @@ displayItemsLists ()
 			}
 			moveSize (0, 1, size);
 		}
-		moveSize (1, -16, size);
+		moveSize (1, -fNbPerCol, size);
 	}
 
 	moveSize (0, -1, size);
@@ -1825,16 +1854,16 @@ displayItemsLists ()
 	moveSize (0, 1, size);
 
 	moveSize (1, 0, size);
-	iNbMaxCols = (iNbWeapons / 16) + 1;
+	iNbMaxCols = (iNbWeapons / iNbPerCol) + 1;
 	ref.category = category_Weapon;
 	ref.position = 0;
 	for (j = 0; j < iNbMaxCols; j++)
 	{
-		for (id = 0; id < 16; id++)
+		for (id = 0; id < iNbPerCol; id++)
 		{
 			weapon_p item;
-			ref.id = id+j*16;
-			if (ref.id <= 1022)
+			ref.id = id+j*iNbPerCol;
+			if (ref.id <= 1023)
 			{
 				item = (weapon_p) getItem (&ref);
 				iCounterPerType[item->type]++;
@@ -1842,7 +1871,7 @@ displayItemsLists ()
 			}
 			moveSize (0, 1, size);
 		}
-		moveSize (1, -16, size);
+		moveSize (1, -fNbPerCol, size);
 	}
 
 	moveSize (0, -1, size);
@@ -1853,14 +1882,14 @@ displayItemsLists ()
 	moveSize (1, 0, size);
 	ref.category = category_Clothing;
 	ref.position = 0;
-	iNbMaxCols = (iNbClothings / 16) + 1;
+	iNbMaxCols = (iNbClothings / iNbPerCol) + 1;
 	for (j = 0; j < iNbMaxCols; j++)
 	{
-		for (id = 0; id < 16; id++)
+		for (id = 0; id < iNbPerCol; id++)
 		{
 			clothing_p item;
-			ref.id = id+j*16;
-			if (ref.id <= 1022)
+			ref.id = id+j*iNbPerCol;
+			if (ref.id <= 1023)
 			{
 				item = (clothing_p) getItem (&ref);
 				iCounterPerType[item->type]++;
@@ -1868,7 +1897,7 @@ displayItemsLists ()
 				moveSize (0, 1, size);
 			}
 		}
-		moveSize (1, -16, size);
+		moveSize (1, -fNbPerCol, size);
 	}
 
 	moveSize (0, -1, size);
@@ -1879,14 +1908,14 @@ displayItemsLists ()
 	moveSize (1, 0, size);
 	ref.category = category_Miscs;
 	ref.position = 0;
-	iNbMaxCols = (iNbMiscs / 16) + 1;
+	iNbMaxCols = (iNbMiscs / iNbPerCol) + 1;
 	for (j = 0; j < iNbMaxCols; j++)
 	{
-		for (id = 0; id < 16; id++)
+		for (id = 0; id < iNbPerCol; id++)
 		{
 			misc_p item;
-			ref.id = id+j*16;
-			if (ref.id <= 1022)
+			ref.id = id+j*iNbPerCol;
+			if (ref.id <= 1023)
 			{
 				item = (misc_p) getItem (&ref);
 				iCounterPerType[item->type]++;
@@ -1894,7 +1923,7 @@ displayItemsLists ()
 				moveSize (0, 1, size);
 			}
 		}
-		moveSize (1, -16, size);
+		moveSize (1, -fNbPerCol, size);
 	}
 
 	moveSize (0, -1, size);
@@ -1905,14 +1934,14 @@ displayItemsLists ()
 	moveSize (1, 0, size);
 	ref.category = category_Potion;
 	ref.position = 0;
-	iNbMaxCols = (iNbPotions / 16) + 1;
+	iNbMaxCols = (iNbPotions / iNbPerCol) + 1;
 	for (j = 0; j < iNbMaxCols; j++)
 	{
-		for (id = 0; id < 16; id++)
+		for (id = 0; id < iNbPerCol; id++)
 		{
 			potion_p item;
-			ref.id = id+j*16;
-			if (ref.id <= 1022)
+			ref.id = id+j*iNbPerCol;
+			if (ref.id <= 1023)
 			{
 				item = (potion_p) getItem (&ref);
 				iCounterPerType[item->type]++;
@@ -1920,7 +1949,7 @@ displayItemsLists ()
 				moveSize (0, 1, size);
 			}
 		}
-		moveSize (1, -16, size);
+		moveSize (1, -fNbPerCol, size);
 	}
 
 	moveSize (0, -1, size);
@@ -1934,16 +1963,16 @@ displayItemsLists ()
 	moveSize (1, 0, size);
 	ref.category = category_Chest;
 	ref.position = 0;
-	iNbMaxCols = (iNbChests / 16) + 1;
+	iNbMaxCols = (iNbChests / iNbPerCol) + 1;
 	for (j = 0; j < iNbMaxCols; j++)
 	{
-		for (id = 0; id < 16; id++)
+		for (id = 0; id < iNbPerCol; id++)
 		{
 			chest_p item;
 			int type = 0;
 
-			ref.id = id+j*16;
-			if (ref.id <= 1022)
+			ref.id = id+j*iNbPerCol;
+			if (ref.id <= 1023)
 			{
 				item = (chest_p) getItem (&ref);
 				if (SKULLKEEP)
@@ -1959,7 +1988,7 @@ displayItemsLists ()
 				moveSize (0, 1, size);
 			}
 		}
-		moveSize (1, -16, size);
+		moveSize (1, -fNbPerCol, size);
 	}
 
 

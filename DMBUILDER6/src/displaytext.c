@@ -241,15 +241,15 @@ static const char* txt_dm2_floor_actuators[] =
 };
 
 static const char* txt_actuator_effect[] = {
-	"STEP ON: OPEN/SET",
-	"STEP ON: CLOSE/CLEAR",
-	"STEP ON: TOGGLE",
-	"STEP ON: OPEN/SET / STEP OUT: CLOSE/CLEAR",
+	"ON: OPEN/SET",
+	"ON: CLOSE/CLEAR",
+	"ON: TOGGLE",
+	"ON: OPEN/SET / OUT: CLOSE/CLEAR",
 
-	"STEP OUT: OPEN/SET",	
-	"STEP OUT: CLOSE/CLEAR",	
-	"STEP OUT: TOGGLE",
-	"STEP OUT: OPEN/SET / STEP ON: CLOSE/CLEAR"};
+	"OUT: OPEN/SET",	
+	"OUT: CLOSE/CLEAR",	
+	"OUT: TOGGLE",
+	"OUT: OPEN/SET / ON: CLOSE/CLEAR"};
 
 static const char* txt_position_ortho[] = {
 	"NORTH", "EAST", "SOUTH", "WEST" };
@@ -1876,7 +1876,7 @@ text_frame_actuator (reference_p reference, int wall, int x, int y)
 	fontDrawString (x, y, "OPERATES ONCE: %d", effect->once);
 	y -= iInfoFntSize;
 	setTextProperties (iInfoFntSize, .4, .8, .4);
-	fontDrawString (x, y, "EFFECT: %02X (%02d) - %s", effect->effect, effect->effect, txt_actuator_effect[effect->effect]);
+	fontDrawString (x, y, "EFFECT: %02X - %s", effect->effect, txt_actuator_effect[effect->effect]);
 	y -= iInfoFntSize;
 	setTextProperties (iInfoFntSize, .4, .8, .4);
 	fontDrawString (x, y, "SOUND: %d", effect->sound);

@@ -10,7 +10,7 @@
 #include <editor.h>
 #include <tile.h>
 #include <display.h>
-
+#include <keyboard.h>
 #include <stdio.h>
 
 #ifdef __MINGW__
@@ -24,6 +24,10 @@ mouse_t Mouse;
 
 #define MOUSE_STATE_RELEASED 1
 #define MOUSE_STATE_PUSHED 0
+
+#define MOUSE_BUTTON_LEFT	0
+#define MOUSE_BUTTON_MIDDLE	1
+#define MOUSE_BUTTON_RIGHT	2
 
 void
 Mouse_Init ()
@@ -81,50 +85,63 @@ extern unsigned tileset;
 void
 Mouse_Handler (int button, int state, int x, int y)
 {
-	//printf ("Button = %d / State = %d / (x,y) = (%d,%d) \n", button, state, x, y);
+	printf ("Button = %d / State = %d / (x,y) = (%d,%d) \n", button, state, x, y);
 	Mouse.state = state;
 	Mouse.button = button;
 	Mouse.x = x;
 	Mouse.y = y;
 	Mouse_CheckCell ();
 
-	if (Mouse.state == MOUSE_STATE_PUSHED)
+	switch (getScreen ())
 	{
-		// TILE EDITING CHECKING
-		if (Mouse.tile_x != -1)
+		case screen_Map:
+		if (Mouse.state == MOUSE_STATE_PUSHED )
 		{
-			tile_p cell = getTile ((char)Mouse.tile_x, (char)Mouse.tile_y, getEditCursor (cursor_L));
-			if (Mouse.button == 0) // left button
+			if (isSelectingNewItem () && Mouse.button == MOUSE_BUTTON_LEFT) // if selecting new object and clicking => place object and keep in new object which allow "painting" with new more objects.
 			{
-				if (cell->type == 0)
-				cell->type = 1; // floor
-				else if (cell->type == 2)
-					((tile_pit_p) cell)->open += 8;
-				else if (cell->type == 3)
-					((tile_stairs_p) cell)->leading += 1;
-				else if (cell->type == 4)
-					((tile_door_p) cell)->closed += 1;
-				else if (cell->type == 5)
-					((tile_teleport_p) cell)->open += 1;
-				else if (cell->type == 6)
-					((tile_trickwall_p) cell)->open += 1;
+				callPlaceNewItem (1);
 			}
-			else if (Mouse.button == 2) // right button
-			{	
-				if (cell->type == 1)
-					cell->type = 0; // wall
+			else if (isSelectingNewItem () && Mouse.button == MOUSE_BUTTON_RIGHT)
+			{
+				setSelectingNewItem (0);
 			}
-			Mouse.is_filling_tiles = 1;
-			setEditCursor (cursor_X, (char)Mouse.tile_x);
-			setEditCursor (cursor_Y, (char)Mouse.tile_y);
-		}
-		// SELECT A TILE FOR FILLING
-//		if (Mouse.tile_filler != -1 && !Mouse.is_filling_tiles)
-//			Editor.TileFiller = Mouse.tile_filler;
+			// TILE EDITING CHECKING
+			else if (Mouse.tile_x != -1 )
+			{
+				tile_p cell = getTile ((char)Mouse.tile_x, (char)Mouse.tile_y, getEditCursor (cursor_L));
+				if (Mouse.button == MOUSE_BUTTON_LEFT) // left button
+				{
+					if (cell->type == 0)
+					cell->type = 1; // floor
+					else if (cell->type == 2)
+						((tile_pit_p) cell)->open += 8;
+					else if (cell->type == 3)
+						((tile_stairs_p) cell)->leading += 1;
+					else if (cell->type == 4)
+						((tile_door_p) cell)->closed += 1;
+					else if (cell->type == 5)
+						((tile_teleport_p) cell)->open += 1;
+					else if (cell->type == 6)
+						((tile_trickwall_p) cell)->open += 1;
+				}
+				else if (Mouse.button == MOUSE_BUTTON_RIGHT) // right button
+				{	
+					if (cell->type == 1)
+						cell->type = 0; // wall
+				}
+				Mouse.is_filling_tiles = 1;
+				setEditCursor (cursor_X, (char)Mouse.tile_x);
+				setEditCursor (cursor_Y, (char)Mouse.tile_y);
+			}
+			// SELECT A TILE FOR FILLING
+	//		if (Mouse.tile_filler != -1 && !Mouse.is_filling_tiles)
+	//			Editor.TileFiller = Mouse.tile_filler;
 
+		}
+		else if (Mouse.state == MOUSE_STATE_RELEASED)
+			Mouse.is_filling_tiles = 0;
+		break;
 	}
-	else if (Mouse.state == MOUSE_STATE_RELEASED)
-		Mouse.is_filling_tiles = 0;
 	glutPostRedisplay ();
 }
 

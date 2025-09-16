@@ -310,6 +310,8 @@ initMonster (short *item, int type)
 {
 	size_t i;
 	monster_p monster = (monster_p) item;
+	level_p level = (level_p) &(getLevels()[getEditCursor (cursor_L)]);
+
 	monster->chested = -2;
 	for (i = 0; i < 4; i ++)
 		monster->health[i] = 0;
@@ -318,9 +320,15 @@ initMonster (short *item, int type)
 	monster->unk1 = 4; // That looks good :/ but I don't know
 	monster->position = (char) 0xFF; //defaut
 
+	//--- Some improvement, make this new monster as the last known ID within monster list
+	if (level->header.nMonsters > 0)
+		monster->type = level->monsters[level->header.nMonsters-1];
 	//--- This is for DM2, so that health is not zero and SAVEGAME will succeed to LOAD
-	for (i = 0; i < 4; i ++)
-		monster->health[i] = 1;
+	if (SKULLKEEP) 
+	{
+		for (i = 0; i < 4; i ++)
+			monster->health[i] = 1;
+	}
 }
 
 static void
