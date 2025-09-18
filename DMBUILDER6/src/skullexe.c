@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-#include <SkullExe.h>
+#include <skullexe.h>
 #include <memory.h>
 #include <stdio.h>
 

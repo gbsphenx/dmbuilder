@@ -27,6 +27,12 @@ extern GLenum texFormat; // defined in tga
 #endif // _WIN32
 #include <GL/gl.h>
 
+#ifdef __LINUX__
+#define __GFX_DIR__	"GFX/"
+#else
+#define __GFX_DIR__ "GFX\\"
+#endif // __LINUX__
+
 //------------------------------------------------------------------------------
 
 int loadArchive (char* archive, int glbank, unsigned int number);
@@ -111,7 +117,10 @@ Graphics_LoadSkullkeepImagesSet (char* name, unsigned int gl_offset, int sizeX, 
 {
 	image_t* itemset, *item;
 	unsigned maxx, maxy;
-	itemset = Image_LoadFromTGA (name, 1);
+	char bufname[128];
+	sprintf(bufname, "%s%s", __GFX_DIR__, name);
+
+	itemset = Image_LoadFromTGA (bufname, 1);
 	if (itemset != NULL)
 	{
 		maxx = itemset->width/sizeX;
@@ -132,32 +141,6 @@ Graphics_LoadSkullkeepImagesSet (char* name, unsigned int gl_offset, int sizeX, 
 		}
 	}
 }
-
-
-
-/*void
-Graphics_LoadSkullkeepItems (char* name, unsigned category)
-{
-	image_t* itemset, *item;
-	unsigned maxx, maxy;
-	itemset = Image_LoadFromTGA (name);
-	maxx = itemset->width>>4;
-	maxy = itemset->height>>4;
-	if (itemset != NULL)
-	{
-		unsigned x, y;
-		for (x = 0; x < maxx; x ++)
-		for (y = 0; y < maxy; y ++)
-		{
-			item = Image_ScissorCut (x*16, y*16, (x+1)*16, (y+1)*16, itemset);
-			Image_Bind (item, gl_StaticSkullkeep + category*0x100 + 16*y + x);
-			MEMFREE (item->data);
-			MEMFREE (item);
-		}
-	MEMFREE (itemset->data);
-	MEMFREE (itemset);
-	}
-}*/
 
 void
 Graphics_LoadSkullkeepItems (char* name, unsigned category)
@@ -211,61 +194,32 @@ void loadGraphics ()
 	loadArchive ("Tiles", gl_Tiles, xtile_Max);
 	loadArchive ("Gui", gl_Gui, gui_Max);
 	loadArchive ("Powers", gl_Powers, power_Max);
-#ifndef __LINUX__
+
 //------------------------------------------------------------------------------
-	Graphics_LoadSkullkeepImagesSet ("gfx\\SKDoors.tga", gl_StaticSkullkeep + gl_Doors, 64, 64);
-	Graphics_LoadSkullkeepImagesSet ("gfx\\SKDoorOrnates.tga", gl_StaticSkullkeep + gl_Ornates, 64, 64);
-	Graphics_LoadSkullkeepImagesSet ("gfx\\SKTileset.tga", gl_SK_TilesSet, 16, 16);
-	Graphics_LoadSkullkeepImagesSet ("gfx\\SKObjects.tga", gl_StaticSkullkeep + gl_Monsters, 64, 64);
-	Graphics_LoadSkullkeepImagesSet ("gfx\\SKWallOrnates.tga", gl_StaticSkullkeep + gl_Walls, 64, 64);
-	Graphics_LoadSkullkeepImagesSet ("gfx\\SKFloorOrnates.tga", gl_StaticSkullkeep + gl_Floors, 64, 64);
-//	Graphics_LoadSkullkeepImagesSet ("gfx\\SKChampions.tga", gl_StaticSkullkeep + gl_Portraits, 32, 32);
-	Graphics_LoadSkullkeepImagesSet ("gfx\\TORCChampions.tga", gl_StaticSkullkeep + gl_Portraits, 32, 32);
-	Graphics_LoadSkullkeepImagesSet ("gfx\\SKTileSpecialFloors.tga", gl_StaticSkullkeep + gl_SpecialTiles, 16, 16);
-	Graphics_LoadSkullkeepImagesSet ("gfx\\SKPotions.tga", gl_StaticSkullkeep + gl_Potions, 16, 16);
-	Graphics_LoadSkullkeepImagesSet ("gfx\\SKContainers.tga", gl_StaticSkullkeep + gl_Containers, 16, 16);
+	Graphics_LoadSkullkeepImagesSet ("SKDoors.tga", gl_StaticSkullkeep + gl_Doors, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("SKDoorOrnates.tga", gl_StaticSkullkeep + gl_Ornates, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("SKTileset.tga", gl_SK_TilesSet, 16, 16);
+	Graphics_LoadSkullkeepImagesSet ("SK2Objects.tga", gl_StaticSkullkeep + gl_Monsters, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("SKWallOrnates.tga", gl_StaticSkullkeep + gl_Walls, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("SKFloorOrnates.tga", gl_StaticSkullkeep + gl_Floors, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("SKChampions.tga", gl_StaticSkullkeep + gl_Portraits, 32, 32);
+//	Graphics_LoadSkullkeepImagesSet ("TORCChampions.tga", gl_StaticSkullkeep + gl_Portraits, 32, 32);
+	Graphics_LoadSkullkeepImagesSet ("SKTileSpecialFloors.tga", gl_StaticSkullkeep + gl_SpecialTiles, 16, 16);
+	//Graphics_LoadSkullkeepImagesSet ("SKPotions.tga", gl_StaticSkullkeep + gl_Potions, 16, 16);
+	Graphics_LoadSkullkeepImagesSet ("SKContainers.tga", gl_StaticSkullkeep + gl_Containers, 16, 16);
 
-	Graphics_LoadSkullkeepImagesSet ("gfx\\SKWActuators.tga", gl_StaticSkullkeep + gl_WActuators, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("SKWActuators.tga", gl_StaticSkullkeep + gl_WActuators, 64, 64);
 
-	Graphics_LoadSkullkeepImagesSet ("gfx\\TELOSObjects.tga", gl_StaticTELOS + gl_Monsters, 64, 64);
-
-	//Graphics_LoadSkullkeepImagesSet ("gfx\\CSBChampions.tga", gl_StaticSkullkeep + gl_Champions, 32, 32);
-//	Graphics_LoadSkullkeepItems ("gfx\\SKWeapons.tga", 5);
-	Graphics_LoadSkullkeepItems ("gfx\\TORCWeapons.tga", 5);
-//	Graphics_LoadSkullkeepItems ("gfx\\SKClothings.tga", 6);
-	Graphics_LoadSkullkeepItems ("gfx\\TORCClothings.tga", 6);
-	Graphics_LoadSkullkeepItems ("gfx\\SKPotions.tga", 8);
-	Graphics_LoadSkullkeepItems ("gfx\\SKBags.tga", 9);
-//	Graphics_LoadSkullkeepItems ("gfx\\SKMiscs.tga", 10);
-	Graphics_LoadSkullkeepItems ("gfx\\TORCMiscs.tga", 10);
-#else
-//------------------------------------------------------------------------------
-	Graphics_LoadSkullkeepImagesSet ("GFX/SKDoors.tga", gl_StaticSkullkeep + gl_Doors, 64, 64);
-	Graphics_LoadSkullkeepImagesSet ("GFX/SKDoorOrnates.tga", gl_StaticSkullkeep + gl_Ornates, 64, 64);
-	Graphics_LoadSkullkeepImagesSet ("GFX/SKTileset.tga", gl_SK_TilesSet, 16, 16);
-	Graphics_LoadSkullkeepImagesSet ("GFX/SKObjects.tga", gl_StaticSkullkeep + gl_Monsters, 64, 64);
-	Graphics_LoadSkullkeepImagesSet ("GFX/SKWallOrnates.tga", gl_StaticSkullkeep + gl_Walls, 64, 64);
-	Graphics_LoadSkullkeepImagesSet ("GFX/SKFloorOrnates.tga", gl_StaticSkullkeep + gl_Floors, 64, 64);
-//	Graphics_LoadSkullkeepImagesSet ("GFX/SKChampions.tga", gl_StaticSkullkeep + gl_Portraits, 32, 32);
-	Graphics_LoadSkullkeepImagesSet ("GFX/TORCChampions.tga", gl_StaticSkullkeep + gl_Portraits, 32, 32);
-	Graphics_LoadSkullkeepImagesSet ("GFX/SKTileSpecialFloors.tga", gl_StaticSkullkeep + gl_SpecialTiles, 16, 16);
-	Graphics_LoadSkullkeepImagesSet ("GFX/SKPotions.tga", gl_StaticSkullkeep + gl_Potions, 16, 16);
-	Graphics_LoadSkullkeepImagesSet ("GFX/SKContainers.tga", gl_StaticSkullkeep + gl_Containers, 16, 16);
-
-	Graphics_LoadSkullkeepImagesSet ("GFX/SKWActuators.tga", gl_StaticSkullkeep + gl_WActuators, 64, 64);
-
-	Graphics_LoadSkullkeepImagesSet ("GFX/TELOSObjects.tga", gl_StaticTELOS + gl_Monsters, 64, 64);
-
-	//Graphics_LoadSkullkeepImagesSet ("GFX/CSBChampions.tga", gl_StaticSkullkeep + gl_Champions, 32, 32);
-//	Graphics_LoadSkullkeepItems ("GFX/SKWeapons.tga", 5);
-	Graphics_LoadSkullkeepItems ("GFX/TORCWeapons.tga", 5);
-//	Graphics_LoadSkullkeepItems ("GFX/SKClothings.tga", 6);
-	Graphics_LoadSkullkeepItems ("GFX/TORCClothings.tga", 6);
-	Graphics_LoadSkullkeepItems ("GFX/SKPotions.tga", 8);
-	Graphics_LoadSkullkeepItems ("GFX/SKBags.tga", 9);
-//	Graphics_LoadSkullkeepItems ("GFX/SKMiscs.tga", 10);
-	Graphics_LoadSkullkeepItems ("GFX/TORCMiscs.tga", 10);
-#endif // __LINUX__
+	Graphics_LoadSkullkeepImagesSet ("TELOSObjects.tga", gl_StaticTELOS + gl_Monsters, 64, 64);
+	//Graphics_LoadSkullkeepImagesSet ("CSBChampions.tga", gl_StaticSkullkeep + gl_Champions, 32, 32);
+	Graphics_LoadSkullkeepItems ("SKWeapons.tga", 5);
+//	Graphics_LoadSkullkeepItems ("TORCWeapons.tga", 5);
+	Graphics_LoadSkullkeepItems ("SKClothings.tga", 6);
+//	Graphics_LoadSkullkeepItems ("TORCClothings.tga", 6);
+	Graphics_LoadSkullkeepItems ("SKPotions.tga", 8);
+	Graphics_LoadSkullkeepItems ("SKBags.tga", 9);
+	Graphics_LoadSkullkeepItems ("SK2Miscs.tga", 10);
+//	Graphics_LoadSkullkeepItems ("TORCMiscs.tga", 10);
 //..............................................................................
 //..............................................................................
 //..............................................................................
@@ -316,12 +270,8 @@ int loadArchive (char* archive, int glbank, unsigned int number)
 {
 	unsigned int i;
 	FILE* file;
-	char buf[] = "                    ";
-#ifdef __LINUX__
-	strcpy (buf, "GFX/");
-#else
-	strcpy (buf, "GFX\\");
-#endif
+	char buf[64];
+	strcpy (buf, __GFX_DIR__);
 	strcat (buf, archive);
 	strcat (buf, ".gfx");
 	file = fopen (buf, "r+b");

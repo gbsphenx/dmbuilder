@@ -523,7 +523,7 @@ printCoordinates ()
 static void
 printLevelStack ()
 {
-	int iOffsetX = 11; // old = 6
+	int iOffsetX = 16; // old = 6
 	int iFntSize = 14; // old = 11
 	unsigned int i;
 	for (i = 0; i < MAX_LEVELS; i++)
@@ -541,7 +541,7 @@ printLevelStack ()
 			setTextProperties (iVFntSize, .4, .35, .35);
 		else 
 			setTextProperties (iVFntSize, .7, .7, .7);
-		fontDrawString (iOffsetX, winH-50-(iFntSize+1)*i, "%02d", i);
+		fontDrawString (iOffsetX, winH-60-(iFntSize+1)*i, "%02d", i);
 	}
 }
 
@@ -1358,7 +1358,7 @@ text_frame_weapon (reference_p reference, int x, int y, float l)
 }
 
 void
-text_frame_clothing (reference_p reference, int x, int y)
+text_frame_clothing (reference_p reference, int x, int y, float l)
 {
 	clothing_p clothing = (clothing_p) getItem (reference);
 	x = iInfoX;
@@ -1366,19 +1366,19 @@ text_frame_clothing (reference_p reference, int x, int y)
 
 	if (reference->category == category_Clothing)
 	{
-		setTextProperties (iInfoFntSize, .8, .5, .1);
+		setTextProperties (iInfoFntSize, .8*l, .5*l, .1*l);
 		fontDrawString (x, y, "CLOTHING");
-		setTextProperties (iInfoFntSize, .6, .6, .4);
+		setTextProperties (iInfoFntSize, .6*l, .6*l, .4*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "TYPE: %02d (x%02X)", clothing->type, clothing->type);
-		setTextProperties (iInfoFntSize, .6, .6, .4);
+		setTextProperties (iInfoFntSize, .6*l, .6*l, .4*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "KEEP IT: %02d", clothing->keep);
 	}
 }
 
 void
-text_frame_potion (reference_p reference, int x, int y)
+text_frame_potion (reference_p reference, int x, int y, float l)
 {
 	potion_p potion = (potion_p) getItem (reference);
 	x = iInfoX;
@@ -1386,19 +1386,19 @@ text_frame_potion (reference_p reference, int x, int y)
 
 	if (reference->category == category_Potion)
 	{
-		setTextProperties (iInfoFntSize, .1, .7, 1);
+		setTextProperties (iInfoFntSize, .1*l, .7*l, 1*l);
 		fontDrawString (x, y, "POTION");
-		setTextProperties (iInfoFntSize, .1, 1, .8);
+		setTextProperties (iInfoFntSize, .1*l, 1*l, .8*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "KEEP IT : %02d", potion->keep);
-		setTextProperties (iInfoFntSize, .1, 1, .8);
+		setTextProperties (iInfoFntSize, .1*l, 1*l, .8*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "POWER: %02d", potion->power);
 	}
 }
 
 void
-text_frame_container (reference_p reference, int x, int y)
+text_frame_container (reference_p reference, int x, int y, float l)
 {
 	chest_p chest = (chest_p) getItem (reference);
 	x = winW-370; 
@@ -1410,19 +1410,19 @@ text_frame_container (reference_p reference, int x, int y)
 
 		type = objectContainerGetType((short*) chest);
 
-		setTextProperties (iInfoFntSize, 1.0, 1.0, .1);
+		setTextProperties (iInfoFntSize, 1.0*l, 1.0*l, .1*l);
 		fontDrawString (x, y, "CONTAINER or MAP");
 		y -= iInfoFntSize;
 
-		setTextProperties (iInfoFntSize, 0.75, .7, .0);
+		setTextProperties (iInfoFntSize, 0.75*l, .7*l, .0*l);
 		fontDrawString (x, y, "TYPE: %02d", type);
 		y -= iInfoFntSize;
 
-		setTextProperties (iInfoFntSize, 0.75, .7, .0);
+		setTextProperties (iInfoFntSize, 0.75*l, .7*l, .0*l);
 		fontDrawString (x, y, "Unknown 2: %04X", (unsigned short) chest->unk2);
 		y -= iInfoFntSize;
 
-		setTextProperties (iInfoFntSize, 0.75, .7, .0);
+		setTextProperties (iInfoFntSize, 0.75*l, .7*l, .0*l);
 		fontDrawString (x, y, "POSSESSION: %04X", (unsigned short) chest->chested);
 
 	}
@@ -1430,7 +1430,7 @@ text_frame_container (reference_p reference, int x, int y)
 }
 
 void
-text_frame_misc (reference_p reference, int x, int y)
+text_frame_misc (reference_p reference, int x, int y, float l)
 {
 	misc_p misc = (misc_p) getItem (reference);
 	x = iInfoX;
@@ -1438,19 +1438,19 @@ text_frame_misc (reference_p reference, int x, int y)
 
 	if (reference->category == category_Miscs)
 	{
-		setTextProperties (iInfoFntSize, .1, 1, .1);
+		setTextProperties (iInfoFntSize, .1*l, 1*l, .1*l);
 		fontDrawString (x, y, "MISCELLANEOUS (%03d | x%02x)", misc->type, misc->type);
-		setTextProperties (iInfoFntSize, .1, .7, 1);
+		setTextProperties (iInfoFntSize, .1*l, .7*l, 1*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "KEEP IT : %02d", misc->keep);
-		setTextProperties (iInfoFntSize, .1, .7, 1);
+		setTextProperties (iInfoFntSize, .1*l, .7*l, 1*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "CAPACITY: %d", misc->capacity);
 	}
 }
 
 void
-text_frame_scroll (reference_p reference, int x, int y)
+text_frame_scroll (reference_p reference, int x, int y, float l)
 {
 	scroll2_p scroll = (scroll2_p) getItem (reference);
 	int iUseGDATText = 0;
@@ -1462,14 +1462,14 @@ text_frame_scroll (reference_p reference, int x, int y)
 		if (scroll->reftxt > 0)
 			iUseGDATText = 1;
 
-		setTextProperties (iInfoFntSize, 0.8, 1.0, 1.0);
+		setTextProperties (iInfoFntSize, 0.8*l, 1.0*l, 1.0*l);
 		fontDrawString (x, y, "SCROLL (%03d | x%02x)", scroll->type, scroll->type);
-		setTextProperties (iInfoFntSize, .2, .8, .8);
+		setTextProperties (iInfoFntSize, .2*l, .8*l, .8*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "USE GDAT TXT : %02d (mode = M)", iUseGDATText);
-		setTextProperties (iInfoFntSize, .2, .8, .8);
+		setTextProperties (iInfoFntSize, .2*l, .8*l, .8*l);
 		if (iUseGDATText == 0)
-			setTextProperties (iInfoFntSize, .1, .4, .4);
+			setTextProperties (iInfoFntSize, .1*l, .4*l, .4*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "TEXT REF     : %02d", scroll->reftxt);
 	}
@@ -1478,7 +1478,7 @@ text_frame_scroll (reference_p reference, int x, int y)
 int yreftextinfo = 24;
 
 void
-text_frame_text (reference_p reference, int x, int y)
+text_frame_text (reference_p reference, int x, int y, float l)
 {
 	text_p text = (text_p) getItem (reference);
 	int iUseGDATText = 0;
@@ -1490,14 +1490,14 @@ text_frame_text (reference_p reference, int x, int y)
 		//if (scroll->reftxt > 0)
 		//	iUseGDATText = 1;
 
-		setTextProperties (iInfoFntSize, 0.8, 1.0, 1.0);
+		setTextProperties (iInfoFntSize, 0.8*l, 1.0*l, 1.0*l);
 		fontDrawString (x, y, "TEXT (OFFSET %03d | x%02x)", text->offset, text->offset);
-		setTextProperties (iInfoFntSize, .2, .8, .8);
+		setTextProperties (iInfoFntSize, .2*l, .8*l, .8*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "VISIBLE    : %0d", text->silent);
-		setTextProperties (iInfoFntSize, .2, .8, .8);
+		setTextProperties (iInfoFntSize, .2*l, .8*l, .8*l);
 		//if (iUseGDATText == 0)
-		//	setTextProperties (iInfoFntSize, .1, .4, .4);
+		//	setTextProperties (iInfoFntSize, .1*l, .4*l, .4*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "FLAGS 2/3  : %d %d", text->flag2, text->flag3);
 		y -= iInfoFntSize;
@@ -1595,7 +1595,7 @@ printMonsterHitPoints (reference_p refp)
 }
 
 void
-text_frame_monster (reference_p reference, int x, int y)
+text_frame_monster (reference_p reference, int x, int y, float l)
 {
 	int i;
 	monster_p monster = (monster_p) getItem (reference);
@@ -1612,11 +1612,11 @@ text_frame_monster (reference_p reference, int x, int y)
 			sprintf(sMonsterName, "%s", txt_monsters[monster->type]);
 		else if (SKULLKEEP && monster->type <= 0x58)
 			sprintf(sMonsterName, "%s", txt_monsters_sk[monster->type]);
-		setTextProperties (iInfoFntSize, 1, .2, .2);
+		setTextProperties (iInfoFntSize, 1*l, .2*l, .2*l);
 		fontDrawString (x, y, "CREATURE TYPE: %02x (%02d) \"%s\"", monster->type, monster->type, sMonsterName);
 		y -= iInfoFntSize;
 
-		setTextProperties (iInfoFntSize, .1, 1, .1);
+		setTextProperties (iInfoFntSize, .1*l, 1*l, .1*l);
 		fontDrawString (x, y, "LEVEL : %d // #NB : %d", getMonsterLevel (monster), monster->number+1);
 		// Old display : 1 HP per row
 		/*
@@ -1631,15 +1631,15 @@ text_frame_monster (reference_p reference, int x, int y)
 		}
 		*/
 		y -= iInfoFntSize;
-		setTextProperties (iInfoFntSize, .1, 1, .1);
+		setTextProperties (iInfoFntSize, .1*l, 1*l, .1*l);
 		fontDrawString (x, y, "HP: ");
 		x += (iInfoFntSize*4);
 		for (i = 0; i < 4; i++)
 		{
 			if (i <= ((int) monster->number))
-				setTextProperties (iInfoFntSize, 1, .8, .1);
+				setTextProperties (iInfoFntSize, 1*l, .8*l, .1*l);
 			else
-				setTextProperties (iInfoFntSize, .2, .4, .4);
+				setTextProperties (iInfoFntSize, .2*l, .4*l, .4*l);
 			fontDrawString (x, y, "%03d", monster->health[i]);
 			x += (iInfoFntSize*5);
 		}
@@ -1647,7 +1647,7 @@ text_frame_monster (reference_p reference, int x, int y)
 }
 
 void
-text_frame_teleport (reference_p reference, int x, int y)
+text_frame_teleport (reference_p reference, int x, int y, float l)
 {
 	static char* scope[] =
 	{"OBJECT","CREATURE","PARTY or OBJECT","EVERYTHING"};
@@ -1657,13 +1657,13 @@ text_frame_teleport (reference_p reference, int x, int y)
 	x = iInfoX + (3*64);
 	y = (winH - iInfoYNeg) - (y*__STD_STACK_SIZE__/2);
 
-	setTextProperties (iInfoFntSize, .1, .7, .9);
+	setTextProperties (iInfoFntSize, .1*l, .7*l, .9*l);
 	fontDrawString (x, y, "TELEPORT SCOPE: (%s)", scope[teleport->scope]);
-	setTextProperties (iInfoFntSize, .1, .7, .9);
+	setTextProperties (iInfoFntSize, .1*l, .7*l, .9*l);
 	y -= iInfoFntSize;
 	fontDrawString (x, y, "DESTINATION: [%02d](%02d,%02d)", teleport->ldest, teleport->xdest, teleport->ydest);
 
-	setTextProperties (iInfoFntSize, .1, .7, .9);
+	setTextProperties (iInfoFntSize, .1*l, .7*l, .9*l);
 	y -= iInfoFntSize;
 	fontDrawString (x, y, "UNUSED: %d . %d", teleport->unused4, teleport->unused8);
 }

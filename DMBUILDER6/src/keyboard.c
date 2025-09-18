@@ -71,6 +71,7 @@ extern int msg_flag;
 #define GLUT_KEY_INSERT			108
 */
 
+
 extern int editing_gfx;
 extern int level_spec;
 
@@ -139,25 +140,27 @@ execTestDungeon ()
 	if (SKULLKEEP || TELOS)
 	{
 		//--- Copy current dungeon as "dungeon.dat" in the test folder
-		saveDungeonData ("SKDMCD\\DATA\\DUNGEON.DAT");
+		saveDungeonData (__FN_DIRDM2__"\\DATA\\DUNGEON.DAT");
 		if (SKULLKEEP)
-			saveMusicList("SKDMCD\\DATA\\SONGLIST.DAT");
+			saveMusicList(__FN_DIRDM2__"\\DATA\\SONGLIST.DAT");
 		printf("SkullExe: %08x\n", xSkullExe);
 		if (MVALID(&xSkullExe))
 		{
-			SkullExe_Write(&xSkullExe, "SKDMCD\\SKULL.EXE");
-			SkullExe_ExportAITable(&xSkullExe, "SKDM2PCWIN\\v1d296c.dat");
+			SkullExe_Write(&xSkullExe, __FN_DIRDM2__"\\SKULL.EXE");
+			SkullExe_ExportAITable(&xSkullExe, __FN_DIRDM2__"\\v1d296c.dat");
 		}
-		strcpy(sExecPath, ".\\SKDMCD\\dosbox-dm2.bat");
+		strcpy(sExecPath, ".\\"__FN_DIRDM2__"\\dosbox-dm2.bat");
 		//--- Start OS run for DM2 PC
+		printf("Start: %s\n", sExecPath);
 		system(sExecPath);
 	}
 	else
 	{
 		//--- Copy current dungeon as "dungeon.dat" in the test folder
-		saveDungeonData ("XDM1PCDOS\\DATA\\DUNGEON.DAT");
-		strcpy(sExecPath, ".\\XDM1PCDOS\\dosbox-dm.bat");
+		saveDungeonData (__FN_DIRDM1__"\\DATA\\DUNGEON.DAT");
+		strcpy(sExecPath, ".\\"__FN_DIRDM1__"\\dosbox-dm.bat");
 		//--- Start OS run for DM2 PC
+		printf("Start: %s\n", sExecPath);
 		system(sExecPath);
 	}
 }
@@ -967,7 +970,8 @@ void arrow_keys (int a_keys, int x, int y)
 		case GLUT_KEY_F2: Call_ChangeScreen (screen_Level); break;
 		case GLUT_KEY_F3: setScreen (screen_ListsCreatures); break;
 		case GLUT_KEY_F4: setScreen (screen_ListsItems); break;
-		case GLUT_KEY_F5: setScreen (screen_ListsActuators); break;
+		//case GLUT_KEY_F5: setScreen (screen_ListsActuators); break;
+		case GLUT_KEY_F5: execTestDungeon (); break;
 		case GLUT_KEY_F6: setScreen (screen_MainHeader); break;
 		case GLUT_KEY_F7:
 				DMB_AutoEdit_LoadSkullExe();
@@ -1044,7 +1048,7 @@ void arrow_keys (int a_keys, int x, int y)
 			case GLUT_KEY_F2: Call_ChangeScreen (screen_Level); break;
 			case GLUT_KEY_F3: setScreen (screen_ListsCreatures); break;
 			case GLUT_KEY_F4: setScreen (screen_ListsItems); break;
-			case GLUT_KEY_F5: setScreen (screen_ListsActuators); break;
+			//case GLUT_KEY_F5: setScreen (screen_ListsActuators); break;
 			case GLUT_KEY_F6: setScreen (screen_MainHeader); break;
 			case GLUT_KEY_F7:
 					DMB_AutoEdit_LoadSkullExe();

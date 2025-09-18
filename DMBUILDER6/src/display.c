@@ -406,7 +406,7 @@ moveToGraphicsList ()
 	//iGLVirtualX += (0*tileScale);
 	//iGLVirtualY += (-32.5*tileScale);
 	//glTranslatef (0, -32.5*tileScale, 0);
-	_GL_Translatef (0, -32.5*tileScale, 0);
+	_GL_Translatef (.5*tileScale, -33*tileScale, 0);
 }
 
 static void
@@ -779,7 +779,7 @@ drawChested (reference_p refp, float light)
 	while (**currentref != -2 && **currentref != -1)
 	{
 		moveStack (1, 0);
-		drawPositionStack (gfx_x_objects[refp->category] + getItemType[refp->category](getItem (refp)), 0, 1.0f);
+		drawPositionStack (gfx_x_objects[refp->category] + getItemType[refp->category](getItem (refp)), 0, 1.0f * light);
 		refp = getNextItem (refp);
 		i++;
 	}
@@ -790,7 +790,7 @@ static void
 displayMonsterObject (reference_p refp, float light)
 {
 	monster_p monster = (monster_p) getItem (refp);
-	drawPositionStack (gl_x_Monsters + monster->type, 0, 1.0f);	
+	drawPositionStack (gl_x_Monsters + monster->type, 0, 1.0f * light);	
 	if (monster->chested != -2)
 		drawChested ((reference_p) &monster->chested, light);
 }
@@ -829,11 +829,11 @@ displayClothingObject (reference_p refp, float light)
 		drawPositionStack (gl_Clothes + clothing->type, 0, 1.0f);
 	else if (SKULLKEEP)
 		drawPositionStack (gl_StaticSkullkeep + gl_Clothes + clothing->type, 0, 1.0f);*/
-	drawPositionStack (gl_x_Clothes + clothing->type, 0, 1.0f);
+	drawPositionStack (gl_x_Clothes + clothing->type, 0, 1.0f*light);
 	for (i = 0; i < 2; i++)
 	{
 		moveStack (1, 0);
-		drawPositionStack (glid[i], 0, 0.4 + 0.6 * lights[i]);
+		drawPositionStack (glid[i], 0, (0.4 + 0.6 * lights[i]) * light);
 	}
 	moveStack ((char)-i, 0);
 }
@@ -841,7 +841,7 @@ displayClothingObject (reference_p refp, float light)
 static void
 displayScrollObject (reference_p refp, float light)
 {
-	drawPositionStack (gl_Special + special_Scroll, 0, 1.0f);
+	drawPositionStack (gl_Special + special_Scroll, 0, 1.0f * light);
 }
 
 static int
@@ -855,9 +855,9 @@ static void
 displayPotionObject (reference_p refp, float light)
 {
 	potion_p potion = (potion_p) getItem (refp);
-	drawPositionStack (gl_x_Potions + potion->type, 0, 1.0f);
+	drawPositionStack (gl_x_Potions + potion->type, 0, 1.0f * light);
 	moveStack (1, 0);
-	drawSizeSquare (gl_Powers + find_potion_power ((int) potion->power), __STD_STACK_SIZE__, 1.0f);
+	drawSizeSquare (gl_Powers + find_potion_power ((int) potion->power), __STD_STACK_SIZE__, 1.0f*light);
 	moveStack (-1, 0);
 }
 
@@ -869,10 +869,10 @@ displayChestObject (reference_p refp, float light)
 	if (SKULLKEEP)
 	{
 		char type = objectContainerGetType((short*)chest);
-		drawPositionStack (gl_x_Containers + type, 0, 1.0f);
+		drawPositionStack (gl_x_Containers + type, 0, 1.0f * light);
 	}
 	else
-		drawPositionStack (gl_Special + special_Chest, 0, 1.0f);
+		drawPositionStack (gl_Special + special_Chest, 0, 1.0f * light);
 	if (chest->chested != -2)
 		drawChested ((reference_p) &chest->chested, light);
 }
@@ -883,7 +883,7 @@ displayMiscellaneousObject (reference_p refp, float light)
 {
 	misc_p misc = (misc_p) getItem (refp);
 
-	drawPositionStack (gl_x_Miscs + misc->type, 0, 1.0f);
+	drawPositionStack (gl_x_Miscs + misc->type, 0, 1.0f * light);
 }
 
 //------------------------------------------------------------------------------
@@ -1099,9 +1099,9 @@ drawStairs (int m, int x, int y, tile_p tile, float light)
 	if (iFacingNorthSouth == 1)	// north/south
 	{
 		if (y-1 >= 0)
-			iTileTypeLeftTop = (int)(getTile (x, y-1, m))->type;
+			iTileTypeLeftTop = (int)(getTile ((char)x, (char)(y-1), (char)m))->type;
 		if (y+1 < 32)
-			iTileTypeRightBottom = (int)(getTile (x, y+1, m))->type;
+			iTileTypeRightBottom = (int)(getTile ((char)x, (char)(y+1), (char)m))->type;
 
 		if (stairs->leading == 1 && iTileTypeRightBottom == tile_Wall && iTileTypeLeftTop != tile_Wall)
 			iRotation = 1;
@@ -1115,9 +1115,9 @@ drawStairs (int m, int x, int y, tile_p tile, float light)
 	else if (iFacingWestEast == 1)	// west/east
 	{
 		if (x-1 >= 0)
-			iTileTypeLeftTop = (int)(getTile (x-1, y, m))->type;
+			iTileTypeLeftTop = (int)(getTile ((char)(x-1), (char)y, (char)m))->type;
 		if (x+1 < 32)
-			iTileTypeRightBottom = (int)(getTile (x+1, y, m))->type;
+			iTileTypeRightBottom = (int)(getTile ((char)(x+1), (char)y, (char)m))->type;
 
 		if (stairs->leading == 1 && iTileTypeLeftTop == tile_Wall && iTileTypeRightBottom != tile_Wall)
 			iRotation = 2;
@@ -1442,7 +1442,6 @@ drawMap (unsigned char level, int edittext)
 			if (edittext)
 				light = .25;
 
-
 			if (tile->type == tile_Pit)
 				drawPit ((tile_pit_p) tile, light);
 			else if (tile->type == tile_Stairs)
@@ -1513,9 +1512,15 @@ drawMapGraphics (char map)
 
 	moveToGraphicsList ();
 	for (j = 0; j < 4; j++)
-	{	for (i = 0; i < maxtable[j]; i++)
+	{	
+		for (i = 0; i < maxtable[j]; i++)
 		{
 			drawSizeSquare (glid[j] + lists[j][i], gfxsize, 1.0f);
+			moveSize (1, 0, gfxsize);
+		}
+		for (;i < 16; i++)
+		{
+			drawFrame (gfxsize, .25f, .25f, .25f);
 			moveSize (1, 0, gfxsize);
 		}
 		moveSize (-i, 1, gfxsize);
