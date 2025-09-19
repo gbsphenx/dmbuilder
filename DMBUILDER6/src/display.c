@@ -58,6 +58,8 @@ float scale = __TILE_SCALE__;	// old = 1
 float tileScale = (__TILE_GL_BASE__*__TILE_SCALE__);
 float stack_object_size = __STD_STACK_SIZE__;
 
+int iCurrentStackCount = 0;
+
 int iFntSizeBigTitle = 32;
 
 int angle = 0;	// for blinking cursor
@@ -660,7 +662,9 @@ displayActivatorObject (reference_p refp, float light)
 		if (effect->graphism != 0)
 			drawPositionStack (gl_x_Walls + (getLevels ()[getEditCursor(cursor_L)]).walls[effect->graphism-1], 0, 1.0f);
 		moveStack (1, 0);
-		
+		// display actuator metatype gfx
+		drawPositionStack (gl_StaticSkullkeep + gl_WActuators + type->type, 0, 1.0f);
+		moveStack (1, 0);
 		switch (type->type)
 		{
 			case actuator_wall_alcove_item:
@@ -692,20 +696,31 @@ displayActivatorObject (reference_p refp, float light)
 				break;
 		}
 		// display actuator metatype gfx
+		/*
 		{
 			int ioldstacksize = stack_object_size;
-			stack_object_size = stack_object_size/2;
-			moveStackFloat (-0.75, .25);
-			drawPositionStack (gl_StaticSkullkeep + gl_WActuators + type->type, 0, 1.0f);
-			moveStackFloat (0.75, -.25);
+			
+			if (effect->graphism != 0)
+			{
+				stack_object_size = stack_object_size/2;
+				moveStackFloat (-0.75, .25);
+				drawPositionStack (gl_StaticSkullkeep + gl_WActuators + type->type, 0, 1.0f);
+				moveStackFloat (0.75, -.25);
+			}
+			else
+				drawPositionStack (gl_StaticSkullkeep + gl_WActuators + type->type, 0, 1.0f);
+
 			stack_object_size = ioldstacksize;
-		}
+		}*/
 
 	}
 	else
 	{
 		if (effect->graphism != 0)
 			drawPositionStack (gl_x_Floors + (getLevels ()[getEditCursor(cursor_L)]).floors[effect->graphism-1], 0, 1.0f);
+		moveStack (1, 0);
+		// display actuator metatype gfx
+		drawPositionStack (gl_StaticSkullkeep + gl_FActuators + type->type, 0, 1.0f);
 		moveStack (1, 0);
 		switch (type->type)
 		{
@@ -718,7 +733,7 @@ displayActivatorObject (reference_p refp, float light)
 				drawPositionStack (gl_x_Monsters + type->value, 0, 1.0f);
 				break;
 		}
-	
+
 	}
 	moveStack (1, 0);
 	drawPositionStack (gl_Gui + gui_Sound, 0, 0.4 + 0.6*effect->sound);
@@ -1168,6 +1183,7 @@ drawStack (char x, char y, unsigned char level)
 	short** currentref = (short **) &refp;
 	int wall = ((getTile (x, y, level))->type == tile_Wall)?1:0;
 
+	iCurrentStackCount = 0;
 	moveToStackUpper ();
 
 	while (**currentref != -2 && **currentref != -1)
@@ -1175,8 +1191,8 @@ drawStack (char x, char y, unsigned char level)
 		short *item = getItem(refp);
 		if (iStackIndex >= 5 && isSelectingNewItem ())	// so that new panel is readable
 			fLightScale = 0.12f;
-		else if (iStackIndex >= 8) // so that online help panel is readable
-			fLightScale = 0.12f;
+		//else if (iStackIndex >= 8) // so that online help panel is readable
+		//	fLightScale = 0.12f;
 		moveStack (-2, 0);
 		//printf("Stack = %d / X= %d / Y=%d\n", iStackIndex, iGLVirtualX, iGLVirtualY);
 		setTextProperties (12, fLightScale, fLightScale, fLightScale);
@@ -1189,31 +1205,32 @@ drawStack (char x, char y, unsigned char level)
 		if (refp->category == category_Weapon)
 			text_frame_weapon (refp, 0, iStackIndex, fLightScale);
 		else if (refp->category == category_Clothing)
-			text_frame_clothing (refp, 0, iStackIndex);
+			text_frame_clothing (refp, 0, iStackIndex, fLightScale);
 		else if (refp->category == category_Potion)
-			text_frame_potion (refp, 0, iStackIndex);
+			text_frame_potion (refp, 0, iStackIndex, fLightScale);
 		else if (refp->category == category_Chest)
-			text_frame_container (refp, 0, iStackIndex);
+			text_frame_container (refp, 0, iStackIndex, fLightScale);
 		else if (refp->category == category_Miscs)
-			text_frame_misc (refp, 0, iStackIndex);
+			text_frame_misc (refp, 0, iStackIndex, fLightScale);
 		else if (refp->category == category_Scroll)
-			text_frame_scroll (refp, 0, iStackIndex);
+			text_frame_scroll (refp, 0, iStackIndex, fLightScale);
 		else if (refp->category == category_Text)
-			text_frame_text (refp, 0, iStackIndex);
+			text_frame_text (refp, 0, iStackIndex, fLightScale);
 		else if (refp->category == category_Monster)
-			text_frame_monster (refp, 0, iStackIndex);
+			text_frame_monster (refp, 0, iStackIndex, fLightScale);
 
 		else if (refp->category == category_Text)
 		{
 			if (SKULLKEEP == 1)
 			{
-				text_frame_simple_actuator(refp, 0, iStackIndex);
+				text_frame_simple_actuator(refp, 0, iStackIndex, fLightScale);
 			}
 		}
 
 		moveStack (0, 1);
 		refp = getNextItem (refp);
 		iStackIndex++;
+		iCurrentStackCount++;
 	}
 
 	if (isEditingTile ())
@@ -1294,7 +1311,7 @@ drawStack (char x, char y, unsigned char level)
 			//--- If DM2/SK, it can be a Simple Actuator
 			else if (SKULLKEEP == 1)
 			{
-				text_frame_simple_actuator(selected, 0, 0);
+				text_frame_simple_actuator(selected, 0, 0, fLightScale);
 				if (wall)
 					displaySelectionBar (bank_Walls,	simpleActuatorGetGraphism(item), 1);
 				else
@@ -1303,7 +1320,7 @@ drawStack (char x, char y, unsigned char level)
 		
 		}
 		else if (selected->category == category_Teleport)
-			text_frame_teleport (selected, 0, iEditStackIndex);
+			text_frame_teleport (selected, 0, iEditStackIndex, fLightScale);
 		else if (selected->category == category_Weapon)
 		{
 			text_frame_weapon (selected, 0, iEditStackIndex, fLightScale);
@@ -1312,7 +1329,7 @@ drawStack (char x, char y, unsigned char level)
 		}
 		else if (selected->category == category_Clothing)
 		{
-			text_frame_clothing (selected, 0, iEditStackIndex);
+			text_frame_clothing (selected, 0, iEditStackIndex, fLightScale);
 			displaySelectionBar (conversion[selected->category],
 			getItemType[selected->category] (item), 1);
 		}/*
@@ -1324,25 +1341,25 @@ drawStack (char x, char y, unsigned char level)
 		}*/
 		else if (selected->category == category_Potion)
 		{
-			text_frame_potion (selected, 0, iEditStackIndex);
+			text_frame_potion (selected, 0, iEditStackIndex, fLightScale);
 			displaySelectionBar (conversion[selected->category],
 			getItemType[selected->category] (item), 1);
 		}
 		else if (selected->category == category_Chest)
 		{
-			text_frame_container (selected, 0, iEditStackIndex);
+			text_frame_container (selected, 0, iEditStackIndex, fLightScale);
 			displaySelectionBar (conversion[selected->category],
 			getItemType[selected->category] (item), 1);
 		}
 		else if (selected->category == category_Miscs)
 		{
-			text_frame_misc (selected, 0, iEditStackIndex);
+			text_frame_misc (selected, 0, iEditStackIndex, fLightScale);
 			displaySelectionBar (conversion[selected->category],
 			getItemType[selected->category] (item), 1);
 		}
 		else if (selected->category == category_Monster)
 		{	
-			text_frame_monster (selected, 0, iEditStackIndex);
+			text_frame_monster (selected, 0, iEditStackIndex, fLightScale);
 			displaySelectionBar (conversion[selected->category],
 			getItemType[selected->category] (item), 1);
 		}
@@ -1481,10 +1498,19 @@ drawMapHelpInfo ()
 {
 	//--- bottom right, to display online help
 	moveToUpperScreen ();
-	moveSize (52, 32, 48);
-	drawFrameXY (1800, 700, .9, .9, .7);
 
-	printMainMapHelpInfo ();
+	if (iCurrentStackCount <= 0)
+	{
+		moveSize (52, 32, 48);
+		drawFrameXY (1800, 700, .9, .9, .7);
+		printMainMapHelpInfo ();
+	}
+	else
+	{
+		moveSize (56, 32, 48);
+		drawFrameXY (1416, 700, .9, .9, .7);
+		printMainMapHelpInfo ();
+	}
 
 	if (isSelectingNewItem ())
 	{
@@ -2412,7 +2438,8 @@ redrawScreen ()
 					printSelectedText (refp);
 				else if (refp->category == category_Actuator){
 				//	printActivator (refp, (getCurrentTile ()->type == tile_Wall));
-					text_frame_actuator (refp, (getCurrentTile ()->type == tile_Wall), 0, 0);}
+					text_frame_actuator (refp, (getCurrentTile ()->type == tile_Wall), 0, 0, 1);
+				}
 			}
 			if (isSelectingNewItem())
 				displaySelectNewItem ();

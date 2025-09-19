@@ -28,17 +28,17 @@ extern void printNewItemStats ();
 
 extern void displaySelectedTextList (unsigned int select);
 
-void text_frame_container (reference_p reference, int x, int y);
-void text_frame_teleport (reference_p reference, int x, int y);
-void text_frame_monster (reference_p reference, int x, int y);
+void text_frame_container (reference_p reference, int x, int y, float l);
+void text_frame_teleport (reference_p reference, int x, int y, float l);
+void text_frame_monster (reference_p reference, int x, int y, float l);
 void text_frame_weapon (reference_p reference, int x, int y, float l);
-void text_frame_clothing (reference_p reference, int x, int y);
-void text_frame_potion (reference_p reference, int x, int y);
-void text_frame_misc (reference_p reference, int x, int y);
-void text_frame_scroll (reference_p reference, int x, int y);
-void text_frame_actuator (reference_p reference, int wall, int x, int y);
-void text_frame_simple_actuator (reference_p reference, int x, int y);
-void text_frame_text (reference_p reference, int x, int y);
+void text_frame_clothing (reference_p reference, int x, int y, float l);
+void text_frame_potion (reference_p reference, int x, int y, float l);
+void text_frame_misc (reference_p reference, int x, int y, float l);
+void text_frame_scroll (reference_p reference, int x, int y, float l);
+void text_frame_actuator (reference_p reference, int wall, int x, int y, float l);
+void text_frame_simple_actuator (reference_p reference, int x, int y, float l);
+void text_frame_text (reference_p reference, int x, int y, float l);
 
 extern void printDungeonSpecificationsInfo ();
 extern void printLevelSpecificationsInfo ();

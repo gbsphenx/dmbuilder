@@ -38,9 +38,11 @@ extern tSkullExe xSkullExe;
 
 //------------------------------------------------------------------------------
 
-int iInfoX = 1200;
+extern int iCurrentStackCount; // display.c
+
+int iInfoX = 1232;
 int iInfoY = 925;
-int iInfoYNeg = 1050 - 925 + 30;
+int iInfoYNeg = 1050 - 925 + 24;
 int iInfoFntSize = 15;
 	//x = winW-370;
 	//y = winH/2;
@@ -2047,6 +2049,9 @@ printMainMapHelpInfo ()
 	int x = basex;
 	int y = basey;
 	int ystep = helptfsize+2;
+
+	if (iCurrentStackCount > 0)
+		x += 192;
 
 	setTextProperties (helptfsize, 1, 1, 1);
 	fontDrawString (x, y, "ONLINE HELP");
