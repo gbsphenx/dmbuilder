@@ -652,6 +652,7 @@ displayActivatorObject (reference_p refp, float light)
 	actuator_target_p target = (actuator_target_p) (getItem (refp)+2);
 	float fEffectColor[3] = { .9, .4, .7 };
 	int iEffect = effect->effect;
+	int inactive = effect->inactive;
 
 	int wall = ((getTile (getEditCursor(cursor_X), getEditCursor(cursor_Y), getEditCursor(cursor_L)))->type == tile_Wall)?1:0;
 	
@@ -663,7 +664,7 @@ displayActivatorObject (reference_p refp, float light)
 			drawPositionStack (gl_x_Walls + (getLevels ()[getEditCursor(cursor_L)]).walls[effect->graphism-1], 0, 1.0f);
 		moveStack (1, 0);
 		// display actuator metatype gfx
-		drawPositionStack (gl_StaticSkullkeep + gl_WActuators + type->type, 0, 1.0f);
+		drawPositionStack (gl_StaticSkullkeep + gl_WActuators + type->type, 0, (inactive?0.5f:1.0f));
 		moveStack (1, 0);
 		switch (type->type)
 		{
@@ -720,7 +721,7 @@ displayActivatorObject (reference_p refp, float light)
 			drawPositionStack (gl_x_Floors + (getLevels ()[getEditCursor(cursor_L)]).floors[effect->graphism-1], 0, 1.0f);
 		moveStack (1, 0);
 		// display actuator metatype gfx
-		drawPositionStack (gl_StaticSkullkeep + gl_FActuators + type->type, 0, 1.0f);
+		drawPositionStack (gl_StaticSkullkeep + gl_FActuators + type->type, 0, (inactive?0.5f:1.0f));
 		moveStack (1, 0);
 		switch (type->type)
 		{
@@ -783,7 +784,7 @@ displayActivatorObject (reference_p refp, float light)
 
 	if (!effect->inactive)
 		drawDestinationFromCurrent ((char) target->xdest, (char) target->ydest, fEffectColor[0], fEffectColor[1], fEffectColor[2], 1, editact);
-	moveStack (-1, 0);
+	moveStack (-2, 0);
 }
 
 static void

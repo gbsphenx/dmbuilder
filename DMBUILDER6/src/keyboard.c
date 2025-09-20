@@ -6,9 +6,6 @@
 // Keyboard Management
 //------------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <string.h>
-
 #include <memory.h>
 #include <displaytext.h>
 #include <keyboard.h>
@@ -26,18 +23,31 @@
 #include <actuator.h>
 #include <monster.h>
 #include <security.h>
-#include <flush.h>
 #include <version.h>
 #include <data.h>
 #include <skullexe.h>
 
 #include <fileop.h>
 
-//#ifdef __MINGW__
-//	#include <GL/freeglut.h>
-//#else
+#include <stdlib.h>
+#include <string.h>
+#include <flush.h>
+
+
+#ifdef __MINGW__
+	#ifdef BOOL
+	#undef BOOL
+	#endif
+	#ifdef APIENTRY
+	#undef APIENTRY
+	#endif
+	#ifdef CALLBACK
+	#undef CALLBACK
+	#endif
+	#include <GL/freeglut.h>
+#else
 	#include <GL/glut.h>	// include glut last
-//#endif
+#endif
 
 extern int msg_flag;
 
@@ -140,6 +150,17 @@ execTestDungeon ()
 	if (SKULLKEEP || TELOS)
 	{
 		//--- Copy current dungeon as "dungeon.dat" in the test folder
+#ifdef __LINUX__
+		saveDungeonData (__FN_DIRDM2__"/DATA/DUNGEON.DAT");
+		if (SKULLKEEP)
+			saveMusicList(__FN_DIRDM2__"/DATA/SONGLIST.DAT");
+		printf("SkullExe: %08x\n", xSkullExe);
+		if (MVALID(&xSkullExe))
+		{
+			SkullExe_Write(&xSkullExe, __FN_DIRDM2__"/SKULL.EXE");
+			SkullExe_ExportAITable(&xSkullExe, __FN_DIRDM2__"/v1d296c.dat");
+		}
+#else
 		saveDungeonData (__FN_DIRDM2__"\\DATA\\DUNGEON.DAT");
 		if (SKULLKEEP)
 			saveMusicList(__FN_DIRDM2__"\\DATA\\SONGLIST.DAT");
@@ -149,7 +170,13 @@ execTestDungeon ()
 			SkullExe_Write(&xSkullExe, __FN_DIRDM2__"\\SKULL.EXE");
 			SkullExe_ExportAITable(&xSkullExe, __FN_DIRDM2__"\\v1d296c.dat");
 		}
+#endif // __LINUX
+
+#ifdef __LINUX__
+		strcpy(sExecPath, "./"__FN_DIRDM2__"/dosbox-dm2.sh");
+#else
 		strcpy(sExecPath, ".\\"__FN_DIRDM2__"\\dosbox-dm2.bat");
+#endif
 		//--- Start OS run for DM2 PC
 		printf("Start: %s\n", sExecPath);
 		system(sExecPath);
@@ -157,8 +184,13 @@ execTestDungeon ()
 	else
 	{
 		//--- Copy current dungeon as "dungeon.dat" in the test folder
+#ifdef __LINUX__
+		saveDungeonData (__FN_DIRDM1__"/DATA/DUNGEON.DAT");
+		strcpy(sExecPath, "./"__FN_DIRDM1__"/dosbox-dm.sh");
+#else
 		saveDungeonData (__FN_DIRDM1__"\\DATA\\DUNGEON.DAT");
 		strcpy(sExecPath, ".\\"__FN_DIRDM1__"\\dosbox-dm.bat");
+#endif
 		//--- Start OS run for DM2 PC
 		printf("Start: %s\n", sExecPath);
 		system(sExecPath);

@@ -1293,7 +1293,7 @@ typedef struct
 //------------------------------------------------------------------------------
 
 void
-text_frame_simple_actuator (reference_p reference, int x, int y)
+text_frame_simple_actuator (reference_p reference, int x, int y, float l)
 {
 	simple_actuator_p xSimpleActuator = (simple_actuator_p) getItem (reference);
 	short sSAct = *((short*) xSimpleActuator);
@@ -1307,21 +1307,21 @@ text_frame_simple_actuator (reference_p reference, int x, int y)
 
 	//if (reference->category == category_Weapon)
 	{
-		setTextProperties (iInfoFntSize, .9, .9, .8);
+		setTextProperties (iInfoFntSize, .9*l, .9*l, .8*l);
 		fontDrawString (x, y, "SIMPLE ACTUATOR");
-		setTextProperties (iInfoFntSize, 1, .5, .4);
+		setTextProperties (iInfoFntSize, 1*l, .5*l, .4*l);
 		fontDrawString (x + 15*iInfoFntSize, y, "-HEX: %04X", sSAct);
 
-		setTextProperties (iLocalFntSize, 1, .5, .4);
+		setTextProperties (iLocalFntSize, 1*l, .5*l, .4*l);
 		y -= iLocalFntSize;
 		fontDrawString (x, y, "ACTIVATED: %02d", xSimpleActuator->Activated);
-		setTextProperties (iLocalFntSize, 1, .5, .4);
+		setTextProperties (iLocalFntSize, 1*l, .5*l, .4*l);
 		y -= iLocalFntSize;
 		fontDrawString (x, y, "MODE:      %02d", xSimpleActuator->Mode);
-		setTextProperties (iLocalFntSize, 1, .5, .4);
+		setTextProperties (iLocalFntSize, 1*l, .5*l, .4*l);
 		y -= iLocalFntSize;
 		fontDrawString (x, y, "GFX:       %02d (%02x)", xSimpleActuator->Graphism, xSimpleActuator->Graphism);
-		setTextProperties (iLocalFntSize, 1, .5, .4);
+		setTextProperties (iLocalFntSize, 1*l, .5*l, .4*l);
 		y -= iLocalFntSize;
 		fontDrawString (x, y, "EXTENDED:  %02d (%s)", xSimpleActuator->ExtendedUsage, txt_dm2_sact_extuse[xSimpleActuator->ExtendedUsage]);
 	}
@@ -1672,17 +1672,19 @@ text_frame_teleport (reference_p reference, int x, int y, float l)
 
 
 void
-text_frame_monster_generator (reference_p reference)
+text_frame_monster_generator (reference_p reference, int cury)
 {
 	short* item = getItem (reference);
-	int x = winW-370;
-	int y = winH/2;
+	int x = iInfoX; //winW-370;
+	int y = cury; // winH/2;
 	a_2_monster_generator_p effect = (a_2_monster_generator_p) (item + 1);
 	a_3_monster_generator_p generator = (a_3_monster_generator_p) (item + 2);
-	setTextProperties (10, 1, .7, .5);
-	fontDrawString (x, y-(5+2)*10, "Generation: %s", txt_generators[effect->generation]);
-	setTextProperties (10, 1, .7, .5);
-	fontDrawString (x, y-(6+2)*10, "Toughness: %02x / Pause?: %02x",
+	y -= iInfoFntSize;
+	setTextProperties (iInfoFntSize, 1, .7, .5);
+	fontDrawString (x, y, "GENERATION: %s", txt_generators[effect->generation]);
+	y -= iInfoFntSize;
+	setTextProperties (iInfoFntSize, 1, .7, .5);
+	fontDrawString (x, y, "TOUGHNESS: %02x / COOLDOWN: %02x",
 		generator->thoughness, generator->pause);
 }
 /*
@@ -1769,7 +1771,7 @@ helper_activator_item(int iAbsoluteValue, int* iItemDB, int* iItemIndex)
 
 
 void
-text_frame_actuator (reference_p reference, int wall, int x, int y)
+text_frame_actuator (reference_p reference, int wall, int x, int y, float l)
 {
 	char actuatorname[64];
 	static char* cell[] = { "FLOOR", "WALL"};
@@ -1962,7 +1964,8 @@ text_frame_actuator (reference_p reference, int wall, int x, int y)
 		switch (act->type)
 		{
 			case actuator_floor_monster_generator:
-				text_frame_monster_generator (reference);
+				text_frame_monster_generator (reference, y);
+				y -= (iInfoFntSize*2);
 				break;
 			default:
 			{
@@ -2276,6 +2279,43 @@ printMainMapHelpInfo ()
 				setTextProperties (helptfsize, .7, .7, .7);
 				fontDrawString (x, y, "'T': SELECT TARGET TILE => CAN CHANGE TARGET MAP WITH PAGE UP / PAGE DOWN");
 
+			case category_Actuator:
+				y -= ystep;
+				setTextProperties (helptfsize, .8, .8, .8);
+				fontDrawString (x, y, "ACTUATOR/SENSOR:");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'S': MAKE SOUND");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'O': OPERATE ONCE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'I': INACTIVE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'D': CYCLE THROUGH DELAY");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'F': CYCLE THROUGH TARGET FACING");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "' ': ACTIVATE / DEACTIVATE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "TAB: SWITCH TO ACTUATOR TYPE OR ACTUATOR VALUE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'1': DECREASE ACTUATOR TYPE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'2': INCREASE ACTUATOR TYPE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'E': DECREASE EFFECT TYPE");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "SHIFT-'E': INCREASE EFFECT TYPE");
 
 			break;
 /*
