@@ -1048,23 +1048,58 @@ displaySelectionBar (int bank, int value, float scale)
 	half = graphisms[bank][1]/2;
 	max = graphisms[bank][1];
 
-	//moveToBottom ();
-	moveToUpperScreen ();
-	moveSize (14.25f, 8.5f, __STD_STACK_SIZE__*scale);
-	moveSize (-half, 0, __STD_STACK_SIZE__*scale);
-	drawFrameXY (100, 100, .9, .9, .7);
-	for (i = 0; i < max; i++)
+	switch (getScreen ())
 	{
-		if (bank == bank_Activators)
-			drawSizeSquare (gfx_activation_items[(i + value - half + max)%max], __STD_STACK_SIZE__*scale, 1.0f);
-		drawSizeSquare (graphisms[bank][0] + (i + value - half + max)%max, __STD_STACK_SIZE__*scale, 1.0f);
-		moveSize (1, 0, __STD_STACK_SIZE__*scale);
-	}	
-	moveToUpperScreen ();
-	moveSize (14.25f, 8.5f, __STD_STACK_SIZE__*scale);
-	drawFrame (__STD_STACK_SIZE__*scale, .5, 1, .5);
-	drawFrameLW (__STD_STACK_SIZE__, 1.*globalfsinv, 1.*globalfsinv, 0.25*globalfsinv, 4.f);
+	//moveToBottom ();
+	// for map view, item cycling
+		case screen_Map:
+		{
+			moveToUpperScreen ();
+			moveSize (14.25f, 8.5f, __STD_STACK_SIZE__*scale);
+			moveSize (-half, 0, __STD_STACK_SIZE__*scale);
+			drawFrameXY (100, 100, .9, .9, .7); // does not appear
+			for (i = 0; i < max; i++)
+			{
+				if (bank == bank_Activators)
+					drawSizeSquare (gfx_activation_items[(i + value - half + max)%max], __STD_STACK_SIZE__*scale, 1.0f);
+				drawSizeSquare (graphisms[bank][0] + (i + value - half + max)%max, __STD_STACK_SIZE__*scale, 1.0f);
+				moveSize (1, 0, __STD_STACK_SIZE__*scale);
+			}	
+			moveToUpperScreen ();
+			moveSize (14.25f, 8.5f, __STD_STACK_SIZE__*scale);
+			drawFrame (__STD_STACK_SIZE__*scale, .5, 1, .5);
+			drawFrameLW (__STD_STACK_SIZE__, 1.*globalfsinv, 1.*globalfsinv, 0.25*globalfsinv, 4.f);
+		}
+		break;
+		case screen_Level:
+		{
+			int midoffset = 7;
+			double fsinv = 0;
+			double rad = 0;
+			if (angle > 360)
+				angle = angle%360;
+			rad = ((double)angle) / 360 * (2*3.1415f) * 1;
+			fsinv = (double)cos(rad);
+			fsinv = (fsinv/2) + 0.5f;
+			globalfsinv = fsinv;
 
+			moveToUpperScreen ();
+			//moveSize (half/2, 0, __STD_STACK_SIZE__*scale); // move half screen
+			//moveSize (-half, 3, __STD_STACK_SIZE__*scale);
+			moveSize (0, 3, __STD_STACK_SIZE__*scale);
+			for (i = 0; i < max; i++)
+			{
+				//drawSizeSquare (graphisms[bank][0] + (i + value - half + max)%max, __STD_STACK_SIZE__*scale, 1.0f);
+				drawSizeSquare (graphisms[bank][0] + (i + value - midoffset + max)%max, __STD_STACK_SIZE__*scale, 1.0f);
+				moveSize (1, 0, __STD_STACK_SIZE__*scale);
+			}
+			moveToUpperScreen ();
+			moveSize (7, 3, __STD_STACK_SIZE__*scale);
+			drawFrame (__STD_STACK_SIZE__*scale, .5, 1, .5);
+			drawFrameLW (__STD_STACK_SIZE__*scale, 1.*globalfsinv, 1.*globalfsinv, 0.25*globalfsinv, 8.f);
+		}
+		break;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -2448,8 +2483,8 @@ redrawScreen ()
 		break;
 	case screen_Level:
 		drawMap (level, 0);
-		displayLevelWindow ();
 		printLevelSpecificationsInfo ();
+		displayLevelWindow ();	// draw graphics after texts
 		break;
 
 	case screen_MainHeader:

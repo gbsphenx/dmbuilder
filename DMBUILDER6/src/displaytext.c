@@ -1126,6 +1126,7 @@ printLevelSpecificationsInfo ()
 	char cSep = '-';
 
 	int iMusicID = 0;
+	float fUnderlight = 1.0f;
 
 	memset(sHelpObjectText, 0, 256);
 	memset(sMusicName, 0, 256);
@@ -1139,74 +1140,78 @@ printLevelSpecificationsInfo ()
 
 	iMusicID = level->iMusicID;
 
-	setTextProperties (iFntHexSize, 1.0, 1.0, 1.0);
+	if (isEditingGraphics ())
+		fUnderlight = 0.125f;
+
+
+	setTextProperties (iFntHexSize, 1.0*fUnderlight, 1.0*fUnderlight, 1.0*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y+(15*5),"MAP HEADER 16 BYTES -- HEXA BREAKDOWN ");
 
 	for (B = 0; B < 16; B++)
 	{
 		if (B == 15)
 			cSep = ' ';
-		setTextProperties (iFntHexSize, .7, .7, .7);
+		setTextProperties (iFntHexSize, .7*fUnderlight, .7*fUnderlight, .7*fUnderlight);
 		fontDrawString (x+((iFntHexSize*3)+2)*B, y+(15*2), "%02X%c", xHexLevelHeader[B], cSep);
 	}
 
 	y -= iStepText;
 
 	B = 0;	// map data offset
-	setTextProperties (iFntHexSize, 1.0, 1.0, 1.0);
+	setTextProperties (iFntHexSize, 1.0*fUnderlight, 1.0*fUnderlight, 1.0*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%02X", (level->header.mapOffset & 0xFF00)>>8);
 	B = 1;	// map data offset
-	setTextProperties (iFntHexSize, 1.0, 1.0, 1.0);
+	setTextProperties (iFntHexSize, 1.0*fUnderlight, 1.0*fUnderlight, 1.0*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%02X", (level->header.mapOffset & 0x00FF));
 
 	B = 6;	// x offset
-	setTextProperties (iFntHexSize, .5, .9, .5);
+	setTextProperties (iFntHexSize, .5*fUnderlight, .9*fUnderlight, .5*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%02X", level->header.xOffset);
 	B = 7;	// y offset
-	setTextProperties (iFntHexSize, .5, .5, .9);
+	setTextProperties (iFntHexSize, .5*fUnderlight, .5*fUnderlight, .9*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%02X", level->header.yOffset);
 
 	B = 8;
-	setTextProperties (iFntHexSize, .1, 0.9, 1.0);
+	setTextProperties (iFntHexSize, .1*fUnderlight, 0.9*fUnderlight, 1.0*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%1X", (xHexLevelHeader[B]&0xF0)>>4);	//	part of x ?
-	setTextProperties (iFntHexSize, 1.0, 0.5, 0.0);
+	setTextProperties (iFntHexSize, 1.0*fUnderlight, 0.5*fUnderlight, 0.0*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B+iFntHexSize, y,	"%1X", xHexLevelHeader[B]&0x0F);		// level stack altitude
 
 	B = 9;
-	setTextProperties (iFntHexSize, .1, 1.0, 0.6);
+	setTextProperties (iFntHexSize, .1*fUnderlight, 1.0*fUnderlight, 0.6*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%1X", (xHexLevelHeader[B]&0xF0)>>4);	//	part of y ?
-	setTextProperties (iFntHexSize, .1, 0.9, 1.0);
+	setTextProperties (iFntHexSize, .1*fUnderlight, 0.9*fUnderlight, 1.0*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B+iFntHexSize, y,	"%1X", xHexLevelHeader[B]&0x0F);		// part of x and y ?
 
 
 	B = 10;
-	setTextProperties (iFntHexSize, .6, .2, .2);
+	setTextProperties (iFntHexSize, .6*fUnderlight, .2*fUnderlight, .2*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%1X", (xHexLevelHeader[B]&0xF0)>>4);	// random walls
-	setTextProperties (iFntHexSize, .8, .4, .4);
+	setTextProperties (iFntHexSize, .8*fUnderlight, .4*fUnderlight, .4*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B+iFntHexSize, y,	"%1X", xHexLevelHeader[B]&0x0F);		// nb walls
 
 	B = 11;
-	setTextProperties (iFntHexSize, .2, .6, .2);
+	setTextProperties (iFntHexSize, .2*fUnderlight, .6*fUnderlight, .2*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%1X", (xHexLevelHeader[B]&0xF0)>>4);	// random floor
-	setTextProperties (iFntHexSize, .4, .8, .4);
+	setTextProperties (iFntHexSize, .4*fUnderlight, .8*fUnderlight, .4*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B+iFntHexSize, y,	"%1X", xHexLevelHeader[B]&0x0F);		// nb floors
 	
 	B = 12;
-	setTextProperties (iFntHexSize, .9, .1, .1);
+	setTextProperties (iFntHexSize, .9*fUnderlight, .1*fUnderlight, .1*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%1X", (xHexLevelHeader[B]&0xF0)>>4);	// nb monsters
-	setTextProperties (iFntHexSize, .9, .8, .1);
+	setTextProperties (iFntHexSize, .9*fUnderlight, .8*fUnderlight, .1*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B+iFntHexSize, y,	"%1X", xHexLevelHeader[B]&0x0F);		// nb door ornates
 	
 	B = 13;
-	setTextProperties (iFntHexSize, .8, .5, 1.0);
+	setTextProperties (iFntHexSize, .8*fUnderlight, .5*fUnderlight, 1.0*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%1X", (xHexLevelHeader[B]&0xF0)>>4);	// depth
 	B = 14;
-	setTextProperties (iFntHexSize, .7, .3, .8);
+	setTextProperties (iFntHexSize, .7*fUnderlight, .3*fUnderlight, .8*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%1X", (xHexLevelHeader[B]&0xF0)>>4);	// tileset
 	B = 15;
-	setTextProperties (iFntHexSize, .9, .5, .1);
+	setTextProperties (iFntHexSize, .9*fUnderlight, .5*fUnderlight, .1*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B, y,			"%1X", (xHexLevelHeader[B]&0xF0)>>4);	// door 2
-	setTextProperties (iFntHexSize, .5, .9, .1);
+	setTextProperties (iFntHexSize, .5*fUnderlight, .9*fUnderlight, .1*fUnderlight);
 	fontDrawString (x+((iFntHexSize*3)+2)*B+iFntHexSize, y,	"%1X", xHexLevelHeader[B]&0x0F);		// door 1
 
 
