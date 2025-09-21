@@ -18,6 +18,7 @@ extern void printGeneralMapInfo ();
 extern void printMainMapHelpInfo ();
 extern void printMapPropertiesHelpInfo ();
 extern void printNewObjectHelpInfo ();
+extern void printNoHelpInfo ();
 
 extern void printGeneralMessage (char *message);
 

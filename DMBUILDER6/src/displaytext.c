@@ -938,7 +938,7 @@ printDungeonSpecificationsInfo ()
 
 
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
-	outputTextLineAt (200, winH-40, "DUNGEON INFORMATION");
+	outputTextLineAt (200, winH-40, "F6:    DUNGEON INFORMATION");
 
 	//--- Hex raw of header
 	for (B = 0; B < 12; B++)
@@ -2062,6 +2062,32 @@ printNewObjectHelpInfo ()
 
 	x = basex;
 	y -= ystep;
+}
+
+void
+printNoHelpInfo ()
+{
+	int basex = iTileInfo_OffsetX+40;
+	int basey = winH-iTileInfo_OffsetY-620;
+	int helptfsize = 13;
+
+	int x = basex + 192;
+	int y = basey - 200;
+	int ystep = helptfsize+2;
+
+	setTextProperties (helptfsize, 1, 1, 1);
+	fontDrawString (x, y, "ONLINE HELP");
+	y -= ystep;
+
+	{
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "NO SPECIFIC ACTION HERE.");
+		y -= ystep;
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "'ESC': BACK TO MAIN VIEWPORT");
+	}
 }
 
 void

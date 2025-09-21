@@ -956,6 +956,21 @@ void keyboard (unsigned char key, int x, int y)
 				}
 
 			} break;
+		case screen_MainHeader:
+			{
+				if (key == KEY_ESCAPE)
+					Call_ChangeScreen (screen_Map);
+			} break;
+		case screen_ListsActuators:
+			{
+				if (key == KEY_ESCAPE)
+					Call_ChangeScreen (screen_Map);
+			} break;
+		case screen_ListsItems:
+			{
+				if (key == KEY_ESCAPE)
+					Call_ChangeScreen (screen_Map);
+			} break;
 		case screen_ListsCreatures:
 			{
 				if (key == KEY_ESCAPE)

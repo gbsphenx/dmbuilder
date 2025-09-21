@@ -1526,13 +1526,19 @@ drawLevelPropertiesHelpInfo ()
 		drawFrameXY (1416, 700, .9, .9, .7);
 		printMapPropertiesHelpInfo ();
 	}
-/*
-	if (isSelectingNewItem ())
+}
+
+
+static void
+drawGenericHelpInfoPanel ()
+{
+	//--- bottom right, to display online help
+	moveToUpperScreen ();
+
 	{
-		drawNewObjectSelectionInfo ();
-		printNewObjectHelpInfo ();
+		moveSize (56, 36, 48);
+		drawFrameXY (1416, 300, .9, .9, .7);
 	}
-	*/
 }
 
 //------------------------------------------------------------------------------
@@ -1854,7 +1860,7 @@ displayAIInfos ()
 	int iExeSizeLoaded = 0;
 
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
-	outputTextLineAt (200, winH-40, "AI STATS INFO :");
+	outputTextLineAt (200, winH-40, "F7:    SKULLKEEP AI STATS INFO");
 
 	//
 	//iExeSizeLoaded = xSkullExe.iExeDataSize;
@@ -2512,19 +2518,27 @@ redrawScreen ()
 	case screen_MainHeader:
 		
 		printDungeonSpecificationsInfo ();
+		drawGenericHelpInfoPanel ();
+		printNoHelpInfo ();
 		break;
 
 
 	case screen_ListsCreatures:
 		displayCreaturesLists ();
+		drawGenericHelpInfoPanel ();
+		printNoHelpInfo ();
 		break;
 
 	case screen_ListsActuators:
 		displayActuatorsLists ();
+		drawGenericHelpInfoPanel ();
+		printNoHelpInfo ();
 		break;
 
 	case screen_ListsItems:
 		displayItemsLists ();
+		drawGenericHelpInfoPanel ();
+		printNoHelpInfo ();
 		break;
 
 	case screen_DM2AI:
