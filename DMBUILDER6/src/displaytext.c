@@ -39,6 +39,8 @@ extern tSkullExe xSkullExe;
 //------------------------------------------------------------------------------
 
 extern int iCurrentStackCount; // display.c
+extern float globalfsinv;
+extern int angle;
 
 int iInfoX = 1232;
 int iInfoY = 925;
@@ -934,6 +936,7 @@ printDungeonSpecificationsInfo ()
 
 	memset(sHelpObjectText, 0, 256);
 
+
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
 	outputTextLineAt (200, winH-40, "DUNGEON INFORMATION");
 
@@ -1127,6 +1130,7 @@ printLevelSpecificationsInfo ()
 
 	int iMusicID = 0;
 	float fUnderlight = 1.0f;
+	float bl = globalfsinv; // blink light
 
 	memset(sHelpObjectText, 0, 256);
 	memset(sMusicName, 0, 256);
@@ -1139,6 +1143,18 @@ printLevelSpecificationsInfo ()
 	iMapEndOffset = level->endoffset;
 
 	iMusicID = level->iMusicID;
+
+	{
+		double fsinv = globalfsinv;
+		double rad = 0;
+		if (angle > 360)
+			angle = angle%360;
+		rad = ((double)angle) / 360 * (2*3.1415f) * 1;
+		fsinv = (double)cos(rad);
+		fsinv = (fsinv/2) + 0.5f;
+		globalfsinv = fsinv;
+		bl = fsinv + 0.5f;
+	}
 
 	if (isEditingGraphics ())
 		fUnderlight = 0.125f;
@@ -1222,20 +1238,21 @@ printLevelSpecificationsInfo ()
 	setTextProperties (iFntSize, .8, .9, .9);
 	y -= iStepText;
 	fontDrawString (x, y, "MAP ID: %d", getEditCursor (cursor_L));
-	if (getEditCursor (cursor_LevelSpec) == 0)
-		setTextProperties (iFntSize, .9, 1, .9);
-	else	setTextProperties (iFntSize, .7, .7, .7);
-	y -= iStepText; setTextProperties (iFntSize, .8, .5, 1.0);
-	fontDrawString (x, y, "DIFFICULTY: %d", level->header.depth);
+	
+	if (level_spec != 0 && getEditCursor (cursor_LevelSpec) == 0)
+		setTextProperties (iFntSize, .8*bl, .5*bl, 1.0*bl);
+	else	setTextProperties (iFntSize, .8, .5, 1.0);
+	y -= iStepText;
+	fontDrawString (x, y, "DIFFICULTY (XP MOD): %d", level->header.depth);
 
-	if (getEditCursor (cursor_LevelSpec) == 1)
-		setTextProperties (iFntSize, .9, 1, .9);
+	if (level_spec != 0 && getEditCursor (cursor_LevelSpec) == 1)
+		setTextProperties (iFntSize, .5*bl, .9*bl, .5*bl);
 	else	setTextProperties (iFntSize, .5, .9, .5);
 	y -= iStepText;	
 	fontDrawString (x, y, "X OFFSET: %02d (%02X)", level->header.xOffset, level->header.xOffset);
 
-	if (getEditCursor (cursor_LevelSpec) == 2)
-		setTextProperties (iFntSize, .9, 1, .9);
+	if (level_spec != 0 && getEditCursor (cursor_LevelSpec) == 2)
+		setTextProperties (iFntSize, .5*bl, .5*bl, .9*bl);
 	else	setTextProperties (iFntSize, .5, .5, .9);
 	y -= iStepText;
 	fontDrawString (x, y, "Y OFFSET: %02d (%02X)", level->header.yOffset, level->header.yOffset);
@@ -2046,6 +2063,83 @@ printNewObjectHelpInfo ()
 	x = basex;
 	y -= ystep;
 }
+
+void
+printMapPropertiesHelpInfo ()
+{
+	int basex = iTileInfo_OffsetX+40;
+	int basey = winH-iTileInfo_OffsetY-620;
+	int helptfsize = 13;
+
+	int x = basex + 192;
+	int y = basey;
+	int ystep = helptfsize+2;
+
+	setTextProperties (helptfsize, 1, 1, 1);
+	fontDrawString (x, y, "ONLINE HELP");
+	y -= ystep;
+
+	{
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "ARROWS KEYS: NAVIGATE THROUGH ITEMS GRID");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "'+': INCREASE MAX ELEMENTS IN THE CURRENT LIST");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "'-': DECREASE MAX ELEMENTS IN THE CURRENT LIST");
+
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "SHIFT-'R': DECREASE MAX RANDOM ELEMENTS IN LIST");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "'R': INCREASE MAX RANDOM ELEMENTS IN LIST");
+
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "SHIFT-'T': DECREASE TILESET ID");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "'T': INCREASE TILESET ID");
+
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "SHIFT-'M': DECREASE MAP MUSIC ID");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "'M': INCREASE MAP MUSIC ID");
+
+		y -= ystep;
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "TAB: SWITCH TO PROPERTIES EDIT (OFFSET / XP MOD)");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "SHIFT-'S': SWITCH DUNGEON TO SKULLKEEP/DM MODE");
+
+		
+		y -= ystep;
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .55, .55);
+		fontDrawString (x, y, "CR: CREATURES LIST");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .55, .55);
+		fontDrawString (x, y, "WL: WALL DECORATIONS LIST");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .55, .55);
+		fontDrawString (x, y, "FL: FLOOR DECORATIONS LIST");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .55, .55);
+		fontDrawString (x, y, "DD: DOOR DECORATIONS LIST");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .55, .55);
+		fontDrawString (x, y, "DR: DOOR TYPES LIST (ONLY 2 POSSIBLE)");
+	
+	}
+}
+
 
 void
 printMainMapHelpInfo ()

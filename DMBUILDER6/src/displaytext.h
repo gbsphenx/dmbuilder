@@ -16,6 +16,7 @@ extern void loadTextFont ();
 extern void printGeneralHelpInfo ();
 extern void printGeneralMapInfo ();
 extern void printMainMapHelpInfo ();
+extern void printMapPropertiesHelpInfo ();
 extern void printNewObjectHelpInfo ();
 
 extern void printGeneralMessage (char *message);

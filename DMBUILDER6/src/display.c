@@ -1086,11 +1086,11 @@ displaySelectionBar (int bank, int value, float scale)
 			moveToUpperScreen ();
 			//moveSize (half/2, 0, __STD_STACK_SIZE__*scale); // move half screen
 			//moveSize (-half, 3, __STD_STACK_SIZE__*scale);
-			moveSize (0, 3, __STD_STACK_SIZE__*scale);
+			moveSize (7 - half, 3, __STD_STACK_SIZE__*scale);
 			for (i = 0; i < max; i++)
 			{
 				//drawSizeSquare (graphisms[bank][0] + (i + value - half + max)%max, __STD_STACK_SIZE__*scale, 1.0f);
-				drawSizeSquare (graphisms[bank][0] + (i + value - midoffset + max)%max, __STD_STACK_SIZE__*scale, 1.0f);
+				drawSizeSquare (graphisms[bank][0] + (i + value - half + max)%max, __STD_STACK_SIZE__*scale, 1.0f);
 				moveSize (1, 0, __STD_STACK_SIZE__*scale);
 			}
 			moveToUpperScreen ();
@@ -1515,6 +1515,25 @@ drawMap (unsigned char level, int edittext)
 	}
 }
 
+static void
+drawLevelPropertiesHelpInfo ()
+{
+	//--- bottom right, to display online help
+	moveToUpperScreen ();
+
+	{
+		moveSize (56, 32, 48);
+		drawFrameXY (1416, 700, .9, .9, .7);
+		printMapPropertiesHelpInfo ();
+	}
+/*
+	if (isSelectingNewItem ())
+	{
+		drawNewObjectSelectionInfo ();
+		printNewObjectHelpInfo ();
+	}
+	*/
+}
 
 //------------------------------------------------------------------------------
 //	
@@ -1554,6 +1573,8 @@ drawMapHelpInfo ()
 		printNewObjectHelpInfo ();
 	}
 }
+
+
 
 
 static void 
@@ -2485,6 +2506,7 @@ redrawScreen ()
 		drawMap (level, 0);
 		printLevelSpecificationsInfo ();
 		displayLevelWindow ();	// draw graphics after texts
+		drawLevelPropertiesHelpInfo ();
 		break;
 
 	case screen_MainHeader:
