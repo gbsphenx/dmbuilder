@@ -28,6 +28,7 @@ enum
 {
 	actuator_floor_none = 0,
 	actuator_floor_everything = 1,
+	actuator_floor_party_monster = 2,
 	actuator_floor_party = 3,
 	actuator_floor_pad_item = 4, 
 	actuator_floor_monster_generator = 6,

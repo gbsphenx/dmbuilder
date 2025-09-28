@@ -921,6 +921,8 @@ enum
 	bank_Activators = 11,
 	bank_Portraits = 12,
 	bank_Containers = 13,
+	bank_ActuatorsFloor = 14,
+	bank_ActuatorsWall = 15,
 };
 
 static int conversion[] =
@@ -976,10 +978,12 @@ displaySelectionBar (int bank, int value, float scale)
 		{ gl_Clothes, clothing_Max},
 		{ gl_Potions, potion_Max},
 		{ gl_Miscs, misc_Max},
-		{ gl_Spells, spell_Max},
+		{ gl_Spells, spell_Max},	// 10
 		{ 0, item_actuators_Max}, // activation items
 		{ gl_Portraits, portrait_Max},
 		{ gl_x_Containers, dt_Containers_Max},
+		{ gl_FActuators, 9},
+		{ gl_WActuators, 128},
 	};
 	int half = graphisms[bank][1]/2;
 	int max = graphisms[bank][1];
@@ -1062,7 +1066,9 @@ displaySelectionBar (int bank, int value, float scale)
 			{
 				if (bank == bank_Activators)
 					drawSizeSquare (gfx_activation_items[(i + value - half + max)%max], __STD_STACK_SIZE__*scale, 1.0f);
-				drawSizeSquare (graphisms[bank][0] + (i + value - half + max)%max, __STD_STACK_SIZE__*scale, 1.0f);
+				else
+					drawSizeSquare (graphisms[bank][0] + (i + value - half + max)%max, __STD_STACK_SIZE__*scale, 1.0f);
+				//printf("TEXTURE: %d\n", graphisms[bank][0] + (i + value - half + max)%max);
 				moveSize (1, 0, __STD_STACK_SIZE__*scale);
 			}	
 			moveToUpperScreen ();
@@ -1292,11 +1298,17 @@ drawStack (char x, char y, unsigned char level)
 		{
 			if (isSecondFunction())
 			{
-				if (wall){
-				switch (((actuator_p) (item))->type)
+				if (wall && isSecondFunction()==1)
 				{
-					case actuator_wall_champion_mirror /*actuator_wall_champion_mirror*/:
-						displaySelectionBar (bank_Portraits, ((actuator_p) (item))->value, 1);
+					displaySelectionBar (bank_ActuatorsWall, ((actuator_p) (item))->type, 1);
+				}
+				else if (wall && isSecondFunction()==2)
+				{
+				switch (((actuator_p) (item))->type)
+					{
+					case actuator_wall_champion_mirror: /*actuator_wall_champion_mirror*/
+						if (isSecondFunction()==2)
+							displaySelectionBar (bank_Portraits, ((actuator_p) (item))->value, 1);
 						break;
 					case actuator_wall_alcove_item:
 					case actuator_wall_item:
@@ -1317,18 +1329,25 @@ drawStack (char x, char y, unsigned char level)
 					}
 		
 				}
-				else
+				else if (!wall)
 				{
-					switch (((actuator_p) (item))->type)
+					if (isSecondFunction()==1)
 					{
-						case actuator_floor_pad_item:
-						case actuator_floor_carried_item:
-						case actuator_dm2_item_capture_from_creature:
-							displaySelectionBar (bank_Activators, ((actuator_p) (item))->value, 1);
-							break;
-						case actuator_floor_monster_generator:
-							displaySelectionBar (bank_Monsters, ((actuator_p) (item))->value, 1);
-							break;
+						displaySelectionBar (bank_ActuatorsFloor, ((actuator_p) (item))->type, 1);
+					}
+					else if (isSecondFunction()==2)
+					{
+						switch (((actuator_p) (item))->type)
+						{
+							case actuator_floor_pad_item:
+							case actuator_floor_carried_item:
+							case actuator_dm2_item_capture_from_creature:
+								displaySelectionBar (bank_Activators, ((actuator_p) (item))->value, 1);
+								break;
+							case actuator_floor_monster_generator:
+								displaySelectionBar (bank_Monsters, ((actuator_p) (item))->value, 1);
+								break;
+						}
 					}
 				}
 

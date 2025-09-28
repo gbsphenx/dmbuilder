@@ -300,7 +300,7 @@ initActuator (short *item, int type)
 
 	target->xdest = getEditCursor (cursor_X);
 	target->ydest = getEditCursor (cursor_Y);
-	xActuator->type = type;
+	xActuator->type = actuator_floor_none;
 	xActuator->value = 0;
 
 }
@@ -315,7 +315,7 @@ initMonster (short *item, int type)
 	monster->chested = -2;
 	for (i = 0; i < 4; i ++)
 		monster->health[i] = 0;
-	monster->number = 0; // That mean 1 monster on the square
+	monster->number = 0; // That means 1 monster on the square
 	monster->type = monster_Screamer;
 	monster->unk1 = 4; // That looks good :/ but I don't know
 	monster->position = (char) 0xFF; //defaut
@@ -735,7 +735,8 @@ cycleActivatorGeneral (reference_p refp, int step)
 	else
 	{
 		int wall = (getCurrentTile ()->type == tile_Wall)?1:0;
-		if (wall)
+		int function = isSecondFunction();
+		if (wall && function == 2)
 		{
 			actuator_p act = (actuator_p) getItem (refp);
 			switch (act->type)
@@ -760,7 +761,26 @@ cycleActivatorGeneral (reference_p refp, int step)
 				act->value += step; break;
 			}
 		}
-		else
+		else if (wall && function == 1)
+		{
+			actuator_p act = (actuator_p) getItem (refp);
+			act->type += step;
+			if (act->type >= 128) act->type = 0;
+			if (step < 0 && act->type >= 18 && act->type <= 126)
+				act->type = 18;
+			else if (step > 0 && act->type >= 18 && act->type <= 126)
+				act->type = 127;
+			act->type = (act->type+128)%128;
+		}
+		else if (!wall && function == 1)
+		{
+			actuator_p act = (actuator_p) getItem (refp);
+			act->type += step;
+			if (act->type >= 9)
+				act->type = ( ((((int)act->type)-128)+9)%9 );
+			act->type = (act->type+9)%9;
+		}
+		else if (!wall && function == 2)
 		{
 			actuator_p act = (actuator_p) getItem (refp);
 			switch (act->type)

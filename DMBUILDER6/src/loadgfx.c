@@ -199,6 +199,10 @@ void loadGraphics ()
 	loadArchive ("Powers", gl_Powers, power_Max);
 
 //------------------------------------------------------------------------------
+
+	Graphics_LoadSkullkeepImagesSet ("DMWActuators.tga", gl_WActuators, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("DMFActuators.tga", gl_FActuators, 64, 64);
+
 	Graphics_LoadSkullkeepImagesSet ("SKDoors.tga", gl_StaticSkullkeep + gl_Doors, 64, 64);
 	Graphics_LoadSkullkeepImagesSet ("SKDoorOrnates.tga", gl_StaticSkullkeep + gl_Ornates, 64, 64);
 	Graphics_LoadSkullkeepImagesSet ("SKTileset.tga", gl_SK_TilesSet, 16, 16);
