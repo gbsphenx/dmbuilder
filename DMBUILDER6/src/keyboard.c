@@ -336,7 +336,8 @@ callPlaceNewItem (int keepnew)
 {
 	short ref = placeNewItem (getEditCursor (cursor_NewItem), -1);
 	if (ref != -2)
-	{	pushReferenceCurrentStack (ref);
+	{	
+		pushReferenceCurrentStack (ref);
 		if (getEditCursor (cursor_NewItem) == category_Door)
 			putDoorTile (getEditCursor (cursor_X), getEditCursor (cursor_Y), getEditCursor (cursor_L));
 		getCurrentTile ()->object = 1;

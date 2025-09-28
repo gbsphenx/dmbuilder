@@ -181,7 +181,7 @@ static const char* txt_complete_wall_actuators[] =
 
 static const char* txt_complete_floor_actuators[] = 
 {
-	"Nothing",	"Activated by Everything",	"2?",	"Activated by Party",
+	"Nothing",	"Activated by Everything",	"Activated by Party or Monster",	"Activated by Party",
 	"Activated by Item",	"5?",	"Monster Generator",	"Activated by Monster",
 	"Activated by Item Carried",	"9?",	"10?",	"11?",
 	"12?",	"13?",	"14?",	"15?",
@@ -868,7 +868,7 @@ printAIDetailsInfos ()
 		int iFlagActive = 0;
 		char sFlagActive = '.';
 		int iLocalStepText = iStepText*1.5;
-		x = 1300;
+		x = 1500;
 		setTextProperties (iFntSmaller, .9, .9, 0);
 		if (iCurrentValue & 0x80) sFlagActive = 'X'; else sFlagActive = '.';
 		fontDrawString (x, y, "%c x80: POISON CLOUD", sFlagActive);
@@ -1564,6 +1564,43 @@ converttexttobuffer (char* s)
 	return buffer;
 }
 
+char *
+convertTextToLimitedBuffer (char* s)
+{
+	static char buffer[300];
+	int i, k = 0;
+	int max = (strlen(s)>=42)?42:strlen(s);
+	for (i = 0; i < max; i++)
+	{
+		if (s[i] == '{' || s[i] == '}')
+			buffer[k++] = ' ';
+		else if (s[i] == 0x7f && s[i+1] == 'c')
+		{
+			buffer[k++] = 'T';
+			buffer[k++] = 'H';
+			buffer[k++] = 'E';
+			buffer[k++] = ' ';
+			i++;
+			max-=3;
+		}
+		else if (s[i] == 0x7f && s[i+1] == 'd')
+		{
+			buffer[k++] = 'Y';
+			buffer[k++] = 'O';
+			buffer[k++] = 'U';
+			buffer[k++] = ' ';
+			i++;
+			max-=3;
+		}
+		else
+			buffer[k++] = s[i] + 'A' - 'a';
+
+	}
+	buffer[k] = '\0';
+	return buffer;
+}
+
+
 void
 printSelectedText (reference_p refp)
 {
@@ -1574,12 +1611,12 @@ printSelectedText (reference_p refp)
 	if (SKULLKEEP == 0 && refp->category == category_Text)
 	{	
 		text = (text_p) getItem (refp);
-		fontDrawString (x, y, "TEXT: \"%s\"", converttexttobuffer (getText(text->offset)));
+		fontDrawString (x, y, "TEXT: \"%s\"", convertTextToLimitedBuffer (getText(text->offset)));
 	}
 	else if (SKULLKEEP == 0 && refp->category == category_Scroll)
 	{	
 		scroll_p scroll = (scroll_p) getItem (refp);
-		fontDrawString (x, y, "SCROLL: \"%s\"", converttexttobuffer (getText(scroll->offset)));
+		fontDrawString (x, y, "SCROLL: \"%s\"", convertTextToLimitedBuffer (getText(scroll->offset)));
 	}
 }
 
@@ -1595,7 +1632,7 @@ displaySelectedTextList (unsigned int select)
 		if (t == 0)
 			setTextProperties (textsize, 1, .9, .7);
 		if (select + t >= 0 && select + t < getTextsNumber())
-		fontDrawString (32, winH - (64 + (textsize-1)*(t+24)), "(%s)", converttexttobuffer (getText(select + t)));
+		fontDrawString (32, winH - (64 + (textsize-1)*(t+24)), "(%32s)", convertTextToLimitedBuffer (getText(select + t)));
 	}
 }
 
@@ -2266,6 +2303,32 @@ printMainMapHelpInfo ()
 				setTextProperties (helptfsize, .7, .7, .7);
 				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH AVAILABLE DOOR ORNATES");
 			break;
+			case category_Text:
+				y -= ystep;
+				setTextProperties (helptfsize, .8, 1, 1);
+				fontDrawString (x, y, "TEXT EDITING:");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH AVAILABLE TEXTS");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'A': ACTIVATED");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'S': SILENT TEXT");
+				y -= ystep;
+				if (SKULLKEEP)
+				{
+					setTextProperties (helptfsize, .7, .7, .7);
+					fontDrawString (x, y, "'E': INCREASE EXTENDED USAGE VALUE");
+					y -= ystep;
+					setTextProperties (helptfsize, .7, .7, .7);
+					fontDrawString (x, y, "SHIFT-'E': DECREASE EXTENDED USAGE VALUE");
+					y -= ystep;
+					setTextProperties (helptfsize, .7, .7, .7);
+					fontDrawString (x, y, "'M': CYCLE THROUGH MODE (DM2)");
+				}
+			break;
 			case category_Monster:
 				y -= ystep;
 				setTextProperties (helptfsize, 1, .25, .25);
@@ -2441,6 +2504,14 @@ printMainMapHelpInfo ()
 				y -= ystep;
 				setTextProperties (helptfsize, .7, .7, .7);
 				fontDrawString (x, y, "SHIFT-'E': INCREASE EFFECT TYPE");
+
+	// if monster generator
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'4': DECREASE GENERATOR COOLDOWN BY 16");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "'5': INCREASE GENERATOR COOLDOWN BY 16");
 
 			break;
 /*

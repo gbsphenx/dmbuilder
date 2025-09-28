@@ -6,6 +6,7 @@
 // Text Data
 //------------------------------------------------------------------------------
 
+// a message can have 53 chars per line
 
 #ifndef TEXTS_H
 #define TEXTS_H
