@@ -21,8 +21,8 @@ extern void drawPositionStack (int id, char position, float light);
 extern void drawTargetLine (char x, char y, float size, float pencil, float r, float g, float b, char target);
 
 extern void drawItemSpot (char position, int wall, float r, float g, float b, float light);
-extern void drawStairsArrow (char direction);
-extern void drawDoor (char direction, char button, char opened, char bashed, int type);
+extern void drawStairsArrow (char direction, float light);
+extern void drawDoor (char direction, char button, char opened, char bashed, int type, float light);
 
 extern void drawStartingPosition (char position);
 

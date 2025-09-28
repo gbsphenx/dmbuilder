@@ -180,7 +180,7 @@ float _pal_dm2_doors[][3] =
 
 
 void
-drawDoor (char direction, char button, char opened, char bashed, int type)
+drawDoor (char direction, char button, char opened, char bashed, int type, float light)
 {
 	float rotatey = 0.5;
 	int usecolors = 0;
@@ -224,14 +224,14 @@ drawDoor (char direction, char button, char opened, char bashed, int type)
 		}
 
 		//glColor4f (.7f, .3f, 0.0f,  1.f);
-		glColor4f (door_rgb[0], door_rgb[1], door_rgb[2],  1.f);
+		glColor4f (door_rgb[0]*light, door_rgb[1]*light, door_rgb[2]*light,  1.f);
 		glBegin(GL_LINES);									
 		glVertex2d(0,0);								
 		glVertex2d(0,-tile*scale);								
 		glEnd();
 	}
 	
-	glColor4f (.0f, .0f, 0.0f,  1.f);
+	glColor4f (.0f*light, .0f*light, 0.0f*light,  1.f);
 	glLineWidth(4.0f*__TILE_SCALE__);
 	glBegin(GL_LINES);									
 	glVertex2d(0,0);								
@@ -243,7 +243,7 @@ drawDoor (char direction, char button, char opened, char bashed, int type)
 	if (button) // paint buttons
 	{
 		//glColor4f (1.0f, .0f, 0.0f,  1.f);
-		glColor4f (1.0f, .0f, .0f,  1.f);
+		glColor4f (1.0f*light, .0f*light, .0f*light,  1.f);
 		glLineWidth(2.0f*__TILE_SCALE__);
 		glBegin(GL_LINES);									
 		glVertex2d(tile*scale/8,0);								
@@ -288,11 +288,11 @@ drawGenericArrow (char position, float pencil, float r, float g, float b)
 }
 
 void
-drawStairsArrow (char direction) // up = 1 / down = 0
+drawStairsArrow (char direction, float light) // up = 1 / down = 0
 {
 	static float colors[][3] = { {1,.2,.2}, {.3,1,.2}};
 	static char pos[] = {2, 0};
-	drawGenericArrow (pos[direction], 1.5*__TILE_SCALE__, colors[direction][0], colors[direction][1], colors[direction][1]);
+	drawGenericArrow (pos[direction], 1.5*__TILE_SCALE__, colors[direction][0]*light, colors[direction][1]*light, colors[direction][1]*light);
 }
 
 void

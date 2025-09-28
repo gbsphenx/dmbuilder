@@ -768,7 +768,7 @@ cycleActivatorGeneral (reference_p refp, int step)
 			if (act->type >= 128) act->type = 0;
 			if (step < 0 && act->type >= 18 && act->type <= 126)
 				act->type = 18;
-			else if (step > 0 && act->type >= 18 && act->type <= 126)
+			else if (step > 0 && act->type >= 19 && act->type <= 126)
 				act->type = 127;
 			act->type = (act->type+128)%128;
 		}

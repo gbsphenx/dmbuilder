@@ -74,6 +74,7 @@ int iGLMatrixLevel = 0;
 
 
 int shadowmap = 0; // if set, the entire map has low light
+int shadowmapbar = 0; // if set, only some rows of map have low light
 
 extern int nItems[16];
 
@@ -949,17 +950,28 @@ displayActivatorGfxBar (int wall, int value, float scale)
 	int half = graphisms[wall][1]/2;
 	int max = graphisms[wall][1];
 
-	moveToBottom ();
-	
+	//moveToBottom ();
+	moveToUpperScreen ();
+	moveSize (14.25f, 8.5f, __STD_STACK_SIZE__*scale);
+	drawFrameXY (150*((max<3)?3:max), 180, .8, .8, .8);
 	moveSize (-half, 0, __STD_STACK_SIZE__*scale);
+	
+	// do not display 0 which is "no gfx"
 	for (i = 0; i < max; i++)
 	{
-		drawSizeSquare (graphisms[wall][0] + lists[wall][(i + value - half + max - 1)%max], __STD_STACK_SIZE__*scale, 1.0f);
+		int isnogfx = (lists[wall][(i + value - half + max - 1)%max])?0:1;
+		if (!isnogfx)
+			drawSizeSquare (graphisms[wall][0] + lists[wall][(i + value - half + max - 1)%max], __STD_STACK_SIZE__*scale, 1.0f);
+		else
+			drawFrame (__STD_STACK_SIZE__*scale, .5, .5, .5);
 		moveSize (1, 0, __STD_STACK_SIZE__*scale);
 	}	
-	moveToBottom ();
+//	moveToBottom ();
+	moveToUpperScreen ();
+	moveSize (14.25f, 8.5f, __STD_STACK_SIZE__*scale);
 	drawFrame (__STD_STACK_SIZE__*scale, .5, 1, .5);
-
+	drawFrameLW (__STD_STACK_SIZE__, 1.*globalfsinv, 1.*globalfsinv, 0.25*globalfsinv, 4.f);
+//	drawFrame (__STD_STACK_SIZE__*scale, .5, 1, .5);
 
 }
 
@@ -1060,8 +1072,8 @@ displaySelectionBar (int bank, int value, float scale)
 		{
 			moveToUpperScreen ();
 			moveSize (14.25f, 8.5f, __STD_STACK_SIZE__*scale);
+			drawFrameXY (150*max, 180, .8, .8, .8);
 			moveSize (-half, 0, __STD_STACK_SIZE__*scale);
-			drawFrameXY (100, 100, .9, .9, .7); // does not appear
 			for (i = 0; i < max; i++)
 			{
 				if (bank == bank_Activators)
@@ -1189,7 +1201,7 @@ drawStairs (int m, int x, int y, tile_p tile, float light)
 	// Neighbors tile have to be tested to know on which direction to show the stairs!
 
 	drawPositionTile ((int)(gl_x_Tiles + tile->type), (char)iRotation, light);
-	drawStairsArrow (stairs->leading);	// up = 1 / down = 0
+	drawStairsArrow (stairs->leading, light);	// up = 1 / down = 0
 }
 
 static void
@@ -1275,6 +1287,7 @@ drawStack (char x, char y, unsigned char level)
 		iCurrentStackCount++;
 	}
 
+	shadowmapbar = 0;
 	if (isEditingTile ())
 	{
 		int iEditStackIndex = getEditCursor (cursor_Stack);
@@ -1289,6 +1302,8 @@ drawStack (char x, char y, unsigned char level)
 		fsinv = (double)cos(rad);
 		fsinv = (fsinv/2) + 0.5f;
 		globalfsinv = fsinv;
+
+		shadowmapbar = 1;
 
 		moveToStackUpper ();
 		moveStack ((char) isSecondFunction(), getEditCursor (cursor_Stack));
@@ -1430,12 +1445,14 @@ drawStack (char x, char y, unsigned char level)
 }
 
 static void
-drawObject (char x, char y, unsigned char level, int edittext)
+drawObject (char x, char y, unsigned char level, int edittext, float light)
 {
 	static float lights[] = { 1.0, .5}; /* no shadow / shadow */
 	reference_p refp = getGroundReference (x, y, level);
 	short** currentref = (short **) &refp;
 	int wall = ((getTile (x, y, level))->type == tile_Wall)?1:0;
+
+	lights[0] = 1.0f*light;
 
 	if (!edittext){ /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 	while (**currentref != -2 && **currentref != -1)
@@ -1449,7 +1466,7 @@ drawObject (char x, char y, unsigned char level, int edittext)
 			door_p door = (door_p) getItem (refp);
 			doortype = ((door->type)?getLevels()[getEditCursor(cursor_L)].header.door2:
 									getLevels()[getEditCursor(cursor_L)].header.door1);
-			drawDoor (tile->facing, (char) door->button, (char) !tile->closed, (char) ((tile->function == 1) && tile->closed), doortype);
+			drawDoor (tile->facing, (char) door->button, (char) !tile->closed, (char) ((tile->function == 1) && tile->closed), doortype, light);
 		}
 		
 		if (refp->category == category_Actuator)
@@ -1460,9 +1477,10 @@ drawObject (char x, char y, unsigned char level, int edittext)
 			drawSizeSquare (gl_x_Monsters + ((monster_p) getItem (refp))->type, tile*2.0, lights[shadowmap]);
 		}
 		if (refp->category != category_Door && refp->category != category_Teleport)
-			drawItemSpot ((char) (refp->position), wall, spot_colors[refp->category][0],
-			spot_colors[refp->category][1],
-			spot_colors[refp->category][2], lights[shadowmap]);
+			drawItemSpot ((char) (refp->position), wall, 
+				spot_colors[refp->category][0],
+				spot_colors[refp->category][1],
+				spot_colors[refp->category][2], lights[shadowmap]);
 
 		if (getNumber ((char) refp->category) <= refp->id)
 		{
@@ -1484,7 +1502,10 @@ drawMapObject (unsigned char level, int edittext)
 	{
 		for (i = 0; i < 32; i++)
 		{
-			drawObject (i, j, level, edittext);
+			float light = 1.0f;
+			if (shadowmapbar == 1 && j >= 21 && j <= 24)
+				light = .25;
+			drawObject (i, j, level, edittext, light);
 			move (1, 0);
 		}
 		move (-i, 1);
@@ -1512,6 +1533,9 @@ drawMap (unsigned char level, int edittext)
 				shadowmap == 1)
 				light = .50;
 			if (edittext)
+				light = .25;
+
+			if (shadowmapbar == 1 && j >= 21 && j <= 24)
 				light = .25;
 
 			if (tile->type == tile_Pit)
