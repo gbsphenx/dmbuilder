@@ -296,10 +296,10 @@ drawStairsArrow (char direction, float light) // up = 1 / down = 0
 }
 
 void
-drawStartingPosition (char position)
+drawStartingPosition (char position, float light)
 {
-	drawGenericArrow (position, 1.5*__TILE_SCALE__, .7, .5, .1);
-	drawFrame (tile*scale, .95, .6, .2);
+	drawGenericArrow (position, 1.5*__TILE_SCALE__, .7*light, .5*light, .1*light);
+	drawFrame (tile*scale, .95*light, .6*light, .2*light);
 }
 //------------------------------------------------------------------------------
 

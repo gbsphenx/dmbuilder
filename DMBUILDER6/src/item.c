@@ -763,13 +763,22 @@ cycleActivatorGeneral (reference_p refp, int step)
 		}
 		else if (wall && function == 1)
 		{
+			int wlimit = 18;
+			int whigh = 127;
 			actuator_p act = (actuator_p) getItem (refp);
+
+			if (SKULLKEEP)
+			{
+				wlimit = 73;
+				whigh = 126;
+			}
+
 			act->type += step;
 			if (act->type >= 128) act->type = 0;
-			if (step < 0 && act->type >= 18 && act->type <= 126)
-				act->type = 18;
-			else if (step > 0 && act->type >= 19 && act->type <= 126)
-				act->type = 127;
+			if (step < 0 && act->type >= wlimit && act->type <= (whigh-1))
+				act->type = wlimit;
+			else if (step > 0 && act->type >= (wlimit+1) && act->type <= (whigh-1))
+				act->type = whigh;
 			act->type = (act->type+128)%128;
 		}
 		else if (!wall && function == 1)

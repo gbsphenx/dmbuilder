@@ -244,6 +244,19 @@ static const char* txt_dm2_floor_actuators[] =
 
 };
 
+static float colors_actuator_effect[][3] = {
+	{.5, 1, .5},
+	{ 1, .25, .25},
+	{ 1, 1, .25},
+	{.5, 1, .8},
+
+	{.5, 1, .5},
+	{ 1, .25, .25},
+	{ 1, 1, .25},
+	{.5, .8, 1},
+
+};
+
 static const char* txt_actuator_effect[] = {
 	"ON: OPEN/SET",
 	"ON: CLOSE/CLEAR",
@@ -1830,6 +1843,67 @@ helper_activator_item(int iAbsoluteValue, int* iItemDB, int* iItemIndex)
 
 
 void
+text_frame_actuator_short (reference_p reference, int wall, int x, int y, float l)
+{
+
+	char actuatorname[64];
+	static char* cell[] = { "FLOOR", "WALL"};
+	short* item = getItem (reference);
+	actuator_p act = (actuator_p) item;
+	actuator_effect_p effect = (actuator_effect_p) (item + 1);
+	actuator_target_p target = (actuator_target_p) (item + 2);
+	a_3_shooter_p shooter = (a_3_shooter_p) (item + 2);
+	char type = (act->type == 0x7F)?-1:act->type;
+	int i = 0;
+	int iselftarget = 0;
+	
+	int iStartPosX = x;
+	int iStartPosY = y;
+	char sSelfTarget[16];
+
+	int iActuatorX = 0;
+	int iActuatorY = 0;
+
+	char sOperatesFacing[16];
+
+	int iActivatorItemDB = 0;
+	int iActivatorItemIndex = 0;
+
+	memset(sSelfTarget, 0, 16);
+	memset(sOperatesFacing, 0, 16);
+
+	x = iInfoX;
+	y = (winH - iInfoYNeg) - (y*__STD_STACK_SIZE__/2);
+
+	if (reference->category == category_Actuator)
+	{
+		//--- For DM2 item activator, it is better to know which category/item is required along the absolute value.
+		helper_activator_item(act->value, &iActivatorItemDB, &iActivatorItemIndex);
+
+
+		/// IDENTITY PART
+		setTextProperties (iInfoFntSize, 1*l, 1*l, .65*l);
+		sprintf(actuatorname, get_secured_actuator_name(wall, type));
+		//fontDrawString (x, y,"%s Actuator: (%d) %s", cell[wall], type, wall?txt_act_walls[type]:txt_act_floors[type]);
+		fontDrawString (x, y,"%s ACTUATOR:", cell[wall]);
+		setTextProperties (iInfoFntSize, 1*l, 1*l, .65*l);
+		y -= iInfoFntSize;
+		fontDrawString (x, y,"TYPE : %02X (%02d): %s", type, type, actuatorname);
+		setTextProperties (iInfoFntSize, .8*l, .8*l, .4*l);
+		y -= iInfoFntSize;
+		if (SKULLKEEP)
+			fontDrawString (x, y,"VALUE: %02X (%02d) [DM2]: <%01X|%02X>", act->value, act->value, iActivatorItemDB, iActivatorItemIndex);
+		else
+			fontDrawString (x, y,"VALUE: %02X (%02d)", act->value, act->value);
+		y -= iInfoFntSize;
+		setTextProperties (iInfoFntSize, colors_actuator_effect[effect->effect][0]*l, colors_actuator_effect[effect->effect][1]*l, colors_actuator_effect[effect->effect][2]*l);
+		fontDrawString (x, y, "EFFECT: %02X - %s", effect->effect, txt_actuator_effect[effect->effect]);
+
+	}
+}
+
+
+void
 text_frame_actuator (reference_p reference, int wall, int x, int y, float l)
 {
 	char actuatorname[64];
@@ -1911,7 +1985,10 @@ text_frame_actuator (reference_p reference, int wall, int x, int y, float l)
 	fontDrawString (x, y,"TYPE : %02X (%02d): %s", type, type, actuatorname);
 	setTextProperties (iInfoFntSize, .8, .8, .4);
 	y -= iInfoFntSize;
-	fontDrawString (x, y,"VALUE: %02X (%02d) [DM2]: <%01X|%02X>", act->value, act->value, iActivatorItemDB, iActivatorItemIndex);
+	if (SKULLKEEP)
+		fontDrawString (x, y,"VALUE: %02X (%02d) [DM2]: <%01X|%02X>", act->value, act->value, iActivatorItemDB, iActivatorItemIndex);
+	else
+		fontDrawString (x, y,"VALUE: %02X (%02d)", act->value, act->value);
 	y -= iInfoFntSize;
 
 	if (act->type == actuator_wall_trigger) {
@@ -1938,7 +2015,8 @@ text_frame_actuator (reference_p reference, int wall, int x, int y, float l)
 	setTextProperties (iInfoFntSize, .4, .8, .4);
 	fontDrawString (x, y, "OPERATES ONCE: %d", effect->once);
 	y -= iInfoFntSize;
-	setTextProperties (iInfoFntSize, .4, .8, .4);
+	//setTextProperties (iInfoFntSize, .4, .8, .4);
+	setTextProperties (iInfoFntSize, colors_actuator_effect[effect->effect][0], colors_actuator_effect[effect->effect][1], colors_actuator_effect[effect->effect][2]);
 	fontDrawString (x, y, "EFFECT: %02X - %s", effect->effect, txt_actuator_effect[effect->effect]);
 	y -= iInfoFntSize;
 	setTextProperties (iInfoFntSize, .4, .8, .4);
@@ -2215,7 +2293,7 @@ printMainMapHelpInfo ()
 	int y = basey;
 	int ystep = helptfsize+2;
 
-	if (iCurrentStackCount > 0)
+	if (iCurrentStackCount > 8)
 		x += 192;
 
 	setTextProperties (helptfsize, 1, 1, 1);

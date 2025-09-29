@@ -203,6 +203,9 @@ void loadGraphics ()
 	Graphics_LoadSkullkeepImagesSet ("DMWActuators.tga", gl_WActuators, 64, 64);
 	Graphics_LoadSkullkeepImagesSet ("DMFActuators.tga", gl_FActuators, 64, 64);
 
+	Graphics_LoadSkullkeepImagesSet ("SKWActuators.tga", gl_StaticSkullkeep + gl_WActuators, 64, 64);
+	Graphics_LoadSkullkeepImagesSet ("SKFActuators.tga", gl_StaticSkullkeep + gl_FActuators, 64, 64);
+
 	Graphics_LoadSkullkeepImagesSet ("SKDoors.tga", gl_StaticSkullkeep + gl_Doors, 64, 64);
 	Graphics_LoadSkullkeepImagesSet ("SKDoorOrnates.tga", gl_StaticSkullkeep + gl_Ornates, 64, 64);
 	Graphics_LoadSkullkeepImagesSet ("SKTileset.tga", gl_SK_TilesSet, 16, 16);
@@ -215,8 +218,6 @@ void loadGraphics ()
 	//Graphics_LoadSkullkeepImagesSet ("SKPotions.tga", gl_StaticSkullkeep + gl_Potions, 16, 16);
 	Graphics_LoadSkullkeepImagesSet ("SKContainers.tga", gl_StaticSkullkeep + gl_Containers, 16, 16);
 //	Graphics_LoadSkullkeepImagesSet ("SKWActuators.tga", gl_StaticSkullkeep + gl_WActuators, 64, 64);
-	Graphics_LoadSkullkeepImagesSet ("DMWActuators.tga", gl_StaticSkullkeep + gl_WActuators, 64, 64);
-	Graphics_LoadSkullkeepImagesSet ("DMFActuators.tga", gl_StaticSkullkeep + gl_FActuators, 64, 64);
 	Graphics_LoadSkullkeepImagesSet ("TELOSObjects.tga", gl_StaticTELOS + gl_Monsters, 64, 64);
 	//Graphics_LoadSkullkeepImagesSet ("CSBChampions.tga", gl_StaticSkullkeep + gl_Champions, 32, 32);
 	Graphics_LoadSkullkeepItems ("SK2Weapons.tga", 5);

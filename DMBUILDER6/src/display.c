@@ -485,7 +485,7 @@ displaySelectNewItem ()
 //	Specific Activator displays
 //------------------------------------------------------------------------------
 static void // draw object on tile
-drawActivator (reference_p refp, int wall, unsigned char level)
+drawActivator (reference_p refp, int wall, unsigned char level, float light)
 {
 	if (!wall)
 	{
@@ -500,14 +500,14 @@ drawActivator (reference_p refp, int wall, unsigned char level)
 				gl_offset = gl_StaticSkullkeep + gl_SpecialTiles;
 			else if (SKULLKEEP && THERONSQUEST)
 				gl_offset = gl_Tiles + xtile_FloorsGFX;
-			drawBasicTile (gl_offset + ornate_gfx, 1.0f);
+			drawBasicTile (gl_offset + ornate_gfx, 1.0f*light);
 //			drawBasicTile (gl_Tiles + xtile_FloorsGFX + 
 //			(getLevels()[level]).floors[effect->graphism-1], 1.0f);
 		}
 		if (type->type == actuator_floor_monster_generator)
 		{	
 			glEnable (GL_BLEND);
-			drawSizeSquare (gl_x_Monsters + type->value, tile*1.5, 1.0f);
+			drawSizeSquare (gl_x_Monsters + type->value, tile*1.5, 1.0f*light);
 		}
 	}
 }
@@ -657,6 +657,10 @@ displayActivatorObject (reference_p refp, float light)
 
 	int wall = ((getTile (getEditCursor(cursor_X), getEditCursor(cursor_Y), getEditCursor(cursor_L)))->type == tile_Wall)?1:0;
 	
+	int iGLSkullkeepOffset = 0;
+	if (SKULLKEEP)
+		iGLSkullkeepOffset = gl_StaticSkullkeep;
+
 	xact = &xActuatorTable[iactid];
 
 	if (wall)
@@ -665,7 +669,7 @@ displayActivatorObject (reference_p refp, float light)
 			drawPositionStack (gl_x_Walls + (getLevels ()[getEditCursor(cursor_L)]).walls[effect->graphism-1], 0, 1.0f);
 		moveStack (1, 0);
 		// display actuator metatype gfx
-		drawPositionStack (gl_StaticSkullkeep + gl_WActuators + type->type, 0, (inactive?0.5f:1.0f));
+		drawPositionStack (iGLSkullkeepOffset + gl_WActuators + type->type, 0, (inactive?0.5f:1.0f));
 		moveStack (1, 0);
 		switch (type->type)
 		{
@@ -722,7 +726,7 @@ displayActivatorObject (reference_p refp, float light)
 			drawPositionStack (gl_x_Floors + (getLevels ()[getEditCursor(cursor_L)]).floors[effect->graphism-1], 0, 1.0f);
 		moveStack (1, 0);
 		// display actuator metatype gfx
-		drawPositionStack (gl_StaticSkullkeep + gl_FActuators + type->type, 0, (inactive?0.5f:1.0f));
+		drawPositionStack (iGLSkullkeepOffset + gl_FActuators + type->type, 0, (inactive?0.5f:1.0f));
 		moveStack (1, 0);
 		switch (type->type)
 		{
@@ -1030,6 +1034,10 @@ displaySelectionBar (int bank, int value, float scale)
 		graphisms[9][1] = dt_Misc_Max;
 
 		graphisms[13][1] = dt_Containers_Max;
+
+		graphisms[14][1] = 73;
+		graphisms[15][1] = 128;
+
 	}
 	else if (TELOS)
 	{
@@ -1044,6 +1052,10 @@ displaySelectionBar (int bank, int value, float scale)
 		graphisms[9][1] = dt_Misc_Max;
 
 		graphisms[13][1] = dt_Containers_Max;
+
+		graphisms[14][1] = 73;
+		graphisms[15][1] = 128;
+
 	}
 	else
 	{
@@ -1057,6 +1069,9 @@ displaySelectionBar (int bank, int value, float scale)
 		graphisms[9][1] = misc_Max;
 
 		graphisms[13][1] = 0;
+
+		graphisms[14][1] = 9;
+		graphisms[15][1] = 128;
 	}
 
 
@@ -1226,6 +1241,7 @@ drawStack (char x, char y, unsigned char level)
 {
 	int iStackIndex = 0;
 	float fLightScale = 1.f;	// when some selection, light will be low to allow other panels over
+	float fLightText = 1.f;
 	static displayObject objectStats[] =
 	{ 
 		displayDoorObject, displayTeleportObject, displayTextObject, displayActivatorObject,
@@ -1236,6 +1252,11 @@ drawStack (char x, char y, unsigned char level)
 	reference_p refp = getGroundReference (x, y, level);
 	short** currentref = (short **) &refp;
 	int wall = ((getTile (x, y, level))->type == tile_Wall)?1:0;
+	int iStackEdit = getEditCursor (cursor_Stack);
+	int	actselect = -1;
+	reference_p selact = (getStackReference (getEditCursor (cursor_Stack))); // this to know if current selection is an actuator
+	if (selact->category == category_Actuator)
+		 actselect = isEditingTile()?iStackEdit:-1;
 
 	iCurrentStackCount = 0;
 	moveToStackUpper ();
@@ -1243,10 +1264,28 @@ drawStack (char x, char y, unsigned char level)
 	while (**currentref != -2 && **currentref != -1)
 	{
 		short *item = getItem(refp);
+		// if actuator is selected, the text takes about 5 stack slots, then the other items should have their text disabled
+		
+
+		fLightScale = 1.0f;
+		fLightText = 1.0f;
+
+		if (actselect >= 0 && iStackIndex <= 4)
+			fLightText = 0.01f;
+
 		if (iStackIndex >= 5 && isSelectingNewItem ())	// so that new panel is readable
 			fLightScale = 0.12f;
-		//else if (iStackIndex >= 8) // so that online help panel is readable
-		//	fLightScale = 0.12f;
+		else if (iStackIndex >= 7 && isEditingTile ())
+		{
+			fLightScale = 0.12f;
+			fLightText = 0.12f;
+		}
+		else if (iStackIndex >= 7) // so that online help panel is readable
+			fLightText = 0.12f;
+		if (actselect == 1 && iStackIndex < 5)
+			fLightText = 0.01f;
+
+
 		moveStack (-2, 0);
 		//printf("Stack = %d / X= %d / Y=%d\n", iStackIndex, iGLVirtualX, iGLVirtualY);
 		setTextProperties (12, fLightScale, fLightScale, fLightScale);
@@ -1257,21 +1296,23 @@ drawStack (char x, char y, unsigned char level)
 		objectStats[refp->category](refp, fLightScale);
 
 		if (refp->category == category_Weapon)
-			text_frame_weapon (refp, 0, iStackIndex, fLightScale);
+			text_frame_weapon (refp, 0, iStackIndex, fLightText);
 		else if (refp->category == category_Clothing)
-			text_frame_clothing (refp, 0, iStackIndex, fLightScale);
+			text_frame_clothing (refp, 0, iStackIndex, fLightText);
 		else if (refp->category == category_Potion)
-			text_frame_potion (refp, 0, iStackIndex, fLightScale);
+			text_frame_potion (refp, 0, iStackIndex, fLightText);
 		else if (refp->category == category_Chest)
-			text_frame_container (refp, 0, iStackIndex, fLightScale);
+			text_frame_container (refp, 0, iStackIndex, fLightText);
 		else if (refp->category == category_Miscs)
-			text_frame_misc (refp, 0, iStackIndex, fLightScale);
+			text_frame_misc (refp, 0, iStackIndex, fLightText);
 		else if (refp->category == category_Scroll)
-			text_frame_scroll (refp, 0, iStackIndex, fLightScale);
+			text_frame_scroll (refp, 0, iStackIndex, fLightText);
 		else if (refp->category == category_Text)
-			text_frame_text (refp, 0, iStackIndex, fLightScale);
+			text_frame_text (refp, 0, iStackIndex, fLightText);
 		else if (refp->category == category_Monster)
-			text_frame_monster (refp, 0, iStackIndex, fLightScale);
+			text_frame_monster (refp, 0, iStackIndex, fLightText);
+		else if (refp->category == category_Actuator)
+			text_frame_actuator_short (refp, wall, 0, iStackIndex, fLightText);
 
 		else if (refp->category == category_Text)
 		{
@@ -1470,7 +1511,7 @@ drawObject (char x, char y, unsigned char level, int edittext, float light)
 		}
 		
 		if (refp->category == category_Actuator)
-			drawActivator (refp, wall, level);
+			drawActivator (refp, wall, level, light);
 		if (refp->category == category_Monster)
 		{	
 			glEnable (GL_BLEND);
@@ -1603,7 +1644,7 @@ drawMapHelpInfo ()
 	//--- bottom right, to display online help
 	moveToUpperScreen ();
 
-	if (iCurrentStackCount <= 0)
+	if (iCurrentStackCount <= 8)
 	{
 		moveSize (52, 32, 48);
 		drawFrameXY (1800, 700, .9, .9, .7);
@@ -1713,9 +1754,14 @@ drawTargetEditCursor (int stat)
 static void
 drawStartingCursor ()
 {
+	float light = 1.0f;
 	moveToUpperMap ();
 	move (getDungeon()->x_start, getDungeon()->y_start);
-	drawStartingPosition ((char) getDungeon()->f_start);
+
+	if (shadowmapbar == 1 && getDungeon()->y_start >= 21 && getDungeon()->y_start <= 24)
+			light = .25;
+
+	drawStartingPosition ((char) getDungeon()->f_start, light);
 }
 
 //------------------------------------------------------------------------------
@@ -2179,6 +2225,7 @@ displayActuatorsLists ()
 	int oldsize = size;
 	int iNbPerCol = 16;
 	int iNbCols = 16;
+	int iGLSkullkeepOffset = 0;
 	tCompanionActuator* xact = NULL;
 
 	ref.category = category_Actuator;
@@ -2187,6 +2234,9 @@ displayActuatorsLists ()
 	iNbTotalItems = iNbActuators;
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
 	outputTextLineAt (200, winH-40, "ALL ACTUATORS LIST : #%03d ITEMS", iNbActuators);
+
+	if (SKULLKEEP)
+		iGLSkullkeepOffset = gl_StaticSkullkeep;
 
 	for (id = 0; id < 128; id++)
 		iCounterPerType[id] = 0;
@@ -2215,7 +2265,7 @@ displayActuatorsLists ()
 			{
 				item = (actuator_p) getItem (&ref);
 				iCounterPerType[item->type]++;
-				drawSizeSquare (gl_StaticSkullkeep + gl_WActuators + item->type, size, ((ref.id>iNbActuators)?.01f:1.0f));
+				drawSizeSquare (iGLSkullkeepOffset + gl_WActuators + item->type, size, ((ref.id>iNbActuators)?.01f:1.0f));
 
 				//--- Shadowed text
 				iAdjustX = -iFntSize;
@@ -2274,7 +2324,7 @@ displayActuatorsLists ()
 		{
 			moveSize (3, -16, size);
 		}
-		drawSizeSquare (gl_StaticSkullkeep + gl_WActuators + id, size, 1.0f);
+		drawSizeSquare (iGLSkullkeepOffset + gl_WActuators + id, size, 1.0f);
 		moveSize (1, 0, size);
 		if (iCounterPerType[id] == 0)
 			setTextProperties (10, .4, .4, .4);
@@ -2540,9 +2590,10 @@ redrawScreen ()
 			drawMapHelpInfo ();
 			{
 				reference_p refp = getStackReference (getEditCursor (cursor_Stack));
+
 				if (refp->category == category_Text || refp->category == category_Scroll)
 					printSelectedText (refp);
-				else if (refp->category == category_Actuator){
+				else if (refp->category == category_Actuator && isEditingTile ()){
 				//	printActivator (refp, (getCurrentTile ()->type == tile_Wall));
 					text_frame_actuator (refp, (getCurrentTile ()->type == tile_Wall), 0, 0, 1);
 				}

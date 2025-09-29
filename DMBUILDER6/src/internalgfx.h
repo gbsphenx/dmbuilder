@@ -24,7 +24,7 @@ extern void drawItemSpot (char position, int wall, float r, float g, float b, fl
 extern void drawStairsArrow (char direction, float light);
 extern void drawDoor (char direction, char button, char opened, char bashed, int type, float light);
 
-extern void drawStartingPosition (char position);
+extern void drawStartingPosition (char position, float light);
 
 extern void drawMaskedTexture (int id, int mask, char facing, float size, float light);
 
