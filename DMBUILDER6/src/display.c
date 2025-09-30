@@ -1254,6 +1254,7 @@ drawStack (char x, char y, unsigned char level)
 	int wall = ((getTile (x, y, level))->type == tile_Wall)?1:0;
 	int iStackEdit = getEditCursor (cursor_Stack);
 	int	actselect = -1;
+	int iStackStartOffset = 0;
 	reference_p selact = (getStackReference (getEditCursor (cursor_Stack))); // this to know if current selection is an actuator
 	if (selact->category == category_Actuator)
 		 actselect = isEditingTile()?iStackEdit:-1;
@@ -1266,6 +1267,20 @@ drawStack (char x, char y, unsigned char level)
 		moveStack (9, 2.15);
 		drawFrameXY (1350, 650, .9, .9, .7);
 		moveStack (-9, -2.15);
+	}
+	if (iStackEdit > 4)
+	{
+		iStackStartOffset = iStackEdit - 4;
+	}
+
+	if (iStackStartOffset > 0)
+	{
+		int imoveref = iStackStartOffset;
+		while (imoveref > 0 && **currentref != -2 && **currentref != -1)
+		{
+			refp = getNextItem (refp);
+			imoveref--;
+		}
 	}
 
 	while (**currentref != -2 && **currentref != -1)
@@ -1296,7 +1311,7 @@ drawStack (char x, char y, unsigned char level)
 		moveStack (-2, 0);
 		//printf("Stack = %d / X= %d / Y=%d\n", iStackIndex, iGLVirtualX, iGLVirtualY);
 		setTextProperties (12, fLightScale, fLightScale, fLightScale);
-		fontDrawString (iGLVirtualX, iGLVirtualY, "%02d", iStackIndex);
+		fontDrawString (iGLVirtualX, iGLVirtualY, "%02d", iStackIndex + iStackStartOffset);
 		moveStack (1, 0);
 		drawPositionStack (gl_Gui + wall, (char) refp->position, fLightScale);
 		moveStack (1, 0);
@@ -1334,7 +1349,7 @@ drawStack (char x, char y, unsigned char level)
 		iStackIndex++;
 		iCurrentStackCount++;
 	}
-	iGlobalStackSize = iCurrentStackCount;
+	iGlobalStackSize = iCurrentStackCount + iStackStartOffset;
 
 	shadowmapbar = 0;
 	if (isEditingTile ())
@@ -1355,7 +1370,7 @@ drawStack (char x, char y, unsigned char level)
 		shadowmapbar = 1;
 
 		moveToStackUpper ();
-		moveStack ((char) isSecondFunction(), getEditCursor (cursor_Stack));
+		moveStack ((char) isSecondFunction(), getEditCursor (cursor_Stack) - iStackStartOffset);
 		drawFrameLW (__STD_STACK_SIZE__, 1, 1, .1, 3.f);
 		drawFrameLW (__STD_STACK_SIZE__, -.25*fsinv, 1.*fsinv, 1.*fsinv, 4.f);
 		if (selected->category == category_Actuator)
@@ -1440,6 +1455,7 @@ drawStack (char x, char y, unsigned char level)
 		}
 		else if (selected->category == category_Teleport)
 			text_frame_teleport (selected, 0, iEditStackIndex, fLightScale);
+		/*
 		else if (selected->category == category_Weapon)
 		{
 			text_frame_weapon (selected, 0, iEditStackIndex, fLightScale);
@@ -1451,13 +1467,13 @@ drawStack (char x, char y, unsigned char level)
 			text_frame_clothing (selected, 0, iEditStackIndex, fLightScale);
 			displaySelectionBar (conversion[selected->category],
 			getItemType[selected->category] (item), 1);
-		}/*
+		}
 		else if (selected->category == category_Scroll)
 		{
 			text_frame_potion (selected, 0, 0);
 			displaySelectionBar (conversion[selected->category],
 			getItemType[selected->category] (item), 1);
-		}*/
+		}
 		else if (selected->category == category_Potion)
 		{
 			text_frame_potion (selected, 0, iEditStackIndex, fLightScale);
@@ -1481,7 +1497,7 @@ drawStack (char x, char y, unsigned char level)
 			text_frame_monster (selected, 0, iEditStackIndex, fLightScale);
 			displaySelectionBar (conversion[selected->category],
 			getItemType[selected->category] (item), 1);
-		}
+		}*/
 		else if (selected->category == category_Scroll)
 		{	
 			displaySelectedTextList ( ((scroll_p) (item))->offset);
