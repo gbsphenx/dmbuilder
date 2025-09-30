@@ -1083,44 +1083,86 @@ printDungeonSpecificationsInfo ()
 void
 printGeneralHelpInfo ()
 {
-	int iLocalFntSize = 15;
-	int y = winH-iStdFntSize;
+	int iLocalFntSize = 24;
+	int iFntSizeBigTitle = 32;
+	int iSmallerFntSize = 18;
+	int y = winH-40;
 	int iStepText = iLocalFntSize+2;
+	int x = 100;
+	float ct[3] = { .8, .8, .8}; // main color text
+	float st[3] = { .5, .5, .6}; // sub text
 
-	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "DMBUILDER GENERAL HELP");
+	setTextProperties (iFntSizeBigTitle, .5, 1, .8);
+	outputTextLineAt (x, y, "F1:    DMBUILDER GENERAL HELP");
 	y -= iStepText;
-	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "----------------------\n");
+	setTextProperties (iFntSizeBigTitle, .5, 1, .8);
+	fontDrawString (x, y,   "-----------------------------\n");
+	x = 22;
 
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F1 : General Help (this screen)\n");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F2 : Level Properties\n");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F3 : List of Items\n");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F4 : List of Creatures\n");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F5 : List of Actuators\n");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F6 : Main Header Dungeon Properties\n");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F7 : DM2 AI Table Values\n");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F8 : DM2 AI Table Values\n");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F9 : Invoke load dungeon screen");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F10 : Export text to file");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F11 : Import text to file");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "F12 : Invoke save dungeon screen");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "ESC : Back to main map editor screen");
-	y -= iStepText;	setTextProperties (iStdFntSize, 1, 1, 1);
-	fontDrawString (22, y, "How to quit DMBuilder ? close the window.\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
+	fontDrawString (x, y, "ESC : BACK TO MAIN MAP EDITOR SCREEN");
+	y -= iStepText; setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "MOST OF THE DUNGEON EDITING IS DONE WITHIN THE MAIN MAP EDITOR.\n");
+	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "YOU CAN EDIT MAPS LAYOUTS AND ITEMS/OBJECTS FROM THERE.\n");
+	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "THE ONLINE HELP PANEL GIVES MORE INFORMATION ABOUT THE KEYS USAGE THERE.\n");
+	y -= iStepText;
+	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
+	fontDrawString (x, y, " F1 : GENERAL HELP (THIS SCREEN)\n");
+	y -= iStepText;
+	y -= iStepText; setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
+	fontDrawString (x, y, " F2 : MAP LEVEL PROPERTIES\n");
+	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "EDIT THE GRAPHICS (DECORATIONS / CREATURES) USED IN THE MAPS\n");
+
+	y -= iStepText;
+	y -= iStepText; setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
+	fontDrawString (x, y, " F3 : LIST OF ITEMS\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
+	fontDrawString (x, y, " F4 : LIST OF CREATURES\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
+	fontDrawString (x, y, " F6 : MAIN DUNGEON HEADER PROPERTIES\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
+	fontDrawString (x, y, " F7 : DM2 \"AI\" TABLE VALUES\n");
+	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
+	fontDrawString (x, y, "F10 : TEXT EDITOR SCREEN");
+	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
+	fontDrawString (x, y, "F11 : LIST OF ACTUATORS");
+	y -= iStepText;
+	y -= iStepText;	setTextProperties (iStdFntSize, 1, ct[1], ct[2]);
+	fontDrawString (x, y, " F8 : CHANGE DUNGEON CONTEXT\n");
+	y -= iStepText; setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "DMBUILDER ALLOWS THE EDITING OF TWO DIFFERENT DUNGEONS AT ONCE.\n");
+	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "HIT F8 IN THE MAIN SCREEN TO SWITCH BETWEEN YOUR FIRST OR SECOND DUNGEON.\n");
+	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "FOR EXAMPLE, LOAD A DUNGEON, HIT F8, THEN LOAD ANOTHER DUNGEON.\n");
+
+
+	y -= iStepText;	
+	y -= iStepText;	setTextProperties (iStdFntSize, .5, .8, 1);
+	fontDrawString (x, y, " F9 : LOAD DUNGEON SCREEN");
+	y -= iStepText;	setTextProperties (iStdFntSize, .5, .8, 1);
+	fontDrawString (x, y, "F12 : SAVE DUNGEON SCREEN");
+	y -= iStepText;
+
+	y -= iStepText;	setTextProperties (iStdFntSize, .8, .2, .2);
+	fontDrawString (x, y, " F5 : PLAY CURRENT EDITED DUNGEON\n");
+	y -= iStepText; setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "YOU CAN TEST RIGHT AWAY YOUR DUNGEON BY HITTING F5.\n");
+	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "THIS WILL START EITHER DM1 OR DM2 DEPENDING ON YOUR DUNGEON. (IT RUNS DOSBOX FOR DM PC VERSIONS)\n");
+	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "BEFOREHAND YOU NEED TO SETUP PROPERLY THE FOLDER XDM1PCDOS AND XDM2PCDOS.\n");
+	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "JUST COPY YOUR DM-PC CONTENTS INTO XDM1PCDOS.\n");
+	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
+	fontDrawString (x, y, "AND YOUR DM2-PC CONTENTS INTO XDM2PCDOS.\n");
+
+	y -= iStepText;
+	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
+	fontDrawString (x, y, "HOW TO EXIT DMBUILDER ? JUST CLOSE THE WINDOW.\n");
 }
 
 void

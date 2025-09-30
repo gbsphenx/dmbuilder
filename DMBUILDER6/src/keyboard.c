@@ -254,8 +254,13 @@ Call_LoadDungeon (char* dungeonname)
 
 	if (SKULLKEEP)
 	{
-		loadMusicList("SONGLIST.DAT");
-		SkullExe_Load(&xSkullExe, "SKDMCD\\SKULL_PCDOS.EXE");
+#ifndef __LINUX__
+		loadMusicList("XDM2PCDOS\\DATA\\SONGLIST.DAT");
+		SkullExe_Load(&xSkullExe, "XDM2PCDOS\\SKULL.EXE");
+#else
+		loadMusicList("XDM2PCDOS/DATA/SONGLIST.DAT");
+		SkullExe_Load(&xSkullExe, "XDM2PCDOS/SKULL.EXE");
+#endif
 	}
 
 }
@@ -282,9 +287,9 @@ callSaveDungeon ()
 	saveDungeonData (fulldungeonname);
 	if (SKULLKEEP)
 #ifndef __LINUX__
-		saveMusicList("SKDMCD\\DATA\\SONGLIST.DAT");
+		saveMusicList("XDM2PCDOS\\DATA\\SONGLIST.DAT");
 #else
-		saveMusicList("SKDMCD/DATA/SONGLIST.DAT");
+		saveMusicList("XDM2PCDOS/DATA/SONGLIST.DAT");
 #endif
 
 }
@@ -1033,7 +1038,8 @@ void arrow_keys (int a_keys, int x, int y)
 			setScreen (screen_LoadFile);
 			break;
 		case GLUT_KEY_F10: exportText (); break;
-		case GLUT_KEY_F11: importText (); break;
+		//case GLUT_KEY_F11: importText (); break;
+		case GLUT_KEY_F11: setScreen (screen_ListsActuators); break;
 		case GLUT_KEY_F12: 
 			updateFileNames ();
 			setScreen (screen_SaveFile);
