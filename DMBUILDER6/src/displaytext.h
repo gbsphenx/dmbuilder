@@ -11,6 +11,8 @@
 
 #include <reference.h>
 
+extern int iGlobalStackSize;
+
 extern void loadTextFont ();
 
 extern void printGeneralHelpInfo ();

@@ -666,10 +666,10 @@ displayActivatorObject (reference_p refp, float light)
 	if (wall)
 	{
 		if (effect->graphism != 0)
-			drawPositionStack (gl_x_Walls + (getLevels ()[getEditCursor(cursor_L)]).walls[effect->graphism-1], 0, 1.0f);
+			drawPositionStack (gl_x_Walls + (getLevels ()[getEditCursor(cursor_L)]).walls[effect->graphism-1], 0, 1.0f*light);
 		moveStack (1, 0);
 		// display actuator metatype gfx
-		drawPositionStack (iGLSkullkeepOffset + gl_WActuators + type->type, 0, (inactive?0.5f:1.0f));
+		drawPositionStack (iGLSkullkeepOffset + gl_WActuators + type->type, 0, (inactive?0.5f*light:1.0f*light));
 		moveStack (1, 0);
 		switch (type->type)
 		{
@@ -687,18 +687,18 @@ displayActivatorObject (reference_p refp, float light)
 			case actuator_dm2_wall_item_generator:
 			case actuator_dm2_wall_alcove_item:
 			case actuator_dm2_item_capture_from_creature:
-				drawPositionStack (gfx_activation_items[type->value], 0, 1.0f);
+				drawPositionStack (gfx_activation_items[type->value], 0, 1.0f*light);
 				break;
 			case actuator_wall_spell_shooter:
 			case actuator_wall_double_spell_shooter:
-				drawPositionStack (gl_Spells + type->value, 0, 1.0f);
+				drawPositionStack (gl_Spells + type->value, 0, 1.0f*light);
 				break;
 			case actuator_dm2_wall_monster_generator:
-				drawPositionStack (gl_x_Monsters + type->value, 0, 1.0f);
+				drawPositionStack (gl_x_Monsters + type->value, 0, 1.0f*light);
 				break;
 			case actuator_dm2_wall_champion_cell: // 0x7E DM2 champion cell
 			case actuator_wall_champion_mirror: // 0x7F actuator_wall_champion_mirror
-				drawPositionStack (gl_x_Portraits + type->value, 0, 1.0f);
+				drawPositionStack (gl_x_Portraits + type->value, 0, 1.0f*light);
 				break;
 		}
 		// display actuator metatype gfx
@@ -723,26 +723,26 @@ displayActivatorObject (reference_p refp, float light)
 	else
 	{
 		if (effect->graphism != 0)
-			drawPositionStack (gl_x_Floors + (getLevels ()[getEditCursor(cursor_L)]).floors[effect->graphism-1], 0, 1.0f);
+			drawPositionStack (gl_x_Floors + (getLevels ()[getEditCursor(cursor_L)]).floors[effect->graphism-1], 0, 1.0f*light);
 		moveStack (1, 0);
 		// display actuator metatype gfx
-		drawPositionStack (iGLSkullkeepOffset + gl_FActuators + type->type, 0, (inactive?0.5f:1.0f));
+		drawPositionStack (iGLSkullkeepOffset + gl_FActuators + type->type, 0, (inactive?0.5f*light:1.0f*light));
 		moveStack (1, 0);
 		switch (type->type)
 		{
 			case actuator_floor_pad_item:
 			case actuator_floor_carried_item:
 			case actuator_dm2_item_capture_from_creature:
-				drawPositionStack (gfx_activation_items[type->value], 0, 1.0f);
+				drawPositionStack (gfx_activation_items[type->value], 0, 1.0f*light);
 				break;
 			case actuator_floor_monster_generator:
-				drawPositionStack (gl_x_Monsters + type->value, 0, 1.0f);
+				drawPositionStack (gl_x_Monsters + type->value, 0, 1.0f*light);
 				break;
 		}
 
 	}
 	moveStack (1, 0);
-	drawPositionStack (gl_Gui + gui_Sound, 0, 0.4 + 0.6*effect->sound);
+	drawPositionStack (gl_Gui + gui_Sound, 0, (0.4 + 0.6*effect->sound)*light);
 	moveStack (-1, 0);
 	if	(!isEditingTile() ||
 			(isEditingTile() &&
@@ -1261,6 +1261,13 @@ drawStack (char x, char y, unsigned char level)
 	iCurrentStackCount = 0;
 	moveToStackUpper ();
 
+	if (actselect >= 0) // draw frame for the actuator text panel
+	{
+		moveStack (9, 2.15);
+		drawFrameXY (1350, 650, .9, .9, .7);
+		moveStack (-9, -2.15);
+	}
+
 	while (**currentref != -2 && **currentref != -1)
 	{
 		short *item = getItem(refp);
@@ -1275,7 +1282,7 @@ drawStack (char x, char y, unsigned char level)
 
 		if (iStackIndex >= 5 && isSelectingNewItem ())	// so that new panel is readable
 			fLightScale = 0.12f;
-		else if (iStackIndex >= 7 && isEditingTile ())
+		else if (isEditingTile () && iStackIndex >= 7 && iStackIndex <= 8)
 		{
 			fLightScale = 0.12f;
 			fLightText = 0.12f;
@@ -1327,6 +1334,7 @@ drawStack (char x, char y, unsigned char level)
 		iStackIndex++;
 		iCurrentStackCount++;
 	}
+	iGlobalStackSize = iCurrentStackCount;
 
 	shadowmapbar = 0;
 	if (isEditingTile ())

@@ -326,6 +326,8 @@ char **txt_act_floors = NULL;
 
 //------------------------------------------------------------------------------
 
+int iGlobalStackSize = 0;
+
 //------------------------------------------------------------------------------
 
 int txtX, txtY;
@@ -575,7 +577,10 @@ printTileValue ()
 	tile_stairs_p stairs = (tile_stairs_p) tile;
 
 	setTextProperties (17, .5, .7, 1);
-	fontDrawString (iTileInfo_OffsetX, winH-iTileInfo_OffsetY, "TILE: (%02X)", *tile);
+	if (iGlobalStackSize > 0)
+		fontDrawString (iTileInfo_OffsetX, winH-iTileInfo_OffsetY, "TILE: (%02X) -- STACK SIZE: %02d", *tile, iGlobalStackSize);
+	else
+		fontDrawString (iTileInfo_OffsetX, winH-iTileInfo_OffsetY, "TILE: (%02X)", *tile);
 
 	if (ptile->type == tile_Stairs)
 	{
