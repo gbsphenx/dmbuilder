@@ -21,8 +21,11 @@
 
 static char* txtDump[] = {"null{text!!"};
 char* TEXTS[1024];
+short TXTTYPE[1024];
 size_t totalTexts = 0;
 short adresses[1024];
+
+
 
 struct dm_codon
 {
@@ -46,7 +49,10 @@ startTexts ()
 {
 	size_t i;
 	for (i = 0; i < 1024; i++)
+	{
 		TEXTS[i] = *txtDump;
+		TXTTYPE[i] = text_undefined;
+	}
 	totalTexts = 0;
 }
 
@@ -101,6 +107,45 @@ convertToMasterTexts ()
 		}
 	}
 }
+
+//------------------------------------------------------------------------------
+//	Scan texts for heros
+//------------------------------------------------------------------------------
+
+void
+findHeros ()
+{
+	// form of champion text:
+	//"BOGUS\012ILLEGAL HERO\012\012M\012AABBAABBAABB\012ABABABABABABAB\012CCCCCCCCCCCCCCCC";
+	//"chani}sayyadina{sihaya}}f}aainahnkaadd}edcpdjedbpdjcp}cageaaaaaaaagegc"
+	size_t i;
+	int iBreaksCount = 0;
+	for (i = 0; i < totalTexts; i++)
+	{
+		if (TEXTS[i] != NULL)
+		{
+			size_t len = strlen (TEXTS[i]);
+			size_t c = 0;
+			char cv = 0;
+
+			iBreaksCount = 0;
+			printf("%d %s\n", i, TEXTS[i]);
+
+			for (c = 0; c < len; c++)
+			{
+				cv = TEXTS[i][c];
+				if (cv == '}')
+					iBreaksCount++;
+			}
+			// Hero text will have 6 "}" at fixed relative position
+			printf("breaks = %d\n", iBreaksCount);
+			if (iBreaksCount == 6)
+				TXTTYPE[i] = text_champion;
+		}
+		//TXTTYPE[i] = text_undefined;
+	}
+}
+
 
 //------------------------------------------------------------------------------
 //	Operations on a 3-letters codon
@@ -220,7 +265,7 @@ void
 loadTexts (unsigned short *rawtexts)
 {
 	extractLines (rawtexts);
-	//findHeros ();
+	findHeros ();
 	if (SKULLKEEP == 0)
 		convertToInternTexts ();
 }
@@ -306,6 +351,12 @@ char*
 getText (unsigned int number)
 {
 	return TEXTS[number];
+}
+
+short
+getTextType (unsigned int number)
+{
+	return TXTTYPE[number];
 }
 
 char*

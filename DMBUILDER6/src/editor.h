@@ -86,6 +86,7 @@ enum screenType
 	screen_LoadFile,
 	screen_SaveFile,
 	screen_GeneralHelp,
+	screen_TextEditor,
 };
 
 
@@ -124,6 +125,7 @@ typedef struct
 	char* xTextStrings[1024];	// Converted plain text, 1 per different text
 	int nTotalTexts;
 	short iTblOffsetsAddresses[1024];	// Table of beginning of each text in raw data
+	short iTblTextTypes[1024];
 
 	// Special flags of game mode
 	int iIsSkullkeep;

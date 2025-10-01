@@ -515,10 +515,12 @@ printCoordinates ()
 	fontDrawString (22 + (iStdFntSize*15), winH-iStdFntSize, "DM MODE : (%d) [%s]",
 		SKULLKEEP, (SKULLKEEP == 1) ? "SKULLKEEP" : "CLASSIC DM");
 
+	setTextProperties (iStdFntSize, text_cat_colors[iGlbCurrentContext+4][0], text_cat_colors[iGlbCurrentContext+4][1], text_cat_colors[iGlbCurrentContext+4][2]);
+	fontDrawString (22 + (iStdFntSize*42), winH-iStdFntSize, "{C%d} ", iGlbCurrentContext);
 	if (currentFileName != NULL) 
 	{
 		setTextProperties (iStdFntSize, 1, 1, .5);
-		fontDrawString (22 + (iStdFntSize*42), winH-iStdFntSize, "DUNGEON : [%s]", currentFileName);
+		fontDrawString (22 + (iStdFntSize*47), winH-iStdFntSize, "DUNGEON : [%s]", currentFileName);
 	}
 	
 	setTextProperties (iStdFntSize, 1, 1, 1);
@@ -1104,9 +1106,9 @@ printGeneralHelpInfo ()
 	y -= iStepText; setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
 	fontDrawString (x, y, "MOST OF THE DUNGEON EDITING IS DONE WITHIN THE MAIN MAP EDITOR.\n");
 	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
-	fontDrawString (x, y, "YOU CAN EDIT MAPS LAYOUTS AND ITEMS/OBJECTS FROM THERE.\n");
+	fontDrawString (x, y, "YOU CAN EDIT MAPS LAYOUT AND ITEMS/OBJECTS FROM THERE.\n");
 	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
-	fontDrawString (x, y, "THE ONLINE HELP PANEL GIVES MORE INFORMATION ABOUT THE KEYS USAGE THERE.\n");
+	fontDrawString (x, y, "THE ONLINE HELP PANEL GIVES MORE INFORMATION ABOUT THE KEYS USAGE DEPENDING ON SELECTED ITEM.\n");
 	y -= iStepText;
 	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
 	fontDrawString (x, y, " F1 : GENERAL HELP (THIS SCREEN)\n");
@@ -1114,7 +1116,7 @@ printGeneralHelpInfo ()
 	y -= iStepText; setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
 	fontDrawString (x, y, " F2 : MAP LEVEL PROPERTIES\n");
 	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
-	fontDrawString (x, y, "EDIT THE GRAPHICS (DECORATIONS / CREATURES) USED IN THE MAPS\n");
+	fontDrawString (x, y, "EDIT THE GRAPHICS (DECORATIONS / CREATURES / TILESET) USED IN THE MAPS.\n");
 
 	y -= iStepText;
 	y -= iStepText; setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
@@ -1133,11 +1135,11 @@ printGeneralHelpInfo ()
 	y -= iStepText;	setTextProperties (iStdFntSize, 1, ct[1], ct[2]);
 	fontDrawString (x, y, " F8 : CHANGE DUNGEON CONTEXT\n");
 	y -= iStepText; setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
-	fontDrawString (x, y, "DMBUILDER ALLOWS THE EDITING OF TWO DIFFERENT DUNGEONS AT ONCE.\n");
+	fontDrawString (x, y, "DMBUILDER ALLOWS THE EDITING OF FOUR DIFFERENT DUNGEONS AT THE SAME TIME.\n");
 	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
-	fontDrawString (x, y, "HIT F8 IN THE MAIN SCREEN TO SWITCH BETWEEN YOUR FIRST OR SECOND DUNGEON.\n");
+	fontDrawString (x, y, "HIT F8 IN THE MAIN SCREEN TO SWITCH BETWEEN YOUR DIFFERENT DUNGEONS (CONTEXTS).\n");
 	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
-	fontDrawString (x, y, "FOR EXAMPLE, LOAD A DUNGEON, HIT F8, THEN LOAD ANOTHER DUNGEON.\n");
+	fontDrawString (x, y, "FOR EXAMPLE, LOAD A DUNGEON, HIT F8, THEN LOAD ANOTHER DUNGEON. CYCLE THROUGH THEM WITH F8.\n");
 
 
 	y -= iStepText;	
@@ -1154,11 +1156,11 @@ printGeneralHelpInfo ()
 	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
 	fontDrawString (x, y, "THIS WILL START EITHER DM1 OR DM2 DEPENDING ON YOUR DUNGEON. (IT RUNS DOSBOX FOR DM PC VERSIONS)\n");
 	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
-	fontDrawString (x, y, "BEFOREHAND YOU NEED TO SETUP PROPERLY THE FOLDER XDM1PCDOS AND XDM2PCDOS.\n");
+	fontDrawString (x, y, "BEFOREHAND YOU NEED TO SETUP PROPERLY THE FOLDERS XDM1PCDOS AND XDM2PCDOS.\n");
 	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
-	fontDrawString (x, y, "JUST COPY YOUR DM-PC CONTENTS INTO XDM1PCDOS.\n");
+	fontDrawString (x, y, "JUST COPY YOUR DM-PC CONTENTS INTO XDM1PCDOS,\n");
 	y -= (iSmallerFntSize+2); setTextProperties (iSmallerFntSize, st[0], st[1], st[2]);
-	fontDrawString (x, y, "AND YOUR DM2-PC CONTENTS INTO XDM2PCDOS.\n");
+	fontDrawString (x, y, " AND YOUR DM2-PC CONTENTS INTO XDM2PCDOS.\n");
 
 	y -= iStepText;
 	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
@@ -2378,10 +2380,15 @@ printMainMapHelpInfo ()
 		fontDrawString (x, y, "' ': SWITCH WHAT IS ON TILE");
 		y -= ystep;
 		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "SHIFT-'B': DECREASE NUMBER OF MAPS");
+		fontDrawString (x, y, "SHIFT-'B'/'N': DECREASE/INCREASE NUMBER OF MAPS");
+
 		y -= ystep;
 		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "SHIFT-'N': INCREASE NUMBER OF MAPS");
+		fontDrawString (x, y, "SHIFT-'E'/'R': DECREASE/INCREASE X DIMENSION OF MAP");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "SHIFT-'D'/'C': DECREASE/INCREASE Y DIMENSION OF MAP");
+
 
 		y -= ystep;
 		y -= ystep;
@@ -2397,6 +2404,16 @@ printMainMapHelpInfo ()
 		setTextProperties (helptfsize, .7, .7, .7);
 		fontDrawString (x, y, "PAGE UP - PAGE DOWN: MOVE ITEM WITHIN STACK");
 
+		y -= ystep;
+		y -= ystep;
+		setTextProperties (helptfsize, 1, 1, 1);
+		fontDrawString (x, y, "TILE EDITING (RAW):");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "'1'/'2'/'4'/'8': SWITCH BITS ON TILE");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "'9': CYCLE THROUGH TILE TYPE");
 	}
 
 //--- If editing door, bring this help

@@ -21,6 +21,8 @@
 #include <version.h>
 #include <string.h>
 #include <loaddungeon.h>
+#include <text.h>
+
 
 #include <skullexe.h>
 #include <math.h>
@@ -1710,6 +1712,11 @@ drawMapGraphics (char map)
 	moveToGraphicsList ();
 	for (j = 0; j < 4; j++)
 	{	
+		if (j == 3)	// door ornates, make them a bit smaller
+		{
+			moveSize (2, 0, gfxsize);
+			gfxsize = 83;
+		}
 		for (i = 0; i < maxtable[j]; i++)
 		{
 			drawSizeSquare (glid[j] + lists[j][i], gfxsize, 1.0f);
@@ -1720,8 +1727,13 @@ drawMapGraphics (char map)
 			drawFrame (gfxsize, .25f, .25f, .25f);
 			moveSize (1, 0, gfxsize);
 		}
-		moveSize (-i, 1, gfxsize);
+		moveSize (-i, 0, gfxsize);
+		if (j == 3)
+			gfxsize = 96;
+		moveSize (0, 1, gfxsize);
 	}
+
+	moveSize (-2, -1, gfxsize);
 	drawSizeSquare (gl_x_Doors + level->header.door1, gfxsize, 1.0f);
 	moveSize (1, 0, gfxsize);
 	drawSizeSquare (gl_x_Doors + level->header.door2, gfxsize, 1.0f);
@@ -1982,6 +1994,61 @@ displayAIInfos ()
 }
 
 //------------------------------------------------------------------------------
+
+void
+displayTextEditor ()
+{
+	unsigned int id = 0;
+	float size = __STD_STACK_SIZE__*0.75f;
+	float textcatsize = 18.f;
+	int i = 0;
+	int ystep = textcatsize + 2;
+	int x = 22;
+	int y = winH - 120;
+	int iNbTexts = getTextsNumber();
+	int tt = 0;	// text type
+	float fTxtTypeColors[][3] = {
+		{.5, .6, .6},	// 0 = undefined
+		{ 1, .2, .2},	// 1 = champion
+		{ 1,  1,  1},	// 2 = narrative
+		{ 1,  1, .5},	// 3 = wall
+		{.8, .6, .8},	// 4 = scroll
+	};
+	char cTxtTypeLetter[] = {
+		'X', 'H', 'N', 'W', 'S'
+	};
+
+	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
+	outputTextLineAt (200, winH-40, "F10:   TEXT EDITOR : #%03d", totalTexts);
+
+	setTextProperties ((textcatsize+6), .5, 1, .8); 
+	outputTextLineAt (100, winH-80, "AVAILABLE TEXTS");
+
+	// left, available texts (shortened) // right, visualisation for wall, scroll, or champion
+
+	for (i = 0; i < iNbTexts; i++)
+	{
+		tt = getTextType (i);
+		setTextProperties (textcatsize, .7, .8, .8); 
+		//printf("%d : %s\n", i, convertTextToLimitedBuffer (i));
+		fontDrawString (x, y, "%03d)   %s", i, convertTextToLimitedBuffer (getText (i) ));
+		setTextProperties (textcatsize, fTxtTypeColors[tt][0], fTxtTypeColors[tt][1], fTxtTypeColors[tt][2]); 
+		fontDrawString (x, y, "     %c", cTxtTypeLetter[tt]);
+		//fontDrawString (x, y, "%03d) ", i);
+		y -= ystep;
+	}
+/*
+	for (t = -24; t < 24; t++)
+	{
+		setTextProperties (textsize, .7, .8, .9);
+		if (t == 0)
+			setTextProperties (textsize, 1, .9, .7);
+		if (select + t >= 0 && select + t < getTextsNumber())
+		fontDrawString (32, winH - (64 + (textsize-1)*(t+24)), "(%32s)", convertTextToLimitedBuffer (getText(select + t)));
+	}*/
+
+}
+
 //------------------------------------------------------------------------------
 
 void
@@ -2655,6 +2722,12 @@ redrawScreen ()
 
 	case screen_ListsItems:
 		displayItemsLists ();
+		drawGenericHelpInfoPanel ();
+		printNoHelpInfo ();
+		break;
+
+	case screen_TextEditor:
+		displayTextEditor ();
 		drawGenericHelpInfoPanel ();
 		printNoHelpInfo ();
 		break;

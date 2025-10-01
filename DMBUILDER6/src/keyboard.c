@@ -540,10 +540,10 @@ void keyboard (unsigned char key, int x, int y)
 				switch (key)
 				{
 			//	case KEY_ESCAPE: break;
-				case 'A':getLevels()[getEditCursor(cursor_L)].header.xDim--;break;
-				case 'Z':getLevels()[getEditCursor(cursor_L)].header.xDim++;break;
-				case 'Q':getLevels()[getEditCursor(cursor_L)].header.yDim--;break;
-				case 'W':getLevels()[getEditCursor(cursor_L)].header.yDim++;break;
+				case 'E':if (getLevels()[getEditCursor(cursor_L)].header.xDim>0)getLevels()[getEditCursor(cursor_L)].header.xDim--;break;
+				case 'R':if (getLevels()[getEditCursor(cursor_L)].header.xDim<31)getLevels()[getEditCursor(cursor_L)].header.xDim++;break;
+				case 'D':if (getLevels()[getEditCursor(cursor_L)].header.yDim>0)getLevels()[getEditCursor(cursor_L)].header.yDim--;break;
+				case 'C':if (getLevels()[getEditCursor(cursor_L)].header.yDim<31)getLevels()[getEditCursor(cursor_L)].header.yDim++;break;
 
 				case 'B': getDungeon()->nLevels --;
 						if (getDungeon()->nLevels < 1)
@@ -982,6 +982,11 @@ void keyboard (unsigned char key, int x, int y)
 				if (key == KEY_ESCAPE)
 					Call_ChangeScreen (screen_Map);
 			} break;
+		case screen_TextEditor:
+			{
+				if (key == KEY_ESCAPE)
+					Call_ChangeScreen (screen_Map);
+			} break;
 		case screen_LoadFile:
 		{
 			if (key == KEY_ESCAPE)
@@ -1030,14 +1035,15 @@ void arrow_keys (int a_keys, int x, int y)
 				DMB_AutoEdit_LoadSkullExe();
 				setScreen (screen_DM2AI);
 				break;
-		case GLUT_KEY_F8:
+		/*case GLUT_KEY_F8:
 			switchContext ();
-			break;
+			break;*/
 		case GLUT_KEY_F9: 
 			updateFileNames ();
 			setScreen (screen_LoadFile);
 			break;
-		case GLUT_KEY_F10: exportText (); break;
+		//case GLUT_KEY_F10: exportText (); break;
+		case GLUT_KEY_F10: setScreen (screen_TextEditor); break;
 		//case GLUT_KEY_F11: importText (); break;
 		case GLUT_KEY_F11: setScreen (screen_ListsActuators); break;
 		case GLUT_KEY_F12: 
@@ -1053,7 +1059,9 @@ void arrow_keys (int a_keys, int x, int y)
 		case screen_Map:
 		if (isSelectingNewItem())
 		{
-			if (a_keys == GLUT_KEY_LEFT)
+			if (a_keys == GLUT_KEY_F8)
+				switchContext ();
+			else if (a_keys == GLUT_KEY_LEFT)
 				setEditCursor (cursor_NewItem, (char) (getEditCursor (cursor_NewItem) - 1));
 			else if (a_keys == GLUT_KEY_RIGHT)
 				setEditCursor (cursor_NewItem, (char) (getEditCursor (cursor_NewItem) + 1));
@@ -1259,19 +1267,28 @@ void arrow_keys (int a_keys, int x, int y)
 				}			
 			}
 			break;
-		case screen_LoadFile:
-			{
+		case screen_TextEditor:
+			{/*
 				switch (a_keys)
 				{
 				case KEY_ESCAPE:
 					Call_ChangeScreen (screen_Map); break;
+				}*/
+			break;
+			}
+		case screen_LoadFile:
+			{
+				switch (a_keys)
+				{
+//				case KEY_ESCAPE:
+//					Call_ChangeScreen (screen_Map); break;
 				case GLUT_KEY_DOWN: selectFile += 1;
 					 break;
 				case GLUT_KEY_UP: selectFile -= 1;
 					 break;
 				}
-if (selectFile < 0) selectFile = 0;
-else if (selectFile > (char) (numberOfFilesToLoad()-1)) selectFile = numberOfFilesToLoad()-1;
+				if (selectFile < 0) selectFile = 0;
+				else if (selectFile > (char) (numberOfFilesToLoad()-1)) selectFile = numberOfFilesToLoad()-1;
 
 			break;
 			}
@@ -1279,15 +1296,15 @@ else if (selectFile > (char) (numberOfFilesToLoad()-1)) selectFile = numberOfFil
 			{
 				switch (a_keys)
 				{
-				case KEY_ESCAPE:
-					Call_ChangeScreen (screen_Map); break;
+//				case KEY_ESCAPE:
+//					Call_ChangeScreen (screen_Map); break;
 				case GLUT_KEY_DOWN: selectFile += 1;
 					 break;
 				case GLUT_KEY_UP: selectFile -= 1;
 					 break;
 				}
-if (selectFile < 0) selectFile = 0;
-else if (selectFile > (char) (numberOfFilesToLoad()-1)) selectFile = numberOfFilesToLoad()-1;
+				if (selectFile < 0) selectFile = 0;
+				else if (selectFile > (char) (numberOfFilesToLoad()-1)) selectFile = numberOfFilesToLoad()-1;
 			break;
 			}
 

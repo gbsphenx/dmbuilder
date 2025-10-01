@@ -215,7 +215,7 @@ void loadGraphics ()
 	Graphics_LoadSkullkeepImagesSet ("SK2Champions.tga", gl_StaticSkullkeep + gl_Portraits, 32, 32);
 //	Graphics_LoadSkullkeepImagesSet ("TORCChampions.tga", gl_StaticSkullkeep + gl_Portraits, 32, 32);
 	Graphics_LoadSkullkeepImagesSet ("SKTileSpecialFloors.tga", gl_StaticSkullkeep + gl_SpecialTiles, 16, 16);
-	//Graphics_LoadSkullkeepImagesSet ("SKPotions.tga", gl_StaticSkullkeep + gl_Potions, 16, 16);
+	Graphics_LoadSkullkeepImagesSet ("SK2Potions.tga", gl_StaticSkullkeep + gl_Potions, 16, 16);
 	Graphics_LoadSkullkeepImagesSet ("SKContainers.tga", gl_StaticSkullkeep + gl_Containers, 16, 16);
 //	Graphics_LoadSkullkeepImagesSet ("SKWActuators.tga", gl_StaticSkullkeep + gl_WActuators, 64, 64);
 	Graphics_LoadSkullkeepImagesSet ("TELOSObjects.tga", gl_StaticTELOS + gl_Monsters, 64, 64);
@@ -224,7 +224,7 @@ void loadGraphics ()
 //	Graphics_LoadSkullkeepItems ("TORCWeapons.tga", 5);
 	Graphics_LoadSkullkeepItems ("SK2Clothings.tga", 6);
 //	Graphics_LoadSkullkeepItems ("TORCClothings.tga", 6);
-	Graphics_LoadSkullkeepItems ("SK2Potions.tga", 8);
+	//Graphics_LoadSkullkeepItems ("SK2Potions.tga", 8);
 	Graphics_LoadSkullkeepItems ("SKBags.tga", 9);
 	Graphics_LoadSkullkeepItems ("SK2Miscs.tga", 10);
 //	Graphics_LoadSkullkeepItems ("TORCMiscs.tga", 10);
