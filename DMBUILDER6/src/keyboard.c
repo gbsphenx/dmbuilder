@@ -1268,12 +1268,12 @@ void arrow_keys (int a_keys, int x, int y)
 			}
 			break;
 		case screen_TextEditor:
-			{/*
+			{
 				switch (a_keys)
 				{
-				case KEY_ESCAPE:
-					Call_ChangeScreen (screen_Map); break;
-				}*/
+					case GLUT_KEY_DOWN: setTextCursor (cursor_Text, (char) (getTextCursor (cursor_Text) + 1)); break;
+					case GLUT_KEY_UP: setTextCursor (cursor_Text, (char) (getTextCursor (cursor_Text) - 1)); break;
+				}	
 			break;
 			}
 		case screen_LoadFile:

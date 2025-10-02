@@ -14,6 +14,7 @@
 #include <dms.h>
 #include <dm.h>
 #include <item.h>
+#include <math.h>
 
 /* max size allowed for coded text is 65535 hence nearly 196605 characters.
 	supposing nearly 20 characters per lines. then about 9830 possible lines
@@ -112,14 +113,133 @@ convertToMasterTexts ()
 //	Scan texts for heros
 //------------------------------------------------------------------------------
 
+int
+convertABCDToInt(char* sAlpha4)
+{
+	int val = 0;
+	int i = 0;
+	for (i = 0; i < 4; i++)
+		val += (sAlpha4[i] - 'a')*pow(16,(3-i));
+	return val;
+}
+
+void
+initTextToChampion (dm_text_champion* sChampionStruct)
+{
+	size_t i;
+	if (sChampionStruct != NULL)
+	{	
+		strcpy(sChampionStruct->firstname, "BOGUS");
+		strcpy(sChampionStruct->lastname, "THE CHAMPION");
+		sChampionStruct->gender = 'F';
+
+		sChampionStruct->health = 40;
+		sChampionStruct->stamina = 500;
+		sChampionStruct->mana = 10;
+
+
+
+		for (i = 0; i < 7; i++)
+			sChampionStruct->attributes[i] = 30;
+		for (i = 0; i < 16; i++)
+			sChampionStruct->skills[i] = 2;
+	}
+}
+
+
+void
+convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
+{
+	int iBreaksCount = 0;
+	int iSegment = 0;
+	int iSegmentSize = 0;
+	char* sInputText = NULL;
+
+	if (TXTTYPE[number] != text_champion)
+		return;
+
+	sInputText = TEXTS[number];
+
+	if (sChampionStruct != NULL)
+	{
+		if (sInputText != NULL)
+		{
+			size_t len = strlen (sInputText);
+			size_t c = 0;
+			size_t out = 0;
+			char cv = 0;
+			char hsm[12];
+			int digit[4];
+
+			memset(sChampionStruct->firstname, 0, sizeof(sChampionStruct->firstname));
+			memset(sChampionStruct->lastname, 0, sizeof(sChampionStruct->lastname));
+
+			iBreaksCount = 0;
+			iSegment = 0;
+			printf("SELECT: %s\n", sInputText);
+
+			for (c = 0; c < len; c++)
+			{
+				cv = sInputText[c];
+				if (cv == '}')
+				{
+					iBreaksCount++;
+					iSegment++;
+					iSegmentSize = 0;
+					out = 0;
+				}
+				else if (iSegment == 0)
+				{
+					sChampionStruct->firstname[out] = cv + ('A'-'a');
+					if (cv == '{')
+						sChampionStruct->firstname[out] = cv;
+					out++;
+				}
+				else if (iSegment == 1)
+				{
+					sChampionStruct->lastname[out] = cv + ('A'-'a');
+					if (cv == '{')
+						sChampionStruct->lastname[out] = cv;
+					out++;
+				}
+				else if (iSegment == 3)
+				{
+					if (cv == 'f')
+						sChampionStruct->gender = 'F';
+					else if (cv == 'm')
+						sChampionStruct->gender = 'M';
+				}
+				else if (iSegment == 4)
+				{
+					hsm[out] = cv;
+					out++;
+				}
+				else
+					iSegmentSize++;
+			}
+			sChampionStruct->health = convertABCDToInt(&hsm[0]);
+			sChampionStruct->stamina = convertABCDToInt(&hsm[4]);
+			sChampionStruct->mana = convertABCDToInt(&hsm[8]);
+			//printf("end/size = %d %d\n", iSegment, iSegmentSize);
+			//digit[3] = hsm[3]-'a';
+			//digit[2] = hsm[2]-'a';
+			//printf("health = %c%c%c%c = %d\n", hsm[0], hsm[1], hsm[2], hsm[3], digit[2]*16 + digit[3]);
+		}
+	}
+}
+
 void
 findHeros ()
 {
 	// form of champion text:
 	//"BOGUS\012ILLEGAL HERO\012\012M\012AABBAABBAABB\012ABABABABABABAB\012CCCCCCCCCCCCCCCC";
 	//"chani}sayyadina{sihaya}}f}aainahnkaadd}edcpdjedbpdjcp}cageaaaaaaaagegc"
+	//}}1}12}14}16
 	size_t i;
+	int iSegment = 0;
+	int iSegmentSize = 0;
 	int iBreaksCount = 0;
+	int iHeroCandidate = 0;
 	for (i = 0; i < totalTexts; i++)
 	{
 		if (TEXTS[i] != NULL)
@@ -128,18 +248,34 @@ findHeros ()
 			size_t c = 0;
 			char cv = 0;
 
+			iHeroCandidate = 0;
 			iBreaksCount = 0;
+			iSegment = 0;
 			printf("%d %s\n", i, TEXTS[i]);
 
 			for (c = 0; c < len; c++)
 			{
 				cv = TEXTS[i][c];
 				if (cv == '}')
+				{
+					printf("break/size = %d %d\n", iSegment, iSegmentSize);
+					if (iSegment == 4 && iSegmentSize == 12)
+						iHeroCandidate = 1;
+					else if (iSegment == 5 && iSegmentSize != 14)
+						iHeroCandidate = 0;
+					else if (iSegment == 6 && iSegmentSize != 16)
+						iHeroCandidate = 0;
 					iBreaksCount++;
+					iSegment++;
+					iSegmentSize = 0;
+				}
+				else
+					iSegmentSize++;
 			}
+			printf("end/size = %d %d\n", iSegment, iSegmentSize);
 			// Hero text will have 6 "}" at fixed relative position
-			printf("breaks = %d\n", iBreaksCount);
-			if (iBreaksCount == 6)
+			//printf("breaks = %d\n", iBreaksCount);
+			if (iBreaksCount == 6 && iHeroCandidate == 1)
 				TXTTYPE[i] = text_champion;
 		}
 		//TXTTYPE[i] = text_undefined;

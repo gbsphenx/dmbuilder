@@ -74,6 +74,14 @@ enum cursorType
 	cursor_AI_attribute,
 };
 
+enum cursorText
+{
+	cursor_Text = 0,		// id of edited text
+	cursor_SubText,		// id of subtext (champion edit)
+};
+
+
+
 enum screenType
 {
 	screen_Map = 0,
@@ -145,6 +153,9 @@ extern void startEditor ();
 
 extern char getEditCursor (enum cursorType type);
 extern void setEditCursor (enum cursorType type, char new_value);
+
+extern int getTextCursor (enum cursorText type);
+extern void setTextCursor (enum cursorText type, int new_value);
 
 extern int getScreen ();
 extern void setScreen (int val);

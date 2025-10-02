@@ -23,6 +23,24 @@ enum
 	text_scroll = 4,
 };
 
+typedef struct 
+{
+	char firstname[10];	// 7 chars
+	char lastname[30];	// x chars
+	char gender;		// f or m
+	int health;
+	int stamina;
+	int mana;
+	short attributes[7];
+	int skills[16];
+	//
+	char txthealth[4];
+	char txtstamina[4];
+	char txtmana[4];
+
+} dm_text_champion;
+
+
 extern int SKULLKEEP;
 extern int THERONSQUEST;
 extern int TELOS;
@@ -45,6 +63,9 @@ extern void importText ();
 
 extern int addText(const char* sTextStrings);
 extern int addTextContext(int iContext, const char* sTextStrings);
+
+extern void initTextToChampion (dm_text_champion* sChampionStruct);
+extern void convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct);
 
 extern void convertToInternTexts ();
 extern void convertToMasterTexts ();

@@ -2017,6 +2017,7 @@ displayTextEditor ()
 	char cTxtTypeLetter[] = {
 		'X', 'H', 'N', 'W', 'S'
 	};
+	int seltext = getTextCursor (cursor_Text);
 
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
 	outputTextLineAt (200, winH-40, "F10:   TEXT EDITOR : #%03d", totalTexts);
@@ -2024,12 +2025,26 @@ displayTextEditor ()
 	setTextProperties ((textcatsize+6), .5, 1, .8); 
 	outputTextLineAt (100, winH-80, "AVAILABLE TEXTS");
 
+	{
+		double fsinv = 0;
+		double rad = 0;
+		if (angle > 360)
+			angle = angle%360;
+		rad = ((double)angle) / 360 * (2*3.1415f);
+		fsinv = (double)cos(rad);
+		fsinv = (fsinv/2) + 0.5f;
+		globalfsinv = fsinv;
+	}
+
 	// left, available texts (shortened) // right, visualisation for wall, scroll, or champion
 
 	for (i = 0; i < iNbTexts; i++)
 	{
 		tt = getTextType (i);
-		setTextProperties (textcatsize, .7, .8, .8); 
+		setTextProperties (textcatsize, .7, .8, .8);
+		if (i == seltext)
+			setTextProperties (textcatsize, .3+.7*globalfsinv, .3+.8*globalfsinv, .3+.8*globalfsinv);
+			
 		//printf("%d : %s\n", i, convertTextToLimitedBuffer (i));
 		fontDrawString (x, y, "%03d)   %s", i, convertTextToLimitedBuffer (getText (i) ));
 		setTextProperties (textcatsize, fTxtTypeColors[tt][0], fTxtTypeColors[tt][1], fTxtTypeColors[tt][2]); 
@@ -2047,6 +2062,62 @@ displayTextEditor ()
 		fontDrawString (32, winH - (64 + (textsize-1)*(t+24)), "(%32s)", convertTextToLimitedBuffer (getText(select + t)));
 	}*/
 
+	// display frame for champion text edit
+	{
+		dm_text_champion stxtchamp;
+
+		moveToUpperScreen ();
+		moveSize (56, 12, 48);
+		drawFrameXY (1600, 1200, .9, .9, .7);
+
+		initTextToChampion(&stxtchamp);
+		convertTextToChampion (seltext, &stxtchamp);
+
+		// display champion values
+		x = 1000;
+		y = winH - 120;
+		setTextProperties (textcatsize, .8, .6, 0); 
+		fontDrawString (x, y, "FIRST NAME: %s", stxtchamp.firstname);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .6, 0); 
+		fontDrawString (x, y, "LAST NAME: %s", stxtchamp.lastname);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .6, 0); 
+		fontDrawString (x, y, "GENDER: %c", stxtchamp.gender);
+		y -= ystep;
+		setTextProperties (textcatsize, .7, .7, .7); 
+		fontDrawString (x, y, "HEALTH: %04d", stxtchamp.health);
+		y -= ystep;
+		setTextProperties (textcatsize, .7, .7, .7); 
+		fontDrawString (x, y, "STAMINA: %04d", stxtchamp.stamina);
+		y -= ystep;
+		setTextProperties (textcatsize, .7, .7, .7); 
+		fontDrawString (x, y, "MANA: %04d", stxtchamp.mana);
+		y -= ystep;
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "LUCK: %04d", stxtchamp.attributes[0]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "STRENGTH: %04d", stxtchamp.attributes[1]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "DEXTERITY: %04d", stxtchamp.attributes[2]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "WISDOM: %04d", stxtchamp.attributes[3]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "VITALITY: %04d", stxtchamp.attributes[4]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8);
+		fontDrawString (x, y, "ANTI-MAGIC: %04d", stxtchamp.attributes[5]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "ANTI-FIRE: %04d", stxtchamp.attributes[6]);
+		y -= ystep;
+
+	}
 }
 
 //------------------------------------------------------------------------------
