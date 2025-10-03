@@ -59,6 +59,8 @@ extern void outputTextLineAt (int x, int y, char* string, ...);
 extern void outputTextLine (char* string, ...);
 extern void outputTextString (char* string, ...);
 
+extern char* convertTextToLimitedBuffer (char* s);
+
 #endif
 
 

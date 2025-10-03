@@ -123,6 +123,25 @@ convertABCDToInt(char* sAlpha4)
 	return val;
 }
 
+int
+convertABToInt(char* sAlpha2)
+{
+	int val = 0;
+	int i = 0;
+	for (i = 0; i < 2; i++)
+		val += (sAlpha2[i] - 'a')*pow(16,(1-i));
+	return val;
+}
+
+int
+convertAToInt(char* sAlpha)
+{
+	int val = 0;
+	int i = 0;
+	val += sAlpha[0] - 'a';
+	return val;
+}
+
 void
 initTextToChampion (dm_text_champion* sChampionStruct)
 {
@@ -154,6 +173,7 @@ convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
 	int iSegment = 0;
 	int iSegmentSize = 0;
 	char* sInputText = NULL;
+	size_t i = 0;
 
 	if (TXTTYPE[number] != text_champion)
 		return;
@@ -169,6 +189,7 @@ convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
 			size_t out = 0;
 			char cv = 0;
 			char hsm[12];
+			char attr[14];
 			int digit[4];
 
 			memset(sChampionStruct->firstname, 0, sizeof(sChampionStruct->firstname));
@@ -214,17 +235,117 @@ convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
 					hsm[out] = cv;
 					out++;
 				}
+				else if (iSegment == 5)
+				{
+					attr[out] = cv;
+					out++;
+				}
 				else
 					iSegmentSize++;
 			}
 			sChampionStruct->health = convertABCDToInt(&hsm[0]);
 			sChampionStruct->stamina = convertABCDToInt(&hsm[4]);
 			sChampionStruct->mana = convertABCDToInt(&hsm[8]);
-			//printf("end/size = %d %d\n", iSegment, iSegmentSize);
-			//digit[3] = hsm[3]-'a';
-			//digit[2] = hsm[2]-'a';
-			//printf("health = %c%c%c%c = %d\n", hsm[0], hsm[1], hsm[2], hsm[3], digit[2]*16 + digit[3]);
+
+			for (i = 0; i < 7; i ++)
+				sChampionStruct->attributes[i] = convertABToInt(&attr[i*2]);
 		}
+	}
+}
+
+void
+convertTextToPlain (unsigned int number, dm_text_plain* sPlainText)
+{
+	int iBreaksCount = 0;
+	int iSegment = 0;
+	int iSegmentSize = 0;
+	char* sInputText = NULL;
+	size_t i = 0;
+	int out = 0;
+	int outrow = 0;
+
+	if (TXTTYPE[number] == text_champion)
+		return;
+
+	sInputText = TEXTS[number];
+
+	if (sPlainText != NULL)
+	{
+		if (sInputText != NULL)
+		{
+			size_t len = strlen (sInputText);
+			size_t c = 0;
+			size_t out = 0;
+			char cv = 0;
+
+			iBreaksCount = 0;
+			iSegment = 0;
+			//printf("SELECT: %s\n", sInputText);
+
+			for (outrow = 0; outrow < 7; outrow++)
+				memset(sPlainText->textline[outrow], 0, 100);
+
+			outrow = 0;
+
+			for (c = 0; c < len; c++)
+			{
+				cv = TEXTS[number][c];
+				if (cv == '}')
+				{
+					iBreaksCount++;
+					iSegment++;
+					iSegmentSize = 0;
+					outrow++;
+					out = 0;
+				}
+				else
+				{
+					if (cv >= 'a' && cv <= 'z')
+						sPlainText->textline[outrow][out] = cv + ('A'-'a');
+					else if (cv == '{')
+						sPlainText->textline[outrow][out] = ' ';
+					else if (cv == 0x7F)
+					{
+						if (TEXTS[number][c+1] == 'b')
+						{
+							sPlainText->textline[outrow][out] = '!';
+							c++;
+						}
+						else if (TEXTS[number][c+1] == 'c')
+						{
+							sPlainText->textline[outrow][out++] = 'T';
+							sPlainText->textline[outrow][out++] = 'H';
+							sPlainText->textline[outrow][out++] = 'E';
+							sPlainText->textline[outrow][out] = ' ';
+							c++;
+						}
+						else if (TEXTS[number][c+1] == 'd')
+						{
+							sPlainText->textline[outrow][out++] = 'Y';
+							sPlainText->textline[outrow][out++] = 'O';
+							sPlainText->textline[outrow][out++] = 'U';
+							sPlainText->textline[outrow][out] = ' ';
+							c++;
+						}
+					}
+					else
+						sPlainText->textline[outrow][out] = cv;
+					iSegmentSize++;
+					out++;
+				}
+			}
+
+		}
+	}
+}
+
+void
+resetTypes ()
+{
+	size_t i;
+	for (i = 0; i < totalTexts; i++)
+	{
+		TXTTYPE[i] = text_undefined;
 	}
 }
 
@@ -258,7 +379,7 @@ findHeros ()
 				cv = TEXTS[i][c];
 				if (cv == '}')
 				{
-					printf("break/size = %d %d\n", iSegment, iSegmentSize);
+					//printf("break/size = %d %d\n", iSegment, iSegmentSize);
 					if (iSegment == 4 && iSegmentSize == 12)
 						iHeroCandidate = 1;
 					else if (iSegment == 5 && iSegmentSize != 14)
@@ -272,7 +393,7 @@ findHeros ()
 				else
 					iSegmentSize++;
 			}
-			printf("end/size = %d %d\n", iSegment, iSegmentSize);
+			//printf("end/size = %d %d\n", iSegment, iSegmentSize);
 			// Hero text will have 6 "}" at fixed relative position
 			//printf("breaks = %d\n", iBreaksCount);
 			if (iBreaksCount == 6 && iHeroCandidate == 1)
@@ -401,6 +522,7 @@ void
 loadTexts (unsigned short *rawtexts)
 {
 	extractLines (rawtexts);
+	resetTypes ();
 	findHeros ();
 	if (SKULLKEEP == 0)
 		convertToInternTexts ();

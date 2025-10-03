@@ -40,6 +40,11 @@ typedef struct
 
 } dm_text_champion;
 
+typedef struct
+{
+	char textline[7][100];
+} dm_text_plain;
+
 
 extern int SKULLKEEP;
 extern int THERONSQUEST;
@@ -66,6 +71,7 @@ extern int addTextContext(int iContext, const char* sTextStrings);
 
 extern void initTextToChampion (dm_text_champion* sChampionStruct);
 extern void convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct);
+extern void convertTextToPlain (unsigned int number, dm_text_plain* sPlainText);
 
 extern void convertToInternTexts ();
 extern void convertToMasterTexts ();

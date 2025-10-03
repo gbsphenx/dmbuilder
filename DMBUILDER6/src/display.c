@@ -2052,17 +2052,10 @@ displayTextEditor ()
 		//fontDrawString (x, y, "%03d) ", i);
 		y -= ystep;
 	}
-/*
-	for (t = -24; t < 24; t++)
-	{
-		setTextProperties (textsize, .7, .8, .9);
-		if (t == 0)
-			setTextProperties (textsize, 1, .9, .7);
-		if (select + t >= 0 && select + t < getTextsNumber())
-		fontDrawString (32, winH - (64 + (textsize-1)*(t+24)), "(%32s)", convertTextToLimitedBuffer (getText(select + t)));
-	}*/
 
 	// display frame for champion text edit
+	tt = getTextType (seltext);
+	if (tt == text_champion)
 	{
 		dm_text_champion stxtchamp;
 
@@ -2074,7 +2067,7 @@ displayTextEditor ()
 		convertTextToChampion (seltext, &stxtchamp);
 
 		// display champion values
-		x = 1000;
+		x = 1050;
 		y = winH - 120;
 		setTextProperties (textcatsize, .8, .6, 0); 
 		fontDrawString (x, y, "FIRST NAME: %s", stxtchamp.firstname);
@@ -2085,38 +2078,135 @@ displayTextEditor ()
 		setTextProperties (textcatsize, .8, .6, 0); 
 		fontDrawString (x, y, "GENDER: %c", stxtchamp.gender);
 		y -= ystep;
-		setTextProperties (textcatsize, .7, .7, .7); 
-		fontDrawString (x, y, "HEALTH: %04d", stxtchamp.health);
 		y -= ystep;
 		setTextProperties (textcatsize, .7, .7, .7); 
-		fontDrawString (x, y, "STAMINA: %04d", stxtchamp.stamina);
+		fontDrawString (x, y, "HEALTH : %04d", stxtchamp.health);
 		y -= ystep;
 		setTextProperties (textcatsize, .7, .7, .7); 
-		fontDrawString (x, y, "MANA: %04d", stxtchamp.mana);
+		fontDrawString (x, y, "STAMINA: %05d", stxtchamp.stamina);
+		y -= ystep;
+		setTextProperties (textcatsize, .7, .7, .7); 
+		fontDrawString (x, y, "MANA   : %04d", stxtchamp.mana);
 		y -= ystep;
 		y -= ystep;
 		setTextProperties (textcatsize, .8, .8, .8); 
-		fontDrawString (x, y, "LUCK: %04d", stxtchamp.attributes[0]);
+		fontDrawString (x, y, "LUCK      : %04d", stxtchamp.attributes[0]);
 		y -= ystep;
 		setTextProperties (textcatsize, .8, .8, .8); 
-		fontDrawString (x, y, "STRENGTH: %04d", stxtchamp.attributes[1]);
+		fontDrawString (x, y, "STRENGTH  : %04d", stxtchamp.attributes[1]);
 		y -= ystep;
 		setTextProperties (textcatsize, .8, .8, .8); 
-		fontDrawString (x, y, "DEXTERITY: %04d", stxtchamp.attributes[2]);
+		fontDrawString (x, y, "DEXTERITY : %04d", stxtchamp.attributes[2]);
 		y -= ystep;
 		setTextProperties (textcatsize, .8, .8, .8); 
-		fontDrawString (x, y, "WISDOM: %04d", stxtchamp.attributes[3]);
+		fontDrawString (x, y, "WISDOM    : %04d", stxtchamp.attributes[3]);
 		y -= ystep;
 		setTextProperties (textcatsize, .8, .8, .8); 
-		fontDrawString (x, y, "VITALITY: %04d", stxtchamp.attributes[4]);
+		fontDrawString (x, y, "VITALITY  : %04d", stxtchamp.attributes[4]);
 		y -= ystep;
 		setTextProperties (textcatsize, .8, .8, .8);
 		fontDrawString (x, y, "ANTI-MAGIC: %04d", stxtchamp.attributes[5]);
 		y -= ystep;
 		setTextProperties (textcatsize, .8, .8, .8); 
-		fontDrawString (x, y, "ANTI-FIRE: %04d", stxtchamp.attributes[6]);
+		fontDrawString (x, y, "ANTI-FIRE : %04d", stxtchamp.attributes[6]);
 		y -= ystep;
 
+		// skills
+		y -= ystep;
+		setTextProperties (textcatsize, 1, 1, 1); 
+		fontDrawString (x, y, "FIGHTER:");
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "SWING : %0d", stxtchamp.skills[0]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "THRUST: %0d", stxtchamp.skills[1]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "CLUB  : %0d", stxtchamp.skills[2]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "PARRY : %0d", stxtchamp.skills[3]);
+		y -= ystep;
+		y -= ystep;
+		setTextProperties (textcatsize, 1, 1, 1); 
+		fontDrawString (x, y, "NINJA:");
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "STEAL : %0d", stxtchamp.skills[4]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8);
+		fontDrawString (x, y, "FIGHT : %0d", stxtchamp.skills[5]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "THROW : %0d", stxtchamp.skills[6]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "SHOOT : %0d", stxtchamp.skills[7]);
+		y += (10*ystep);
+		x += 300;
+		//y -= ystep;
+		setTextProperties (textcatsize, 1, 1, 1); 
+		fontDrawString (x, y, "PRIEST:");
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "IDENTIFY : %0d", stxtchamp.skills[8]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "HEAL     : %0d", stxtchamp.skills[9]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "INFLUENCE: %0d", stxtchamp.skills[10]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "DEFEND   : %0d", stxtchamp.skills[11]);
+		y -= ystep;
+		y -= ystep;
+		setTextProperties (textcatsize, 1, 1, 1); 
+		fontDrawString (x, y, "WIZARD:");
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "FIRE     : %0d", stxtchamp.skills[12]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8);
+		fontDrawString (x, y, "AIR      : %0d", stxtchamp.skills[13]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "EARTH    : %0d", stxtchamp.skills[14]);
+		y -= ystep;
+		setTextProperties (textcatsize, .8, .8, .8); 
+		fontDrawString (x, y, "WATER    : %0d", stxtchamp.skills[15]);
+		y -= ystep;
+	}
+	else // any generic, probably scroll or wall
+	{
+		char *sInText = NULL;
+		static dm_text_plain stxtplain;
+
+		moveToUpperScreen ();
+		moveSize (56, 12, 48);
+		drawFrameXY (1600, 1200, .9, .9, .7);
+
+		sInText = getText (seltext);
+		//printf("SX: %s\n", sInText);
+		convertTextToPlain (seltext, &stxtplain);
+
+		x = 1050;
+		y = winH - 120;
+
+		for (i = 0; i < 7; i++)
+		{
+			int slen = 0;
+			int xs = x;
+			setTextProperties (textcatsize, .8, .6, 0); 
+			//printf("R%d: %s\n", i, stxtplain.textline[i]);
+			fontDrawString (x, y, "R%d:", i);
+			slen = strlen(stxtplain.textline[i]);
+			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
+			setTextProperties (textcatsize, .7, .7, .7); 
+			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
+			y -= ystep;
+		}
 	}
 }
 
