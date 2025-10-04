@@ -42,7 +42,7 @@ typedef struct
 
 typedef struct
 {
-	char textline[7][100];
+	char textline[9][100];
 } dm_text_plain;
 
 

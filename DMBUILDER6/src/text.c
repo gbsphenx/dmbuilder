@@ -220,7 +220,18 @@ convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
 				{
 					sChampionStruct->lastname[out] = cv + ('A'-'a');
 					if (cv == '{')
-						sChampionStruct->lastname[out] = cv;
+						sChampionStruct->lastname[out] = ' ';
+					else if (cv == 0x7F)
+					{
+						if (TEXTS[number][c+1] == 'c')
+						{
+							sChampionStruct->lastname[out++] = 'T';
+							sChampionStruct->lastname[out++] = 'H';
+							sChampionStruct->lastname[out++] = 'E';
+							sChampionStruct->lastname[out] = ' ';
+							c++;
+						}
+					}
 					out++;
 				}
 				else if (iSegment == 3)
@@ -280,9 +291,9 @@ convertTextToPlain (unsigned int number, dm_text_plain* sPlainText)
 
 			iBreaksCount = 0;
 			iSegment = 0;
-			//printf("SELECT: %s\n", sInputText);
+			printf("SELECT: %s\n", sInputText);
 
-			for (outrow = 0; outrow < 7; outrow++)
+			for (outrow = 0; outrow < 9; outrow++)
 				memset(sPlainText->textline[outrow], 0, 100);
 
 			outrow = 0;
@@ -304,6 +315,8 @@ convertTextToPlain (unsigned int number, dm_text_plain* sPlainText)
 						sPlainText->textline[outrow][out] = cv + ('A'-'a');
 					else if (cv == '{')
 						sPlainText->textline[outrow][out] = ' ';
+					else if (cv == '|')
+						sPlainText->textline[outrow][out] = '.';
 					else if (cv == 0x7F)
 					{
 						if (TEXTS[number][c+1] == 'b')

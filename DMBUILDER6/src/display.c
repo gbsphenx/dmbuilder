@@ -2053,6 +2053,13 @@ displayTextEditor ()
 		y -= ystep;
 	}
 
+	// display champion values
+	x = 1050;
+	y = winH - 120; y += ystep;
+	setTextProperties (textcatsize, .5, 1, .8); 
+	fontDrawString (x, y, "TEXT : #%03d", seltext);
+
+
 	// display frame for champion text edit
 	tt = getTextType (seltext);
 	if (tt == text_champion)
@@ -2194,7 +2201,7 @@ displayTextEditor ()
 		x = 1050;
 		y = winH - 120;
 
-		for (i = 0; i < 7; i++)
+		for (i = 0; i < 9; i++)
 		{
 			int slen = 0;
 			int xs = x;
