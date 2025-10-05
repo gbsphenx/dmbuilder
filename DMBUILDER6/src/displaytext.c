@@ -2255,6 +2255,38 @@ printNoHelpInfo ()
 }
 
 void
+printTextEditHelpInfo ()
+{
+	int basex = iTileInfo_OffsetX+40;
+	int basey = winH-iTileInfo_OffsetY-620;
+	int helptfsize = 13;
+
+	int x = basex + 192;
+	int y = basey;
+	int ystep = helptfsize+2;
+
+	setTextProperties (helptfsize, 1, 1, 1);
+	fontDrawString (x, y, "ONLINE HELP");
+	y -= ystep;
+
+	{
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "UP-DOWN ARROWS: NAVIGATE THROUGH THE TEXTS LIST");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "ENTER: LOCK CURRENT TEXT FOR EDIT");
+		y -= ystep;
+		setTextProperties (helptfsize, .7, .7, .7);
+		fontDrawString (x, y, "'+': ADD A NEW TEXT");
+		y -= ystep;
+
+
+	
+	}
+}
+
+void
 printMapPropertiesHelpInfo ()
 {
 	int basex = iTileInfo_OffsetX+40;

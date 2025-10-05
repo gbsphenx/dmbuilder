@@ -190,6 +190,7 @@ convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
 			char cv = 0;
 			char hsm[12];
 			char attr[14];
+			char skills[16];
 			int digit[4];
 
 			memset(sChampionStruct->firstname, 0, sizeof(sChampionStruct->firstname));
@@ -251,6 +252,11 @@ convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
 					attr[out] = cv;
 					out++;
 				}
+				else if (iSegment == 6)
+				{
+					skills[out] = cv;
+					out++;
+				}
 				else
 					iSegmentSize++;
 			}
@@ -260,6 +266,8 @@ convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
 
 			for (i = 0; i < 7; i ++)
 				sChampionStruct->attributes[i] = convertABToInt(&attr[i*2]);
+			for (i = 0; i < 16; i ++)
+				sChampionStruct->skills[i] = convertAToInt(&skills[i]);
 		}
 	}
 }
@@ -579,6 +587,21 @@ importText ()
 	}
 	fclose (fp);
 }
+
+int
+createEmptyTextChampion()
+{
+	int itxt = addText ("bogus}illegal{hero}}m}aabbaabbaabb}ababababababab}cccccccccccccccc");
+	TXTTYPE[itxt] = text_champion;
+}
+
+int
+createEmptyText()
+{
+	return createEmptyTextChampion ();
+	//return addText ("edit}new}text");
+}
+
 
 int
 addText(const char* sTextStrings)

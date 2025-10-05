@@ -174,6 +174,10 @@ extern void setEditingTarget (int boolean);
 
 extern int isEditingGraphics ();
 extern void switchEditingGraphics ();
+
+extern int isEditingText ();
+extern void switchEditingText ();
+
 extern void goTarget (reference_p ref);
 
 extern void switchModifyLevelSpecs ();

@@ -986,6 +986,11 @@ void keyboard (unsigned char key, int x, int y)
 			{
 				if (key == KEY_ESCAPE)
 					Call_ChangeScreen (screen_Map);
+				else if (key == KEY_RETURN)
+					switchEditingText ();
+				else if (key == '+')
+					setTextCursor (cursor_Text, createEmptyText ());
+					;
 			} break;
 		case screen_LoadFile:
 		{
@@ -1269,12 +1274,15 @@ void arrow_keys (int a_keys, int x, int y)
 			break;
 		case screen_TextEditor:
 			{
-				switch (a_keys)
+				if (!isEditingText ())
 				{
-					case GLUT_KEY_DOWN: setTextCursor (cursor_Text, (char) (getTextCursor (cursor_Text) + 1)); break;
-					case GLUT_KEY_UP: setTextCursor (cursor_Text, (char) (getTextCursor (cursor_Text) - 1)); break;
-				}	
-			break;
+					switch (a_keys)
+					{
+						case GLUT_KEY_DOWN: setTextCursor (cursor_Text, (getTextCursor (cursor_Text) + 1)); break;
+						case GLUT_KEY_UP: setTextCursor (cursor_Text, (getTextCursor (cursor_Text) - 1)); break;
+					}
+					break;
+				}
 			}
 		case screen_LoadFile:
 			{

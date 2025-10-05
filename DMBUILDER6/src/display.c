@@ -1638,6 +1638,17 @@ drawLevelPropertiesHelpInfo ()
 	}
 }
 
+static void
+drawTextEditHelpInfo ()
+{
+	//--- bottom right, to display online help
+	moveToUpperScreen ();
+	{
+		moveSize (56, 32, 48);
+		drawFrameXY (1416, 300, .9, .9, .7);
+		printTextEditHelpInfo ();
+	}
+}
 
 static void
 drawGenericHelpInfoPanel ()
@@ -2018,6 +2029,8 @@ displayTextEditor ()
 		'X', 'H', 'N', 'W', 'S'
 	};
 	int seltext = getTextCursor (cursor_Text);
+	int iMaxDisplayText = (totalTexts>50)?50:totalTexts;
+	int iDisplayTextOffset = 0;
 
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
 	outputTextLineAt (200, winH-40, "F10:   TEXT EDITOR : #%03d", totalTexts);
@@ -2038,18 +2051,27 @@ displayTextEditor ()
 
 	// left, available texts (shortened) // right, visualisation for wall, scroll, or champion
 
-	for (i = 0; i < iNbTexts; i++)
+	// should be < 45 with middle around 25
+	if (seltext > 25)
+		iDisplayTextOffset = seltext - 25;
+	for (i = 0; i < iMaxDisplayText; i++)
 	{
-		tt = getTextType (i);
+		if ( (i+iDisplayTextOffset) >= totalTexts)
+			continue;
+		tt = getTextType (i+iDisplayTextOffset);
 		setTextProperties (textcatsize, .7, .8, .8);
-		if (i == seltext)
-			setTextProperties (textcatsize, .3+.7*globalfsinv, .3+.8*globalfsinv, .3+.8*globalfsinv);
+		if (i+iDisplayTextOffset == seltext)
+		{
+			if (isEditingText ())
+				setTextProperties (textcatsize, 1, 1, .5);
+			else
+				setTextProperties (textcatsize, .3+.7*globalfsinv/2, .3+.8*globalfsinv/2, .3+.8*globalfsinv/2);
+		}
 			
-		//printf("%d : %s\n", i, convertTextToLimitedBuffer (i));
-		fontDrawString (x, y, "%03d)   %s", i, convertTextToLimitedBuffer (getText (i) ));
+		fontDrawString (x, y, "%03d)   %s", i+iDisplayTextOffset, convertTextToLimitedBuffer (getText (i+iDisplayTextOffset) ));
 		setTextProperties (textcatsize, fTxtTypeColors[tt][0], fTxtTypeColors[tt][1], fTxtTypeColors[tt][2]); 
 		fontDrawString (x, y, "     %c", cTxtTypeLetter[tt]);
-		//fontDrawString (x, y, "%03d) ", i);
+
 		y -= ystep;
 	}
 
@@ -2896,8 +2918,7 @@ redrawScreen ()
 
 	case screen_TextEditor:
 		displayTextEditor ();
-		drawGenericHelpInfoPanel ();
-		printNoHelpInfo ();
+		drawTextEditHelpInfo ();
 		break;
 
 	case screen_DM2AI:

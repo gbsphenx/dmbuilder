@@ -66,6 +66,7 @@ extern size_t encodeTexts (unsigned short *rawtexts);
 extern void exportText ();
 extern void importText ();
 
+extern int createEmptyText();
 extern int addText(const char* sTextStrings);
 extern int addTextContext(int iContext, const char* sTextStrings);
 
