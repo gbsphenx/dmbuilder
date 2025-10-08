@@ -515,7 +515,7 @@ printCoordinates ()
 	fontDrawString (22 + (iStdFntSize*15), winH-iStdFntSize, "DM MODE : (%d) [%s]",
 		SKULLKEEP, (SKULLKEEP == 1) ? "SKULLKEEP" : "CLASSIC DM");
 
-	setTextProperties (iStdFntSize, text_cat_colors[iGlbCurrentContext+4][0], text_cat_colors[iGlbCurrentContext+4][1], text_cat_colors[iGlbCurrentContext+4][2]);
+	setTextProperties (iStdFntSize, text_cat_colors[iGlbCurrentContext+5][0], text_cat_colors[iGlbCurrentContext+5][1], text_cat_colors[iGlbCurrentContext+5][2]);
 	fontDrawString (22 + (iStdFntSize*42), winH-iStdFntSize, "{C%d} ", iGlbCurrentContext);
 	if (currentFileName != NULL) 
 	{
@@ -2258,7 +2258,7 @@ void
 printTextEditHelpInfo ()
 {
 	int basex = iTileInfo_OffsetX+40;
-	int basey = winH-iTileInfo_OffsetY-620;
+	int basey = winH-iTileInfo_OffsetY-730;
 	int helptfsize = 13;
 
 	int x = basex + 192;

@@ -1051,6 +1051,7 @@ void arrow_keys (int a_keys, int x, int y)
 		case GLUT_KEY_F10: setScreen (screen_TextEditor); break;
 		//case GLUT_KEY_F11: importText (); break;
 		case GLUT_KEY_F11: setScreen (screen_ListsActuators); break;
+		//case GLUT_KEY_F11: DMB_AutoEdit_DM1_to_DM2_DungeonMasterAgain (); break;
 		case GLUT_KEY_F12: 
 			updateFileNames ();
 			setScreen (screen_SaveFile);
@@ -1130,8 +1131,8 @@ void arrow_keys (int a_keys, int x, int y)
 				updateFileNames ();
 				setScreen (screen_LoadFile);
 				break;
-			case GLUT_KEY_F10: exportText (); break;
-			case GLUT_KEY_F11: importText (); break;
+			//case GLUT_KEY_F10: exportText (); break;
+			//case GLUT_KEY_F11: importText (); break;
 			case GLUT_KEY_F12: 
 				updateFileNames ();
 				setScreen (screen_SaveFile);
@@ -1280,6 +1281,18 @@ void arrow_keys (int a_keys, int x, int y)
 					{
 						case GLUT_KEY_DOWN: setTextCursor (cursor_Text, (getTextCursor (cursor_Text) + 1)); break;
 						case GLUT_KEY_UP: setTextCursor (cursor_Text, (getTextCursor (cursor_Text) - 1)); break;
+					}
+					break;
+				}
+				else if (isEditingText ())
+				{
+					switch (a_keys)
+					{
+						case GLUT_KEY_DOWN: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) + 1)); break;
+						case GLUT_KEY_UP: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) - 1)); break;
+						case GLUT_KEY_LEFT: controlTextAttributeValue (cursor_SubText, -1); break;
+						case GLUT_KEY_RIGHT: controlTextAttributeValue (cursor_SubText, 1); break;
+
 					}
 					break;
 				}

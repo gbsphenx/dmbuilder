@@ -2087,6 +2087,9 @@ displayTextEditor ()
 	if (tt == text_champion)
 	{
 		dm_text_champion stxtchamp;
+		int subselect = isEditingText ()?getTextCursor (cursor_SubText):-1;
+		float l = 1.f;
+		//globalfsinv
 
 		moveToUpperScreen ();
 		moveSize (56, 12, 48);
@@ -2098,45 +2101,58 @@ displayTextEditor ()
 		// display champion values
 		x = 1050;
 		y = winH - 120;
-		setTextProperties (textcatsize, .8, .6, 0); 
+		l = (subselect==0)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .6*l, 0*l); 
 		fontDrawString (x, y, "FIRST NAME: %s", stxtchamp.firstname);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .6, 0); 
+		l = (subselect==1)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .6*l, 0*l); 
 		fontDrawString (x, y, "LAST NAME: %s", stxtchamp.lastname);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .6, 0); 
+		l = (subselect==2)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .6*l, 0*l); 
 		fontDrawString (x, y, "GENDER: %c", stxtchamp.gender);
 		y -= ystep;
 		y -= ystep;
-		setTextProperties (textcatsize, .7, .7, .7); 
+		l = (subselect==3)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
 		fontDrawString (x, y, "HEALTH : %04d", stxtchamp.health);
 		y -= ystep;
-		setTextProperties (textcatsize, .7, .7, .7); 
+		l = (subselect==4)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
 		fontDrawString (x, y, "STAMINA: %05d", stxtchamp.stamina);
 		y -= ystep;
-		setTextProperties (textcatsize, .7, .7, .7); 
+		l = (subselect==5)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
 		fontDrawString (x, y, "MANA   : %04d", stxtchamp.mana);
 		y -= ystep;
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==6)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
 		fontDrawString (x, y, "LUCK      : %04d", stxtchamp.attributes[0]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==7)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
 		fontDrawString (x, y, "STRENGTH  : %04d", stxtchamp.attributes[1]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==8)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
 		fontDrawString (x, y, "DEXTERITY : %04d", stxtchamp.attributes[2]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==9)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
 		fontDrawString (x, y, "WISDOM    : %04d", stxtchamp.attributes[3]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==10)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
 		fontDrawString (x, y, "VITALITY  : %04d", stxtchamp.attributes[4]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8);
+		l = (subselect==11)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "ANTI-MAGIC: %04d", stxtchamp.attributes[5]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==12)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
 		fontDrawString (x, y, "ANTI-FIRE : %04d", stxtchamp.attributes[6]);
 		y -= ystep;
 
@@ -2145,32 +2161,40 @@ displayTextEditor ()
 		setTextProperties (textcatsize, 1, 1, 1); 
 		fontDrawString (x, y, "FIGHTER:");
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==13)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
 		fontDrawString (x, y, "SWING : %0d", stxtchamp.skills[0]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==14)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
 		fontDrawString (x, y, "THRUST: %0d", stxtchamp.skills[1]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==15)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
 		fontDrawString (x, y, "CLUB  : %0d", stxtchamp.skills[2]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==16)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "PARRY : %0d", stxtchamp.skills[3]);
 		y -= ystep;
 		y -= ystep;
 		setTextProperties (textcatsize, 1, 1, 1); 
 		fontDrawString (x, y, "NINJA:");
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==17)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "STEAL : %0d", stxtchamp.skills[4]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8);
+		l = (subselect==18)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "FIGHT : %0d", stxtchamp.skills[5]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==19)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "THROW : %0d", stxtchamp.skills[6]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==20)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "SHOOT : %0d", stxtchamp.skills[7]);
 		y += (10*ystep);
 		x += 300;
@@ -2178,32 +2202,40 @@ displayTextEditor ()
 		setTextProperties (textcatsize, 1, 1, 1); 
 		fontDrawString (x, y, "PRIEST:");
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==21)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "IDENTIFY : %0d", stxtchamp.skills[8]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==22)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "HEAL     : %0d", stxtchamp.skills[9]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==23)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "INFLUENCE: %0d", stxtchamp.skills[10]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==24)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "DEFEND   : %0d", stxtchamp.skills[11]);
 		y -= ystep;
 		y -= ystep;
 		setTextProperties (textcatsize, 1, 1, 1); 
 		fontDrawString (x, y, "WIZARD:");
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==25)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "FIRE     : %0d", stxtchamp.skills[12]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8);
+		l = (subselect==26)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "AIR      : %0d", stxtchamp.skills[13]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==27)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "EARTH    : %0d", stxtchamp.skills[14]);
 		y -= ystep;
-		setTextProperties (textcatsize, .8, .8, .8); 
+		l = (subselect==28)?globalfsinv:1.f;
+		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
 		fontDrawString (x, y, "WATER    : %0d", stxtchamp.skills[15]);
 		y -= ystep;
 	}
@@ -2492,10 +2524,11 @@ displayActuatorsLists ()
 {
 	dm_reference ref;
 	unsigned int iNbActuators = getNumber (category_Actuator);
-	unsigned int id = 0;
+	int id = 0;
 	unsigned int j = 0;
 	unsigned int iNbTotalItems = 0;
-	int iCounterPerType[128];
+	int iCounterPerWType[128];
+	int iCounterPerFType[128];
 	float size = __STD_STACK_SIZE__*0.75f;
 	int iFntSize = 16;
 	int iAdjustX = 0;
@@ -2507,6 +2540,7 @@ displayActuatorsLists ()
 	int iNbPerCol = 16;
 	int iNbCols = 16;
 	int iGLSkullkeepOffset = 0;
+	int iShowType = 0;
 	tCompanionActuator* xact = NULL;
 
 	ref.category = category_Actuator;
@@ -2514,16 +2548,19 @@ displayActuatorsLists ()
 
 	iNbTotalItems = iNbActuators;
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
-	outputTextLineAt (200, winH-40, "ALL ACTUATORS LIST : #%03d ITEMS", iNbActuators);
+	outputTextLineAt (200, winH-40, "F11: ALL ACTUATORS LIST : #%03d", iNbActuators);
 
 	if (SKULLKEEP)
 		iGLSkullkeepOffset = gl_StaticSkullkeep;
 
 	for (id = 0; id < 128; id++)
-		iCounterPerType[id] = 0;
+	{
+		iCounterPerWType[id] = 0;
+		iCounterPerFType[id] = 0;
+	}
 
 	moveToUpperMap ();
-	if (iNbActuators > 256)
+	if (iNbActuators > 512)
 	{
 		iStepDisplay = 32;
 		iFntSize = 8;
@@ -2531,6 +2568,35 @@ displayActuatorsLists ()
 		iNbPerCol = 32;
 		iNbCols = 32;
 	}
+	else if (iNbActuators > 256)
+	{
+		iFntSize = 12;
+		size = (__STD_STACK_SIZE__*0.75f)*0.75f;
+		iNbPerCol = 20;
+		iStepDisplay = iNbPerCol;
+		iNbCols = 16;
+	}
+	else if (iNbActuators < 64)
+	{
+		iFntSize = 20;
+		size = (__STD_STACK_SIZE__)*1.25f;
+		iNbPerCol = 8;
+		iStepDisplay = iNbPerCol;
+		iNbCols = 8;
+		iShowType = 1;
+	}
+	else if (iNbActuators < 144)
+	{
+		iFntSize = 18;
+		size = (__STD_STACK_SIZE__);
+		iNbPerCol = 12;
+		iStepDisplay = iNbPerCol;
+		iNbCols = 12;
+		iShowType = 1;
+	}
+
+
+	moveSize (0, 1, size);
 	for (j = 0; j < (unsigned int) iNbCols; j++)
 	{
 		for (id = 0; id < (unsigned int) iNbPerCol; id++)
@@ -2542,16 +2608,9 @@ displayActuatorsLists ()
 			fwtype = '?';
 			actmap = 0;
 
-			if (ref.id <= 1022)
+			if (ref.id < iNbActuators)
 			{
-				item = (actuator_p) getItem (&ref);
-				iCounterPerType[item->type]++;
-				drawSizeSquare (iGLSkullkeepOffset + gl_WActuators + item->type, size, ((ref.id>iNbActuators)?.01f:1.0f));
 
-				//--- Shadowed text
-				iAdjustX = -iFntSize;
-				setTextProperties (iFntSize, 0, 0, 0);
-				fontDrawString (iGLVirtualX+1+iAdjustX, iGLVirtualY-1, "%02X", item->type);
 				// If actuator is unreferenced
 				actmap = xact->map;
 				if (xact->used == 0)
@@ -2569,26 +2628,51 @@ displayActuatorsLists ()
 						fwtype = 'W';
 					}
 				}
-				fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY, "%02X", item->type);
+				
+				item = (actuator_p) getItem (&ref);
+				if (xact->wact == 0)
+					iCounterPerFType[item->type]++;
+				else
+					iCounterPerWType[item->type]++;
+				if (xact->wact == 1)
+					drawSizeSquare (iGLSkullkeepOffset + gl_WActuators + (unsigned int) item->type, size, ((ref.id>iNbActuators)?.01f:1.0f));
+				else
+					drawSizeSquare (iGLSkullkeepOffset + gl_FActuators + (unsigned int) item->type, size, ((ref.id>iNbActuators)?.01f:1.0f));
+
+				//--- Shadowed text, actuator type
+				if (iShowType == 1)
+				{
+					float fshadowstep = (iFntSize/8.f);
+					iAdjustX = -iFntSize;
+					iAdjustY = iFntSize;
+					setTextProperties (iFntSize, 0, 0, 0);
+					fontDrawString (iGLVirtualX+iAdjustX+fshadowstep, iGLVirtualY+iAdjustY-(fshadowstep), "%02X", item->type);
+					setTextProperties (iFntSize, 1, 1, 1);
+					fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY+iAdjustY, "%02X", item->type);
+				}
+
+				
+				
 				//if (xact->used == 1)
 				{
-					iAdjustY = -iFntSize;
-					iAdjustX = -1.5f*iFntSize;
+					iAdjustY = -1.75f*iFntSize;
+					iAdjustX = -1.75f*iFntSize;
 					
 					setTextProperties (iFntSize, 0, 0, 0);
 					fontDrawString (iGLVirtualX+1+iAdjustX, iGLVirtualY-1+iAdjustY, "%C", fwtype);	
 					setTextProperties (iFntSize, .8, .8, .8);
 					fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY+iAdjustY, "%C", fwtype);
 
-					iAdjustY = -iFntSize;
-					iAdjustX = 0*iFntSize;
+					iAdjustY = -1.75f*iFntSize;
+					iAdjustX = 1.0f*iFntSize;
 					setTextProperties (iFntSize, 0, 0, 0);
 					fontDrawString (iGLVirtualX+1+iAdjustX, iGLVirtualY-1+iAdjustY, "%d", actmap);	
-					setTextProperties (iFntSize, .4, .9, .4);
-					setTextProperties (iFntSize, .4 + (.6*actmap/16.f), .9 - (.9*actmap/16.f), .4 + (.6*actmap/16.f));
+					//setTextProperties (iFntSize, .4, .9, .4);
+					//setTextProperties (iFntSize, .4 + (.6*actmap/16.f), .9 - (.9*actmap/16.f), .4 + (.6*actmap/16.f));
+					setTextProperties (iFntSize, .4 + (actmap%4)*.6, .9 + ((actmap+1)%4)*(-.8f), .4 + ((actmap+2)%4)*.6);
 					fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY+iAdjustY, "%d", actmap);
-				
 				}
+				
 			}
 			moveSize (0, 1, size);
 		}
@@ -2599,17 +2683,49 @@ displayActuatorsLists ()
 	//--- Display quantity per type
 	moveToUpperMap ();
 	moveSize (18, 0, size);
-	for (id = 0; id < 80; id++)
+	size = (__STD_STACK_SIZE__);
+	setTextProperties (20, .5, 1, .8); 
+	fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY+iAdjustY, "WALL ACTUATORS");
+	moveSize (0, 1, size);
+	for (id = -1; id <= actuator_end_pad; id++)
 	{
-		if (id%16 == 0 && id != 0)
+		if (id == -1)
+			id = 0x7F;
+		if (id%8 == 0 && id != 0)
 		{
-			moveSize (3, -16, size);
+			moveSize (2.5, -8, size);
+			if (id == 8)
+				moveSize(0, -1, size);
 		}
 		drawSizeSquare (iGLSkullkeepOffset + gl_WActuators + id, size, 1.0f);
 		moveSize (1, 0, size);
-		if (iCounterPerType[id] == 0)
-			setTextProperties (10, .4, .4, .4);
-		fontDrawString (iGLVirtualX, iGLVirtualY, "%02d", iCounterPerType[id]);
+		if (iCounterPerWType[id] == 0)
+			setTextProperties (14, .3, .5, .4);
+		else
+			setTextProperties (14, .5, 1, .8);
+		fontDrawString (iGLVirtualX, iGLVirtualY, "%02d", iCounterPerWType[id]);
+		moveSize (-1, 1, size);
+		if (id == 0x7F)
+			id = -1;
+	}
+	moveSize (0, -1*(id%8), size);
+	moveSize (3, -1, size);
+	setTextProperties (20, .5, 1, .8); 
+	fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY+iAdjustY, "FLOOR ACTUATORS");
+	moveSize (0, 1, size);
+	for (id = 0; id <= actuator_floor_carried_item; id++)
+	{
+		if (id%8 == 0 && id != 0)
+		{
+			moveSize (3, -8, size);
+		}
+		drawSizeSquare (iGLSkullkeepOffset + gl_FActuators + id, size, 1.0f);
+		moveSize (1, 0, size);
+		if (iCounterPerFType[id] == 0)
+			setTextProperties (14, .3, .5, .4);
+		else
+			setTextProperties (14, .5, 1, .8);
+		fontDrawString (iGLVirtualX, iGLVirtualY, "%02d", iCounterPerFType[id]);
 		moveSize (-1, 1, size);
 	}
 }
@@ -2623,18 +2739,20 @@ void
 drawDatabasesCapacity (float scale)
 {
 	int i;
-	float large = 16;
+	float large = 20;
 	moveToUpperMap ();
 	
 	//moveSize (winW*2 - 400, 16*16*scale, 1);
-	moveSize (890*3, 110, 1);
+	moveSize (64, 38, 48);
+	//moveSize (890*3, 110, 1);
 	//fontDrawString (iTileInfo_OffsetX, winH-iTileInfo_OffsetY, "TILE: (%02X)", *tile);
 
 	for (i = 0; i < 16; i++)
 	{
-		drawCapacityBar ((float) nItems[i]/1020, i, large/2, scale*1020/4);
+		drawCapacityBar ((float) nItems[i]/1020, i, large/2, scale*1020/4*(large/16));
 		moveSize (large, 0, 1);
 	}
+	fontDrawString (1650, winH-1015, "DB USAGE");
 }
 
 //------------------------------------------------------------------------------

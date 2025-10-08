@@ -638,6 +638,13 @@ addTextContext(int iContext, const char* sTextStrings)
 	return iTextNum;
 }
 
+//------------------------------------------------------------------------------
+
+void
+controlTextAttributeValue (enum cursorText type, int new_value)
+{
+
+}
 
 //------------------------------------------------------------------------------
 

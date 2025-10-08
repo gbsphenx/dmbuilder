@@ -612,6 +612,10 @@ setTextCursor (enum cursorText type, int new_value)
 		txtcursors[type] = 0;
 	else if (type == cursor_Text && new_value >= totalTexts)	// from text.h
 		txtcursors[type] = totalTexts-1;
+	else if (type == cursor_SubText && new_value < 0)
+		txtcursors[type] = 0;
+	else if (type == cursor_SubText && new_value >= 28)	// champion text edit
+		txtcursors[type] = 28;
 }
 
 //------------------------------------------------------------------------------

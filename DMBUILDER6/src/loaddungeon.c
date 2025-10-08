@@ -261,6 +261,19 @@ loadMusicList(char* sFilenameSongListDat)
 //------------------------------------------------------------------------------
 
 int
+loadDungeonFromDir (char *dungeonname)
+{
+	char fulldungeonname[512];
+	memset(fulldungeonname, 0, 512);
+#ifdef __LINUX__
+	sprintf(fulldungeonname, "dungeons/%s", dungeonname);
+#else
+	sprintf(fulldungeonname, "dungeons\\%s", dungeonname);
+#endif // __LINUX__
+	return loadDungeonData (fulldungeonname);
+}
+
+int
 loadDungeonData (char *dungeonname)
 {
 	FILE* fp = NULL;

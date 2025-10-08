@@ -21,6 +21,7 @@ typedef struct
 //--- Companion table for actuators usage
 extern tCompanionActuator xActuatorTable[1024];
 
+int loadDungeonFromDir (char *dungeonname);
 int loadDungeonData (char* dungeonname);
 int loadMusicList (char* sFilenameSongListDat);
 
