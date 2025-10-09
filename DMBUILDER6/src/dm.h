@@ -553,6 +553,11 @@ enum ACTIVATORSITEMTYPE
 	special_OpenChest = 30,
 
 	special_Max = 33,
+
+	special_TextWall = 34,
+	special_TextScroll1 = 35,
+	special_TextScroll2 = 36,
+
 	item_actuators_Max = 0xc7,
 };
 

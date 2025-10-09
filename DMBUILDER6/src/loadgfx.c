@@ -200,6 +200,10 @@ void loadGraphics ()
 
 //------------------------------------------------------------------------------
 
+	Graphics_LoadSkullkeepImagesSet ("TWall.tga", gl_Special + special_TextWall, 128, 128);
+	Graphics_LoadSkullkeepImagesSet ("TScroll1.tga", gl_Special + special_TextScroll1, 128, 128);
+	Graphics_LoadSkullkeepImagesSet ("TScroll2.tga", gl_Special + special_TextScroll2, 128, 128);
+
 	Graphics_LoadSkullkeepImagesSet ("DMWActuators.tga", gl_WActuators, 64, 64);
 	Graphics_LoadSkullkeepImagesSet ("DMFActuators.tga", gl_FActuators, 64, 64);
 

@@ -2243,6 +2243,7 @@ displayTextEditor ()
 	{
 		char *sInText = NULL;
 		static dm_text_plain stxtplain;
+		float fScrollSize = 128*4;
 
 		moveToUpperScreen ();
 		moveSize (56, 12, 48);
@@ -2262,6 +2263,61 @@ displayTextEditor ()
 			setTextProperties (textcatsize, .8, .6, 0); 
 			//printf("R%d: %s\n", i, stxtplain.textline[i]);
 			fontDrawString (x, y, "R%d:", i);
+			slen = strlen(stxtplain.textline[i]);
+			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
+			setTextProperties (textcatsize, .7, .7, .7); 
+			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
+			y -= ystep;
+		}
+
+		/// Then it should be displayed for scroll, wall, and narrative text (floor pad)
+		x = 1000;
+		y = winH - (120 + 15 * textcatsize);
+		moveSize (0, 1, size);
+		moveSize (-.75f, 0, fScrollSize);
+		drawSizeSquare (gl_Special + special_TextScroll1, fScrollSize*1.25f, 1.0f);
+		moveSize (.75f, 0, fScrollSize);
+		// scroll => up to 7 lines
+		for (i = 0; i < 7; i++)
+		{
+			int slen = 0;
+			int xs = x;
+			slen = strlen(stxtplain.textline[i]);
+			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
+			setTextProperties (textcatsize, .1, .1, .1); 
+			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
+			y -= ystep;
+		}
+
+		x = 1350;
+		y = winH - (120 + 15 * textcatsize);
+		// wall => up to 4 lines
+		moveSize (.75f, 0, fScrollSize);
+		drawSizeSquare (gl_Special + special_TextWall, fScrollSize*0.85f, 1.0f);
+		moveSize (-.75f, 0, fScrollSize);
+		for (i = 0; i < 4; i++)
+		{
+			int slen = 0;
+			int xs = x;
+			slen = strlen(stxtplain.textline[i]);
+			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
+			setTextProperties (textcatsize, .1, .1, .1);
+			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
+			xs -= 2;
+			y += 2;
+			setTextProperties (textcatsize, 1, 1, 1);
+			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
+			y -= ystep;
+		}
+
+		x = 1000;
+		y = winH - (120 + 23 * textcatsize);
+		// narrative text => up to 3 large lines
+		for (i = 0; i < 4; i++)
+		{
+			int slen = 0;
+			int xs = x;
+			setTextProperties (textcatsize, .8, .6, 0); 
 			slen = strlen(stxtplain.textline[i]);
 			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
 			setTextProperties (textcatsize, .7, .7, .7); 
@@ -2686,7 +2742,7 @@ displayActuatorsLists ()
 	size = (__STD_STACK_SIZE__);
 	setTextProperties (20, .5, 1, .8); 
 	fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY+iAdjustY, "WALL ACTUATORS");
-	moveSize (0, 1, size);
+	moveSize (0, 1.25f, size);
 	for (id = -1; id <= actuator_end_pad; id++)
 	{
 		if (id == -1)
@@ -2709,10 +2765,10 @@ displayActuatorsLists ()
 			id = -1;
 	}
 	moveSize (0, -1*(id%8), size);
-	moveSize (3, -1, size);
+	moveSize (3, -1.25f, size);
 	setTextProperties (20, .5, 1, .8); 
 	fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY+iAdjustY, "FLOOR ACTUATORS");
-	moveSize (0, 1, size);
+	moveSize (0, 1.25f, size);
 	for (id = 0; id <= actuator_floor_carried_item; id++)
 	{
 		if (id%8 == 0 && id != 0)

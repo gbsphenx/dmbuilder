@@ -32,7 +32,7 @@ enum GLGROUP
  gl_Spells			=	0x1800,
  gl_Powers			=	0x1900,
  gl_Portraits		=	0x1A00,
- gl_Special			=	0x1B00, // use for actuators
+ gl_Special			=	0x1B00,
  gl_Tiles			=	0x1C00,
  gl_Ornates			=	0x1D00,	// door ornates
  gl_Floors			=	0x1E00,
