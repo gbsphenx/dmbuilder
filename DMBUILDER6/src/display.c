@@ -2244,10 +2244,16 @@ displayTextEditor ()
 		char *sInText = NULL;
 		static dm_text_plain stxtplain;
 		float fScrollSize = 128*4;
+		int rMax = 0;
 
 		moveToUpperScreen ();
 		moveSize (56, 12, 48);
 		drawFrameXY (1600, 1200, .9, .9, .7);
+		moveSize (0, 10, 48);
+		drawFrameXY (1400, 180, .9, .9, .7);	// for narrative text
+
+		moveToUpperScreen ();
+		moveSize (56, 12, 48);
 
 		sInText = getText (seltext);
 		//printf("SX: %s\n", sInText);
@@ -2264,6 +2270,8 @@ displayTextEditor ()
 			//printf("R%d: %s\n", i, stxtplain.textline[i]);
 			fontDrawString (x, y, "R%d:", i);
 			slen = strlen(stxtplain.textline[i]);
+			if (slen > 0)
+				rMax = i;
 			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
 			setTextProperties (textcatsize, .7, .7, .7); 
 			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
@@ -2271,12 +2279,16 @@ displayTextEditor ()
 		}
 
 		/// Then it should be displayed for scroll, wall, and narrative text (floor pad)
-		x = 1000;
-		y = winH - (120 + 15 * textcatsize);
+		x = 990;
+		y = winH - (130 + 16 * textcatsize);
 		moveSize (0, 1, size);
-		moveSize (-.75f, 0, fScrollSize);
-		drawSizeSquare (gl_Special + special_TextScroll1, fScrollSize*1.25f, 1.0f);
-		moveSize (.75f, 0, fScrollSize);
+		moveSize (-.65f, 0, fScrollSize);
+		if (SKULLKEEP)
+			drawSizeSquare (gl_Special + special_TextScroll2, fScrollSize*1.5f, 1.0f);
+		else
+			drawSizeSquare (gl_Special + special_TextScroll1, fScrollSize*1.5f, 1.0f);
+		moveSize (.65f, 0, fScrollSize);
+		y += ((float)ystep*rMax)/2;
 		// scroll => up to 7 lines
 		for (i = 0; i < 7; i++)
 		{
@@ -2290,11 +2302,13 @@ displayTextEditor ()
 		}
 
 		x = 1350;
-		y = winH - (120 + 15 * textcatsize);
-		// wall => up to 4 lines
+		y = winH - (130 + 16 * textcatsize);
+		
 		moveSize (.75f, 0, fScrollSize);
-		drawSizeSquare (gl_Special + special_TextWall, fScrollSize*0.85f, 1.0f);
+		drawSizeSquare (gl_Special + special_TextWall, fScrollSize, 1.0f);
 		moveSize (-.75f, 0, fScrollSize);
+		y += ((float)ystep*(rMax>4?4:rMax))/2;
+		// wall => up to 4 lines
 		for (i = 0; i < 4; i++)
 		{
 			int slen = 0;
@@ -2309,20 +2323,44 @@ displayTextEditor ()
 			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
 			y -= ystep;
 		}
-
-		x = 1000;
-		y = winH - (120 + 23 * textcatsize);
-		// narrative text => up to 3 large lines
-		for (i = 0; i < 4; i++)
+		if (rMax>3)
 		{
 			int slen = 0;
 			int xs = x;
-			setTextProperties (textcatsize, .8, .6, 0); 
-			slen = strlen(stxtplain.textline[i]);
-			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
-			setTextProperties (textcatsize, .7, .7, .7); 
-			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
 			y -= ystep;
+			slen = strlen("MESSED DISPLAY!");
+			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
+			setTextProperties (textcatsize, .1, .1, .1);
+			fontDrawString (xs, y, "MESSED DISPLAY!");
+			xs -= 3;
+			y += 3;
+			setTextProperties (textcatsize, 1, 0, 0);
+			fontDrawString (xs, y, "MESSED DISPLAY!");
+		}
+
+
+		x = 1100;
+		y = winH - (120 + 26 * textcatsize);
+		// narrative text => up to 3 large lines
+		{
+			char tcctxt[3][100];
+			for (i = 0; i < 3; i++)
+				memset(tcctxt[i], 0, 100);
+
+			sprintf(tcctxt[0], "%s %s %s", stxtplain.textline[0], stxtplain.textline[1], stxtplain.textline[2]);
+			sprintf(tcctxt[1], "%s %s %s", stxtplain.textline[3], stxtplain.textline[4], stxtplain.textline[5]);
+			sprintf(tcctxt[2], "%s %s %s", stxtplain.textline[6], stxtplain.textline[7], stxtplain.textline[8]);
+
+			textcatsize = 13.f;
+
+			for (i = 0; i < 3; i++)
+			{
+				int slen = 0;
+				int xs = x;
+				setTextProperties (textcatsize, .8, .8, .8); 
+				fontDrawString (xs, y, "%s", tcctxt[i]);
+				y -= ystep;
+			}
 		}
 	}
 }
