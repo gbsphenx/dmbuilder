@@ -78,6 +78,7 @@ enum cursorText
 {
 	cursor_Text = 0,		// id of edited text
 	cursor_SubText,		// id of subtext (champion edit)
+	cursor_NewTextType,
 };
 
 
@@ -152,7 +153,7 @@ extern int iGlbCurrentContext;
 extern void startEditor ();
 
 extern char getEditCursor (enum cursorType type);
-extern void setEditCursor (enum cursorType type, char new_value);
+extern void setEditCursor (enum cursorType type, int new_value);
 
 extern int getTextCursor (enum cursorText type);
 extern void setTextCursor (enum cursorText type, int new_value);

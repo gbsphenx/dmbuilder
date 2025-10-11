@@ -483,6 +483,40 @@ displaySelectNewItem ()
 
 }
 
+static void
+displaySelectNewText ()
+{
+	static int symbol_item[] = {
+		gl_Special + special_OpenScroll,
+		gl_Walls + wall_HeroMirror };
+	unsigned int i;
+
+	moveToUpperScreen ();
+	moveSize (56, 26.75, 48);
+	for (i = 0; i < 2; i++)
+	{
+		drawSizeSquare (symbol_item[i], __STD_STACK_SIZE__, 1.0f);
+		if (i == (unsigned int) getTextCursor (cursor_NewTextType))
+		{
+			double fsinv = 0;
+			double rad = 0;
+			if (angle > 360)
+				angle = angle%360;
+			rad = ((double)angle) / 360 * (2*3.1415f) * 1;
+			fsinv = (double)cos(rad);
+			fsinv = (fsinv/2) + 0.5f;
+			drawFrame (__STD_STACK_SIZE__, 0, .5, 1);
+			drawFrameLW (__STD_STACK_SIZE__, 1.*fsinv, 1.*fsinv, -.5*fsinv, 4.f);
+		}
+		moveSize (1, 0, __STD_STACK_SIZE__);
+	}
+
+	moveToUpperScreen ();
+	moveSize (56, 26.75, 48);
+	drawFrameXY (1416, 180, .9, .9, .7);
+
+}
+
 //------------------------------------------------------------------------------
 //	Specific Activator displays
 //------------------------------------------------------------------------------
@@ -2289,8 +2323,8 @@ displayTextEditor ()
 			drawSizeSquare (gl_Special + special_TextScroll1, fScrollSize*1.5f, 1.0f);
 		moveSize (.65f, 0, fScrollSize);
 		y += ((float)ystep*rMax)/2;
-		// scroll => up to 7 lines
-		for (i = 0; i < 7; i++)
+		// scroll => up to 8 lines
+		for (i = 0; i < 8; i++)
 		{
 			int slen = 0;
 			int xs = x;
@@ -3131,6 +3165,8 @@ redrawScreen ()
 	case screen_TextEditor:
 		displayTextEditor ();
 		drawTextEditHelpInfo ();
+		if (isSelectingNewItem())
+			displaySelectNewText ();
 		break;
 
 	case screen_DM2AI:

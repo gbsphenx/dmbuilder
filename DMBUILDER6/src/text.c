@@ -198,7 +198,6 @@ convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
 
 			iBreaksCount = 0;
 			iSegment = 0;
-			printf("SELECT: %s\n", sInputText);
 
 			for (c = 0; c < len; c++)
 			{
@@ -299,7 +298,6 @@ convertTextToPlain (unsigned int number, dm_text_plain* sPlainText)
 
 			iBreaksCount = 0;
 			iSegment = 0;
-			printf("SELECT: %s\n", sInputText);
 
 			for (outrow = 0; outrow < 9; outrow++)
 				memset(sPlainText->textline[outrow], 0, 100);
@@ -393,7 +391,7 @@ findHeros ()
 			iHeroCandidate = 0;
 			iBreaksCount = 0;
 			iSegment = 0;
-			printf("%d %s\n", i, TEXTS[i]);
+			//printf("%d %s\n", i, TEXTS[i]);
 
 			for (c = 0; c < len; c++)
 			{
@@ -419,6 +417,10 @@ findHeros ()
 			//printf("breaks = %d\n", iBreaksCount);
 			if (iBreaksCount == 6 && iHeroCandidate == 1)
 				TXTTYPE[i] = text_champion;
+			else if (iBreaksCount >= 8)
+				TXTTYPE[i] = text_narrative;
+			else if (iBreaksCount >= 4)
+				TXTTYPE[i] = text_scroll;
 		}
 		//TXTTYPE[i] = text_undefined;
 	}
@@ -593,6 +595,7 @@ createEmptyTextChampion()
 {
 	int itxt = addText ("bogus}illegal{hero}}m}aabbaabbaabb}ababababababab}cccccccccccccccc");
 	TXTTYPE[itxt] = text_champion;
+	return itxt;
 }
 
 int
@@ -641,9 +644,9 @@ addTextContext(int iContext, const char* sTextStrings)
 //------------------------------------------------------------------------------
 
 void
-controlTextAttributeValue (enum cursorText type, int new_value)
+controlTextAttributeValue (int subattribute, int deltavalue)
 {
-
+	int iTextNum = getTextCursor (cursor_Text);
 }
 
 //------------------------------------------------------------------------------

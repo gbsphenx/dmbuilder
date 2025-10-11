@@ -77,6 +77,8 @@ extern void convertTextToPlain (unsigned int number, dm_text_plain* sPlainText);
 extern void convertToInternTexts ();
 extern void convertToMasterTexts ();
 
+extern void controlTextAttributeValue (int subattribute, int deltavalue);
+
 extern void startTexts ();
 
 #endif

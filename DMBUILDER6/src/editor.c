@@ -79,8 +79,8 @@ static char cursors_limit[] = {
 static const size_t cursor_number = cursor_AI_attribute + 1;
 char cursors[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0};
 
-int txtcursors[] = {0, 0};
-static const size_t text_cursor_number = 2;
+int txtcursors[] = {0, 0, 0};
+static const size_t text_cursor_number = 3;
 
 int screen = screen_Map;
 
@@ -723,6 +723,8 @@ void
 setScreen (int val)
 {
 	screen = val;
+
+	setSelectingNewItem (0);	// by default, changing screen cancels any new select item
 
 	if (screen == screen_ListsActuators)
 		recomputeActuatorsUsage();

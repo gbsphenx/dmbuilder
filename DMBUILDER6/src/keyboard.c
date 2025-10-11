@@ -984,12 +984,24 @@ void keyboard (unsigned char key, int x, int y)
 			} break;
 		case screen_TextEditor:
 			{
-				if (key == KEY_ESCAPE)
+				if (isSelectingNewItem () == 0 && key == KEY_ESCAPE)
 					Call_ChangeScreen (screen_Map);
+				else if (isSelectingNewItem () && key == KEY_RETURN)
+				{
+					int iselect = getTextCursor (cursor_NewTextType);
+					if (iselect == 0)
+						addText ("NEW TEXT");
+					else if (iselect == 1)
+						createEmptyTextChampion ();
+					setSelectingNewItem (0);
+				}
 				else if (key == KEY_RETURN)
 					switchEditingText ();
 				else if (key == '+')
-					setTextCursor (cursor_Text, createEmptyText ());
+					//setTextCursor (cursor_Text, createEmptyText ());
+					setSelectingNewItem (1);
+				else if (key == '-' || (key == KEY_ESCAPE && isSelectingNewItem ()))
+					setSelectingNewItem (0);
 					;
 			} break;
 		case screen_LoadFile:
@@ -1275,7 +1287,16 @@ void arrow_keys (int a_keys, int x, int y)
 			break;
 		case screen_TextEditor:
 			{
-				if (!isEditingText ())
+				if (isSelectingNewItem ())
+				{
+					switch (a_keys)
+					{
+						case GLUT_KEY_LEFT: setTextCursor (cursor_NewTextType, (!getTextCursor (cursor_NewTextType))); break;
+						case GLUT_KEY_RIGHT: setTextCursor (cursor_NewTextType, (!getTextCursor (cursor_NewTextType))); break;
+					}
+					break;
+				}
+				else if (!isEditingText ())
 				{
 					switch (a_keys)
 					{
@@ -1290,8 +1311,8 @@ void arrow_keys (int a_keys, int x, int y)
 					{
 						case GLUT_KEY_DOWN: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) + 1)); break;
 						case GLUT_KEY_UP: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) - 1)); break;
-						case GLUT_KEY_LEFT: controlTextAttributeValue (cursor_SubText, -1); break;
-						case GLUT_KEY_RIGHT: controlTextAttributeValue (cursor_SubText, 1); break;
+						case GLUT_KEY_LEFT: controlTextAttributeValue (getTextCursor (cursor_SubText), -1); break;
+						case GLUT_KEY_RIGHT: controlTextAttributeValue (getTextCursor (cursor_SubText), 1); break;
 
 					}
 					break;
