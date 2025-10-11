@@ -990,13 +990,18 @@ void keyboard (unsigned char key, int x, int y)
 				{
 					int iselect = getTextCursor (cursor_NewTextType);
 					if (iselect == 0)
-						addText ("NEW TEXT");
+						iselect = addText ("NEW TEXT");
 					else if (iselect == 1)
-						createEmptyTextChampion ();
+						iselect = createEmptyTextChampion ();
 					setSelectingNewItem (0);
+					setTextCursor (cursor_Text, iselect);
 				}
 				else if (key == KEY_RETURN)
+				{
 					switchEditingText ();
+					if (!isEditingText ()) // just switch off edition
+						putEditBufferToText (getTextCursor (cursor_Text));
+				}
 				else if (key == '+')
 					//setTextCursor (cursor_Text, createEmptyText ());
 					setSelectingNewItem (1);
@@ -1302,6 +1307,8 @@ void arrow_keys (int a_keys, int x, int y)
 					{
 						case GLUT_KEY_DOWN: setTextCursor (cursor_Text, (getTextCursor (cursor_Text) + 1)); break;
 						case GLUT_KEY_UP: setTextCursor (cursor_Text, (getTextCursor (cursor_Text) - 1)); break;
+						case GLUT_KEY_PAGE_DOWN: setTextCursor (cursor_Text, (getTextCursor (cursor_Text) + 5)); break;
+						case GLUT_KEY_PAGE_UP: setTextCursor (cursor_Text, (getTextCursor (cursor_Text) - 5)); break;
 					}
 					break;
 				}

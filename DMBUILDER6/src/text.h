@@ -45,6 +45,7 @@ typedef struct
 	char textline[9][100];
 } dm_text_plain;
 
+extern dm_text_champion	edit_champion;
 
 extern int SKULLKEEP;
 extern int THERONSQUEST;
@@ -70,9 +71,14 @@ extern int createEmptyText();
 extern int addText(const char* sTextStrings);
 extern int addTextContext(int iContext, const char* sTextStrings);
 
+extern void putTextToEditBuffer (unsigned int number);
+extern void putEditBufferToText (unsigned int number);
+
 extern void initTextToChampion (dm_text_champion* sChampionStruct);
 extern void convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct);
 extern void convertTextToPlain (unsigned int number, dm_text_plain* sPlainText);
+
+extern void convertChampionToText (unsigned int number, dm_text_champion* sChampionStruct);
 
 extern void convertToInternTexts ();
 extern void convertToMasterTexts ();

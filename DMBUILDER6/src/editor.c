@@ -556,6 +556,10 @@ void
 switchEditingText ()
 {
 	editing_text = !editing_text;
+	if (editing_text == 1)	// get text into edit buffer
+		putTextToEditBuffer (getTextCursor (cursor_Text));
+	else if (editing_text == 0)	// return buffer to text raw strings
+		putEditBufferToText (getTextCursor (cursor_Text));
 }
 
 
