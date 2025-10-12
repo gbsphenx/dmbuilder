@@ -755,7 +755,42 @@ controlTextAttributeValue (int subattribute, int deltavalue)
 	int oldvalue = 0;
 	int newvalue = 0;
 
-	if (subattribute >= 13 && subattribute <= 28)
+	if (subattribute == 2)
+	{
+		if (edit_champion.gender == 'M' || edit_champion.gender == 'm')
+			edit_champion.gender = 'f';
+		else
+			edit_champion.gender = 'm';
+	}
+	else if (subattribute >= 3 && subattribute <= 5)
+	{
+		int* statvalue = NULL;
+		int fact = 1;
+		if (subattribute == 3)
+			statvalue = &edit_champion.health;
+		else if (subattribute == 4)
+		{
+			statvalue = &edit_champion.stamina;
+			fact = 10;
+		}
+		else if (subattribute == 5)
+			statvalue = &edit_champion.mana;
+		*statvalue += (deltavalue*fact);
+		if ( *statvalue < (1*fact))
+			*statvalue = (1*fact);
+		else if ( *statvalue > 10000)
+			*statvalue = 10000;
+	}
+	else if (subattribute >= 6 && subattribute <= 12)
+	{
+		int attr = subattribute - 6;
+		edit_champion.attributes[attr] += deltavalue;
+		if ( edit_champion.attributes[attr] < 30)
+			edit_champion.attributes[attr] = 30;
+		else if ( edit_champion.attributes[attr] > 170)
+			edit_champion.attributes[attr] = 170;
+	}
+	else if (subattribute >= 13 && subattribute <= 28)
 	{
 		int skill = subattribute - 13;
 		edit_champion.skills[skill] += deltavalue;
