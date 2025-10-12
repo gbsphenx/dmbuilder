@@ -43,6 +43,9 @@ char const EndOfLine = 28;
 char const Extension = 30;
 char const EndOfBlock = 31;
 
+dm_text_champion	edit_champion;
+dm_text_plain		edit_plain_text;
+
 //------------------------------------------------------------------------------
 
 void
@@ -142,6 +145,30 @@ convertAToInt(char* sAlpha)
 	return val;
 }
 
+
+
+void
+convertIntToA(char* sAlpha, int value)
+{
+	sAlpha[0] = value + 'a';
+}
+
+void
+convertIntToAB(char* sAlpha, int value)
+{
+	int i = 0;
+	for (i = 0; i < 2; i++)
+		sAlpha[i] = (int)(value/pow(16,1-i))%16 + 'a';
+}
+
+void
+convertIntToABCD(char* sAlpha, int value)
+{
+	int i = 0;
+	for (i = 0; i < 4; i++)
+		sAlpha[i] = (int)(value/pow(16,3-i))%16 + 'a';
+}
+
 void
 initTextToChampion (dm_text_champion* sChampionStruct)
 {
@@ -162,6 +189,82 @@ initTextToChampion (dm_text_champion* sChampionStruct)
 			sChampionStruct->attributes[i] = 30;
 		for (i = 0; i < 16; i++)
 			sChampionStruct->skills[i] = 2;
+	}
+}
+
+void
+convertChampionToText (unsigned int number, dm_text_champion* sChampionStruct)
+{
+	char* sOutputText = NULL;
+	dm_text_champion* scs = sChampionStruct;
+
+	if (sChampionStruct != NULL)
+	{
+		sOutputText = TEXTS[number];
+
+		// size of text is
+		// fname (max 7) + lname (max ??) + 1 + 3*4 + 7*2 + 16*1 + 6 breaks = size (name) + 48
+		if (sOutputText != NULL)
+			free (sOutputText);
+
+		sOutputText = calloc ( 48 + 7 + 32, sizeof(char));
+
+		if (sOutputText != NULL)
+		{
+			int i = 0;
+			char fname[8];
+			char lname[31];
+			char g = 'f';
+			char bsk[13];
+			char attr[15];
+			char skills[17];
+			memset (fname, 0, 8);
+			memset (lname, 0, 31);
+			memset (bsk, 'a', 13); bsk[12] = 0;
+			memset (attr, 'a', 15); attr[14] = 0;
+			memset (skills, 'a', 17); skills[16] = 0;
+
+			//printf("1) %s}%s}}%c}%s}%s}%s", fname, lname, g, &bsk, &attr, &skills);
+			//sprintf(sOutputText, "1) %s}%s}}%c}%s}%s}%s", fname, lname, g, &bsk, &attr, &skills);
+			//printf("bsk = %8x / health = %03d / champion %8x\n", bsk, scs->health, sChampionStruct);
+			convertIntToABCD(&bsk[0], scs->health);
+			convertIntToABCD(&bsk[4], scs->stamina);
+			convertIntToABCD(&bsk[8], scs->mana);
+
+			for (i = 0; i < 7; i++)
+			{
+				fname[i] = scs->firstname[i];
+				if (fname[i] >= 'A' && fname[i] <= 'Z')
+					fname[i] = fname[i] + ('a' - 'A');
+				if (fname[i] == ' ' || fname[i] == '_')
+					fname[i] = '{';
+			}
+			for (i = 0; i < 30; i++)
+			{
+				lname[i] = scs->lastname[i];
+				if (lname[i] >= 'A' && lname[i] <= 'Z')
+					lname[i] = lname[i] + ('a' - 'A');
+				if (lname[i] == ' ' || lname[i] == '_')
+					lname[i] = '{';
+			}
+			g = scs->gender;
+			if (g == 'M') g = 'm';
+			else if (g == 'F') g = 'f';
+
+			for (i = 0; i < 7; i++)
+				convertIntToAB(&(attr[i*2]), scs->attributes[i]);
+
+			for (i = 0; i < 16; i++)
+				convertIntToA(&(skills[i]), scs->skills[i]);
+
+			//printf("%s:%s", scs->firstname, scs->lastname);
+			//printf("2) %s}%s}}%c}%s}%s}%s", fname, lname, g, &bsk, &attr, &skills);
+			sprintf(sOutputText, "%s}%s}}%c}%s}%s}%s", fname, lname, g, &bsk, &attr, &skills);
+			//printf("New text = %s\n", sOutputText);
+
+			TEXTS[number] = sOutputText;
+		}
+
 	}
 }
 
@@ -641,12 +744,26 @@ addTextContext(int iContext, const char* sTextStrings)
 	return iTextNum;
 }
 
+
+
 //------------------------------------------------------------------------------
 
 void
 controlTextAttributeValue (int subattribute, int deltavalue)
 {
 	int iTextNum = getTextCursor (cursor_Text);
+	int oldvalue = 0;
+	int newvalue = 0;
+
+	if (subattribute >= 13 && subattribute <= 28)
+	{
+		int skill = subattribute - 13;
+		edit_champion.skills[skill] += deltavalue;
+		if ( edit_champion.skills[skill] < 0)
+			edit_champion.skills[skill] = 0;
+		else if ( edit_champion.skills[skill] > 15)
+			edit_champion.skills[skill] = 15;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -674,3 +791,28 @@ getTextsNumber ()
 {
 	return totalTexts;
 }
+
+//------------------------------------------------------------------------------
+
+void
+putTextToEditBuffer (unsigned int number)
+{
+	if (TXTTYPE[number] == text_champion)
+	{
+		convertTextToChampion (number, &edit_champion);
+	}
+//edit_champion
+//edit_plain_text
+}
+
+void
+putEditBufferToText (unsigned int number)
+{
+	if (TXTTYPE[number] == text_champion)
+	{
+		convertChampionToText (number, &edit_champion);
+	}
+}
+
+
+//------------------------------------------------------------------------------
