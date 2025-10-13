@@ -2260,6 +2260,7 @@ printTextEditHelpInfo ()
 	int basex = iTileInfo_OffsetX+40;
 	int basey = winH-iTileInfo_OffsetY-730;
 	int helptfsize = 13;
+	float l = 1.f;
 
 	int x = basex + 192;
 	int y = basey;
@@ -2269,6 +2270,9 @@ printTextEditHelpInfo ()
 	fontDrawString (x, y, "ONLINE HELP");
 	y -= ystep;
 
+	if (totalTexts == 0)
+		l = globalfsinv;
+
 	{
 		y -= ystep;
 		setTextProperties (helptfsize, .7, .7, .7);
@@ -2277,12 +2281,9 @@ printTextEditHelpInfo ()
 		setTextProperties (helptfsize, .7, .7, .7);
 		fontDrawString (x, y, "ENTER: LOCK CURRENT TEXT FOR EDIT");
 		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
+		setTextProperties (helptfsize, .7*l, .7*l, .7*l);
 		fontDrawString (x, y, "'+': ADD A NEW TEXT");
 		y -= ystep;
-
-
-	
 	}
 }
 

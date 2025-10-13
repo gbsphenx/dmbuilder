@@ -2285,6 +2285,9 @@ displayTextEditor ()
 		static dm_text_plain stxtplain;
 		float fScrollSize = 128*4;
 		int rMax = 0;
+		int selrow = 0;
+		int selchar = 0;
+		float l = 1.f;
 
 		moveToUpperScreen ();
 		moveSize (56, 12, 48);
@@ -2302,11 +2305,18 @@ displayTextEditor ()
 		x = 1050;
 		y = winH - 120;
 
+		selrow = getTextCursor (cursor_RowText);
+		selchar = getTextCursor (cursor_InlineText);
+
 		for (i = 0; i < 9; i++)
 		{
 			int slen = 0;
 			int xs = x;
-			setTextProperties (textcatsize, .8, .6, 0); 
+			l = 1.0f;
+
+			if (i == selrow && isEditingText ())
+				l = globalfsinv + 0.5f;
+			setTextProperties (textcatsize, .8*l, .6*l, 0*l); 
 			//printf("R%d: %s\n", i, stxtplain.textline[i]);
 			fontDrawString (x, y, "R%d:", i);
 			slen = strlen(stxtplain.textline[i]);
@@ -2315,6 +2325,13 @@ displayTextEditor ()
 			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
 			setTextProperties (textcatsize, .7, .7, .7); 
 			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
+			if (i == selrow && isEditingText ())
+			{
+				setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+				xs += (selchar * textcatsize);
+				fontDrawString (xs, y, "%c", stxtplain.textline[i][selchar]);
+				
+			}
 			y -= ystep;
 		}
 

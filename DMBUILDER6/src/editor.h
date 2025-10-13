@@ -79,6 +79,8 @@ enum cursorText
 	cursor_Text = 0,		// id of edited text
 	cursor_SubText,		// id of subtext (champion edit)
 	cursor_NewTextType,
+	cursor_RowText,		// row of text to edit
+	cursor_InlineText,	// X cursor within current row
 };
 
 

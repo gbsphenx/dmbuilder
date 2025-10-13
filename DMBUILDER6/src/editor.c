@@ -79,7 +79,7 @@ static char cursors_limit[] = {
 static const size_t cursor_number = cursor_AI_attribute + 1;
 char cursors[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0};
 
-int txtcursors[] = {0, 0, 0};
+int txtcursors[] = {0, 0, 0, 0, 0};
 static const size_t text_cursor_number = 3;
 
 int screen = screen_Map;
@@ -601,6 +601,12 @@ setEditingTarget (int boolean)
 //------------------------------------------------------------------------------
 
 int
+findLastTextCharRow (int numtext)
+{
+	return 0;
+}
+
+int
 getTextCursor (enum cursorText type)
 {
 	assert ((size_t) type < text_cursor_number);
@@ -612,7 +618,7 @@ setTextCursor (enum cursorText type, int new_value)
 {
 	assert ((size_t) type < text_cursor_number);
 	txtcursors[type] = new_value;
-	if (type == cursor_Text && new_value < 0)
+	if (type == cursor_Text && (new_value < 0 || totalTexts == 0))
 		txtcursors[type] = 0;
 	else if (type == cursor_Text && new_value >= totalTexts)	// from text.h
 		txtcursors[type] = totalTexts-1;
@@ -620,6 +626,21 @@ setTextCursor (enum cursorText type, int new_value)
 		txtcursors[type] = 0;
 	else if (type == cursor_SubText && new_value >= 28)	// champion text edit
 		txtcursors[type] = 28;
+
+	if (type == cursor_RowText)
+	{
+		if (new_value <= 0)
+			txtcursors[type] = 0;
+		else if (new_value >= 8)
+			txtcursors[type] = 8;
+	}
+	else if (type == cursor_InlineText)
+	{
+		if (new_value <= 0)
+			txtcursors[type] = 0;
+		else if (new_value >= 10)
+			txtcursors[type] = 10;
+	}
 }
 
 //------------------------------------------------------------------------------

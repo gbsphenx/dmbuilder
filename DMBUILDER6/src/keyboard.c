@@ -996,7 +996,7 @@ void keyboard (unsigned char key, int x, int y)
 					setSelectingNewItem (0);
 					setTextCursor (cursor_Text, iselect);
 				}
-				else if (key == KEY_RETURN)
+				else if (key == KEY_RETURN && totalTexts > 0)
 				{
 					switchEditingText ();
 					if (!isEditingText ()) // just switch off edition
@@ -1312,7 +1312,7 @@ void arrow_keys (int a_keys, int x, int y)
 					}
 					break;
 				}
-				else if (isEditingText ())
+				else if (isEditingText () && TXTTYPE[getTextCursor(cursor_Text)] == text_champion)
 				{
 					switch (a_keys)
 					{
@@ -1320,7 +1320,17 @@ void arrow_keys (int a_keys, int x, int y)
 						case GLUT_KEY_UP: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) - 1)); break;
 						case GLUT_KEY_LEFT: controlTextAttributeValue (getTextCursor (cursor_SubText), -1); break;
 						case GLUT_KEY_RIGHT: controlTextAttributeValue (getTextCursor (cursor_SubText), 1); break;
-
+					}
+					break;
+				}
+				else if (isEditingText ())
+				{
+					switch (a_keys)
+					{
+						case GLUT_KEY_DOWN: setTextCursor (cursor_RowText, (getTextCursor (cursor_RowText) + 1)); break;
+						case GLUT_KEY_UP: setTextCursor (cursor_RowText, (getTextCursor (cursor_RowText) - 1)); break;
+						case GLUT_KEY_LEFT: setTextCursor (cursor_InlineText, (getTextCursor (cursor_InlineText) - 1)); break;
+						case GLUT_KEY_RIGHT: setTextCursor (cursor_InlineText, (getTextCursor (cursor_InlineText) + 1)); break;
 					}
 					break;
 				}
