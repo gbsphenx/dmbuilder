@@ -46,6 +46,7 @@ typedef struct
 } dm_text_plain;
 
 extern dm_text_champion	edit_champion;
+extern dm_text_plain	edit_plain_text;
 
 extern int SKULLKEEP;
 extern int THERONSQUEST;
@@ -84,6 +85,7 @@ extern void convertToInternTexts ();
 extern void convertToMasterTexts ();
 
 extern void controlTextAttributeValue (int subattribute, int deltavalue);
+extern void controlTextChar (int textnumber, int keyvalue);
 
 extern void startTexts ();
 

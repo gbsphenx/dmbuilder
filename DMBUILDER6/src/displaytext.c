@@ -1694,7 +1694,7 @@ displaySelectedTextList (unsigned int select)
 		if (t == 0)
 			setTextProperties (textsize, 1, .9, .7);
 		if (select + t >= 0 && select + t < getTextsNumber())
-		fontDrawString (32, winH - (64 + (textsize-1)*(t+24)), "(%32s)", convertTextToLimitedBuffer (getText(select + t)));
+		fontDrawString (32, winH - (64 + (textsize-1)*(t+24)), "(%s)", convertTextToLimitedBuffer (getText(select + t)));
 	}
 }
 

@@ -54,6 +54,8 @@ extern int msg_flag;
 #define KEY_RETURN 13
 #define KEY_TAB	9
 #define KEY_ESCAPE 27
+#define KEY_BACKSPACE 8
+#define KEY_DELETE 127
 #define KEY_CONTROL -96	// 'a' is 97, C-a is 1
 
 #define ControlKey(key) (KEY_CONTROL + (key))
@@ -985,7 +987,10 @@ void keyboard (unsigned char key, int x, int y)
 		case screen_TextEditor:
 			{
 				if (isSelectingNewItem () == 0 && key == KEY_ESCAPE)
+				{
 					Call_ChangeScreen (screen_Map);
+					setSelectingNewItem (0);
+				}
 				else if (isSelectingNewItem () && key == KEY_RETURN)
 				{
 					int iselect = getTextCursor (cursor_NewTextType);
@@ -1002,11 +1007,20 @@ void keyboard (unsigned char key, int x, int y)
 					if (!isEditingText ()) // just switch off edition
 						putEditBufferToText (getTextCursor (cursor_Text));
 				}
+				else if (key == KEY_DELETE)
+					controlTextChar ( getTextCursor (cursor_Text), key);
 				else if (key == '+')
-					//setTextCursor (cursor_Text, createEmptyText ());
 					setSelectingNewItem (1);
 				else if (key == '-' || (key == KEY_ESCAPE && isSelectingNewItem ()))
 					setSelectingNewItem (0);
+				else if (isEditingText () && key >= 'a' && key <= 'z')
+					controlTextChar ( getTextCursor (cursor_Text), key);
+				else if (isEditingText () && key >= '0' && key <= '9')
+					controlTextChar ( getTextCursor (cursor_Text), key);
+				else if (isEditingText () && (key == ' ' || key == '_'))
+					controlTextChar ( getTextCursor (cursor_Text), key);
+				else if (isEditingText () && (key == '!' || key == '?' || key == KEY_BACKSPACE))
+					controlTextChar ( getTextCursor (cursor_Text), key);
 					;
 			} break;
 		case screen_LoadFile:

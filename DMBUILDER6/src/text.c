@@ -26,7 +26,8 @@ short TXTTYPE[1024];
 size_t totalTexts = 0;
 short adresses[1024];
 
-
+#define KEY_BACKSPACE 8
+#define KEY_DELETE 127
 
 struct dm_codon
 {
@@ -461,6 +462,61 @@ convertTextToPlain (unsigned int number, dm_text_plain* sPlainText)
 	}
 }
 
+
+void
+convertEditToText (int number, dm_text_plain* edittext)
+{
+	char* sOutputText = NULL;
+	size_t i = 0;
+	char sInternalBuffer[500];
+	size_t outputcursor = 0;
+	size_t ccur = 0;
+	size_t row = 0;
+	char inchr = 0;
+
+	if (TXTTYPE[number] == text_champion)
+		return;
+
+	sOutputText = TEXTS[number];
+
+	if (edittext != NULL)
+	{
+		if (sOutputText != NULL)
+		{
+			free(sOutputText);
+		}
+		memset(sInternalBuffer, 0, 500);
+		for (row = 0; row < 9; row++)
+		{
+			for (ccur = 0; ccur < 100; ccur++)
+			{
+				inchr = edittext->textline[row][ccur];
+				if (inchr == 0)
+					break;
+				if (inchr >= 'A' && inchr <= 'Z')
+					inchr = inchr - 'A' + 'a';
+				else if (inchr == ' ' || inchr == '_')
+					inchr = '{';
+				sInternalBuffer[outputcursor++] = inchr;
+			}
+			sInternalBuffer[outputcursor++] = '}';
+		}
+		sOutputText = calloc (sizeof (sInternalBuffer)+1, sizeof (char));
+		strcpy(sOutputText, sInternalBuffer);
+		//printf("Produced text = %s\n", sOutputText);
+		TEXTS[number] = sOutputText;
+	}
+
+}
+
+void
+convertTextToEdit (int number, dm_text_plain* edittext)
+{
+	convertTextToPlain (number, edittext);
+}
+
+
+
 void
 resetTypes ()
 {
@@ -749,6 +805,42 @@ addTextContext(int iContext, const char* sTextStrings)
 //------------------------------------------------------------------------------
 
 void
+controlTextChar (int textnumber, int keyvalue)
+{
+	int selrow = getTextCursor (cursor_RowText);
+	int selchar = getTextCursor (cursor_InlineText);
+
+	if (keyvalue >= 'a' && keyvalue <= 'z')
+		edit_plain_text.textline[selrow][selchar] = keyvalue - 'a' + 'A';
+	else if (keyvalue >= 'A' && keyvalue <= 'Z')
+		edit_plain_text.textline[selrow][selchar] = keyvalue;
+	else if (keyvalue >= '0' && keyvalue <= '9')
+		edit_plain_text.textline[selrow][selchar] = keyvalue;
+	else if (keyvalue == ' ' || keyvalue == '_')
+		edit_plain_text.textline[selrow][selchar] = ' ';
+	else if (keyvalue == '?' || keyvalue == '!')
+		edit_plain_text.textline[selrow][selchar] = keyvalue;
+	else if (keyvalue == KEY_DELETE)
+	{
+		size_t i = 0;
+		for (i = selchar; i < 99; i++)
+			edit_plain_text.textline[selrow][i] = edit_plain_text.textline[selrow][i+1];
+		setTextCursor (cursor_InlineText, selchar);
+		return;
+	}
+	else if (keyvalue == KEY_BACKSPACE && selchar > 0)
+	{
+		size_t i = 0;
+		for (i = selchar-1; i < 99; i++)
+			edit_plain_text.textline[selrow][i] = edit_plain_text.textline[selrow][i+1];
+		setTextCursor (cursor_InlineText, selchar-1);
+		return;
+	}
+
+	setTextCursor (cursor_InlineText, ++selchar);
+}
+
+void
 controlTextAttributeValue (int subattribute, int deltavalue)
 {
 	int iTextNum = getTextCursor (cursor_Text);
@@ -833,20 +925,18 @@ void
 putTextToEditBuffer (unsigned int number)
 {
 	if (TXTTYPE[number] == text_champion)
-	{
 		convertTextToChampion (number, &edit_champion);
-	}
-//edit_champion
-//edit_plain_text
+	else
+		convertTextToEdit (number, &edit_plain_text);
 }
 
 void
 putEditBufferToText (unsigned int number)
 {
 	if (TXTTYPE[number] == text_champion)
-	{
 		convertChampionToText (number, &edit_champion);
-	}
+	else
+		convertEditToText (number, &edit_plain_text);
 }
 
 

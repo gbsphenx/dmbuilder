@@ -2282,7 +2282,8 @@ displayTextEditor ()
 	else // any generic, probably scroll or wall
 	{
 		char *sInText = NULL;
-		static dm_text_plain stxtplain;
+		static dm_text_plain basesplain;
+		dm_text_plain* stxtplain = NULL;
 		float fScrollSize = 128*4;
 		int rMax = 0;
 		int selrow = 0;
@@ -2298,9 +2299,13 @@ displayTextEditor ()
 		moveToUpperScreen ();
 		moveSize (56, 12, 48);
 
+		stxtplain = &basesplain;
 		sInText = getText (seltext);
 		//printf("SX: %s\n", sInText);
-		convertTextToPlain (seltext, &stxtplain);
+		convertTextToPlain (seltext, &basesplain);
+
+		if ( isEditingText () )
+			stxtplain = &edit_plain_text;
 
 		x = 1050;
 		y = winH - 120;
@@ -2319,17 +2324,20 @@ displayTextEditor ()
 			setTextProperties (textcatsize, .8*l, .6*l, 0*l); 
 			//printf("R%d: %s\n", i, stxtplain.textline[i]);
 			fontDrawString (x, y, "R%d:", i);
-			slen = strlen(stxtplain.textline[i]);
+			slen = strlen(stxtplain->textline[i]);
 			if (slen > 0)
 				rMax = i;
 			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
 			setTextProperties (textcatsize, .7, .7, .7); 
-			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
+			fontDrawString (xs, y, "%s", stxtplain->textline[i]);
 			if (i == selrow && isEditingText ())
 			{
-				setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+				setTextProperties (textcatsize, 1.*(1-l), 1.*(1-l), 1.*(1-l)); 
 				xs += (selchar * textcatsize);
-				fontDrawString (xs, y, "%c", stxtplain.textline[i][selchar]);
+				fontDrawString (xs, y, "%c", stxtplain->textline[i][selchar]);
+				setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+				fontDrawString (xs, y, "%c", 0x08);
+				//fontDrawString (xs, y, "%c", stxtplain.textline[i][selchar] + 0x80);
 				
 			}
 			y -= ystep;
@@ -2351,10 +2359,10 @@ displayTextEditor ()
 		{
 			int slen = 0;
 			int xs = x;
-			slen = strlen(stxtplain.textline[i]);
+			slen = strlen(stxtplain->textline[i]);
 			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
 			setTextProperties (textcatsize, .1, .1, .1); 
-			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
+			fontDrawString (xs, y, "%s", stxtplain->textline[i]);
 			y -= ystep;
 		}
 
@@ -2370,14 +2378,14 @@ displayTextEditor ()
 		{
 			int slen = 0;
 			int xs = x;
-			slen = strlen(stxtplain.textline[i]);
+			slen = strlen(stxtplain->textline[i]);
 			xs = x + (float)((5 + 10 - (float)slen/2.f)*textcatsize);
-			setTextProperties (textcatsize, .1, .1, .1);
-			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
-			xs -= 2;
-			y += 2;
-			setTextProperties (textcatsize, 1, 1, 1);
-			fontDrawString (xs, y, "%s", stxtplain.textline[i]);
+			setTextProperties (textcatsize, 1, 1, 1);	// shadow
+			fontDrawString (xs, y, "%s", stxtplain->textline[i]);
+			xs -= 3;
+			y += 3;
+			setTextProperties (textcatsize, .3, .3, .3);
+			fontDrawString (xs, y, "%s", stxtplain->textline[i]);
 			y -= ystep;
 		}
 		if (rMax>3)
@@ -2404,9 +2412,9 @@ displayTextEditor ()
 			for (i = 0; i < 3; i++)
 				memset(tcctxt[i], 0, 100);
 
-			sprintf(tcctxt[0], "%s %s %s", stxtplain.textline[0], stxtplain.textline[1], stxtplain.textline[2]);
-			sprintf(tcctxt[1], "%s %s %s", stxtplain.textline[3], stxtplain.textline[4], stxtplain.textline[5]);
-			sprintf(tcctxt[2], "%s %s %s", stxtplain.textline[6], stxtplain.textline[7], stxtplain.textline[8]);
+			sprintf(tcctxt[0], "%s %s %s", stxtplain->textline[0], stxtplain->textline[1], stxtplain->textline[2]);
+			sprintf(tcctxt[1], "%s %s %s", stxtplain->textline[3], stxtplain->textline[4], stxtplain->textline[5]);
+			sprintf(tcctxt[2], "%s %s %s", stxtplain->textline[6], stxtplain->textline[7], stxtplain->textline[8]);
 
 			textcatsize = 13.f;
 

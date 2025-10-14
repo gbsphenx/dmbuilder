@@ -80,7 +80,7 @@ static const size_t cursor_number = cursor_AI_attribute + 1;
 char cursors[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0};
 
 int txtcursors[] = {0, 0, 0, 0, 0};
-static const size_t text_cursor_number = 3;
+static const size_t text_cursor_number = 5;
 
 int screen = screen_Map;
 
@@ -618,6 +618,7 @@ setTextCursor (enum cursorText type, int new_value)
 {
 	assert ((size_t) type < text_cursor_number);
 	txtcursors[type] = new_value;
+
 	if (type == cursor_Text && (new_value < 0 || totalTexts == 0))
 		txtcursors[type] = 0;
 	else if (type == cursor_Text && new_value >= totalTexts)	// from text.h
@@ -638,8 +639,8 @@ setTextCursor (enum cursorText type, int new_value)
 	{
 		if (new_value <= 0)
 			txtcursors[type] = 0;
-		else if (new_value >= 10)
-			txtcursors[type] = 10;
+		else if (new_value >= 20)
+			txtcursors[type] = 20;
 	}
 }
 
