@@ -1599,13 +1599,15 @@ drawMapObject (unsigned char level, int edittext)
 {
 	char i, j;
 	moveToUpperMap ();
-	for (j = 0; j < 32; j++)
+	for (j = 0; j < 32; j++) 
 	{
 		for (i = 0; i < 32; i++)
 		{
 			float light = 1.0f;
-			if (shadowmapbar == 1 && j >= 21 && j <= 24)
-				light = .25;
+			// if we edit a target, do not shadow the map since we want to see it
+			if (!isEditingTarget ())
+				if (shadowmapbar == 1 && j >= 21 && j <= 24)
+					light = .25;
 			drawObject (i, j, level, edittext, light);
 			move (1, 0);
 		}
@@ -1636,8 +1638,10 @@ drawMap (unsigned char level, int edittext)
 			if (edittext)
 				light = .25;
 
-			if (shadowmapbar == 1 && j >= 21 && j <= 24)
-				light = .25;
+			// if we edit a target, do not shadow the map since we want to see it
+			if (!isEditingTarget ())
+				if (shadowmapbar == 1 && j >= 21 && j <= 24)
+					light = .25;
 
 			if (tile->type == tile_Pit)
 				drawPit ((tile_pit_p) tile, light);
