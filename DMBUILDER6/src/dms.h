@@ -125,7 +125,7 @@ typedef dm_teleport* teleport_p;
 
 typedef struct 
 {
-	unsigned short silent:1;
+	unsigned short visible:1;
 	unsigned short flag2:1;
 	unsigned short flag3:1;
 	unsigned short offset:13;

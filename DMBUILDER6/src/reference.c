@@ -284,7 +284,7 @@ copyStackNum (int stacknumsource, int stacknumdest)
 				short* xNewItem = getItem(&xRefNewItem);
 				text_p xNewText = (text_p) xNewItem;
 				//push_reference_in_stack_facing (xRefNewItem, x, y, m, facing);
-				xNewText->silent = xText->silent;
+				xNewText->visible = xText->visible;
 				xNewText->flag2 = xText->flag2;
 				xNewText->flag3 = xText->flag3;
 				xNewText->offset = xText->offset;
@@ -428,7 +428,7 @@ copyStackNumContexts (int iContextSource, int stacknumsource, int iContextDest, 
 				short* xNewItem = getItemContext(iContextDest, &xRefNewItem);
 				text_p xNewText = (text_p) xNewItem;
 				//push_reference_in_stack_facing (xRefNewItem, x, y, m, facing);
-				xNewText->silent = xText->silent;
+				xNewText->visible = xText->visible;
 				xNewText->flag2 = xText->flag2;
 				xNewText->flag3 = xText->flag3;
 

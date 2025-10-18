@@ -696,7 +696,7 @@ void keyboard (unsigned char key, int x, int y)
 							sact->Activated = !sact->Activated;
 
 						if (key == 's' && sact->Mode == 0)	// standard text
-							text->silent += 1;
+							text->visible += 1;
 						break;
 					}
 

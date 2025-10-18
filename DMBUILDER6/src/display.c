@@ -657,7 +657,7 @@ displayTextObject (reference_p refp, float light)
 	{
 		drawPositionStack (gl_x_Walls, 0, 1.0f);
 		moveStack (1, 0);
-		drawPositionStack (gl_Gui + text_Mouth, 0, 0.4 + 0.6 * text->silent);
+		drawPositionStack (gl_Gui + text_Mouth, 0, 0.4 + 0.6 * text->visible);
 		moveStack (-1, 0);
 	}
 	else if (SKULLKEEP == 1)

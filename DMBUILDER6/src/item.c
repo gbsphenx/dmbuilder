@@ -280,7 +280,7 @@ initText (short *item, int type)
 {
 	text_p text = (text_p) item;
 	text->offset = 0;
-	text->silent = 0;
+	text->visible = 1;
 	text->flag2 = 0;
 	text->flag3 = 0;
 }

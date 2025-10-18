@@ -1580,7 +1580,7 @@ text_frame_text (reference_p reference, int x, int y, float l)
 		fontDrawString (x, y, "TEXT (OFFSET %03d | x%02x)", text->offset, text->offset);
 		setTextProperties (iInfoFntSize, .2*l, .8*l, .8*l);
 		y -= iInfoFntSize;
-		fontDrawString (x, y, "VISIBLE    : %0d", text->silent);
+		fontDrawString (x, y, "VISIBLE    : %0d", text->visible);
 		setTextProperties (iInfoFntSize, .2*l, .8*l, .8*l);
 		//if (iUseGDATText == 0)
 		//	setTextProperties (iInfoFntSize, .1*l, .4*l, .4*l);
