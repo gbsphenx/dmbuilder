@@ -182,7 +182,7 @@ static const char* txt_complete_wall_actuators[] =
 static const char* txt_complete_floor_actuators[] = 
 {
 	"Nothing",	"Activated by Everything",	"Activated by Party or Monster",	"Activated by Party",
-	"Activated by Item",	"5?",	"Monster Generator",	"Activated by Monster",
+	"Activated by Item",	"And/Or Gate",	"Monster Generator",	"Activated by Monster",
 	"Activated by Item Carried",	"9?",	"10?",	"11?",
 	"12?",	"13?",	"14?",	"15?",
 	"16?",	"17?",	"18?",	"19?",

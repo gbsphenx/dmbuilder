@@ -501,6 +501,14 @@ convertEditToText (int number, dm_text_plain* edittext)
 			}
 			sInternalBuffer[outputcursor++] = '}';
 		}
+		// remove trailing 'break line'
+		ccur = outputcursor - 1;
+		while (sInternalBuffer[ccur] == '}' && ccur > 0)
+		{
+			sInternalBuffer[ccur] = 0;
+			ccur--;
+		}
+
 		sOutputText = calloc (sizeof (sInternalBuffer)+1, sizeof (char));
 		strcpy(sOutputText, sInternalBuffer);
 		//printf("Produced text = %s\n", sOutputText);
