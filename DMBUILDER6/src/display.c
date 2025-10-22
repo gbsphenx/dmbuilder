@@ -1071,6 +1071,8 @@ displaySelectionBar (int bank, int value, float scale)
 
 		graphisms[13][1] = dt_Containers_Max;
 
+		graphisms[14][0] = gl_StaticSkullkeep + gl_FActuators;
+		graphisms[15][0] = gl_StaticSkullkeep + gl_WActuators;
 		graphisms[14][1] = 73;
 		graphisms[15][1] = 128;
 
@@ -1106,6 +1108,8 @@ displaySelectionBar (int bank, int value, float scale)
 
 		graphisms[13][1] = 0;
 
+		graphisms[14][0] = gl_FActuators;
+		graphisms[15][0] = gl_WActuators;
 		graphisms[14][1] = 9;
 		graphisms[15][1] = 128;
 	}
@@ -1366,19 +1370,16 @@ drawStack (char x, char y, unsigned char level)
 		else if (refp->category == category_Scroll)
 			text_frame_scroll (refp, 0, iStackIndex, fLightText);
 		else if (refp->category == category_Text)
-			text_frame_text (refp, 0, iStackIndex, fLightText);
+		{
+			if (SKULLKEEP == 1)
+				text_frame_simple_actuator(refp, 0, iStackIndex, fLightScale);
+			else
+				text_frame_text (refp, 0, iStackIndex, fLightText);
+		}
 		else if (refp->category == category_Monster)
 			text_frame_monster (refp, 0, iStackIndex, fLightText);
 		else if (refp->category == category_Actuator)
 			text_frame_actuator_short (refp, wall, 0, iStackIndex, fLightText);
-
-		else if (refp->category == category_Text)
-		{
-			if (SKULLKEEP == 1)
-			{
-				text_frame_simple_actuator(refp, 0, iStackIndex, fLightScale);
-			}
-		}
 
 		moveStack (0, 1);
 		refp = getNextItem (refp);
@@ -2705,6 +2706,12 @@ displayActuatorsLists ()
 	int iGLSkullkeepOffset = 0;
 	int iShowType = 0;
 	tCompanionActuator* xact = NULL;
+	int iFTypeMax = actuator_floor_carried_item;
+	int iWTypeMax = actuator_end_pad;
+	int iWTypeStart = -1;
+	int percol = 8;
+
+	float stepnum = 1;
 
 	ref.category = category_Actuator;
 	ref.position = 0;
@@ -2850,37 +2857,52 @@ displayActuatorsLists ()
 	setTextProperties (20, .5, 1, .8); 
 	fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY+iAdjustY, "WALL ACTUATORS");
 	moveSize (0, 1.25f, size);
-	for (id = -1; id <= actuator_end_pad; id++)
+	
+	if (SKULLKEEP)
+	{
+		iFTypeMax = 0x49;
+		iWTypeMax = 0x48;
+		iWTypeStart = -2;
+		stepnum = .5f;
+		size = size*.75f;
+		percol = 12;
+	}
+
+	for (id = iWTypeStart; id <= iWTypeMax; id++)
 	{
 		if (id == -1)
 			id = 0x7F;
-		if (id%8 == 0 && id != 0)
+		else if (id == -2)
+			id = 0x7E;
+		if (id%percol == 0 && id != 0)
 		{
-			moveSize (2.5, -8, size);
-			if (id == 8)
+			moveSize (1.5 + stepnum, -percol, size);
+			if (id == percol)
 				moveSize(0, -1, size);
 		}
 		drawSizeSquare (iGLSkullkeepOffset + gl_WActuators + id, size, 1.0f);
-		moveSize (1, 0, size);
+		moveSize (stepnum, 0, size);
 		if (iCounterPerWType[id] == 0)
 			setTextProperties (14, .3, .5, .4);
 		else
 			setTextProperties (14, .5, 1, .8);
 		fontDrawString (iGLVirtualX, iGLVirtualY, "%02d", iCounterPerWType[id]);
-		moveSize (-1, 1, size);
-		if (id == 0x7F)
+		moveSize (-stepnum, 1, size);
+		if (id == 0x7E)
+			id = -2;
+		else if (id == 0x7F)
 			id = -1;
 	}
-	moveSize (0, -1*(id%8), size);
+	moveSize (0, -1*(id%percol), size);
 	moveSize (3, -1.25f, size);
 	setTextProperties (20, .5, 1, .8); 
 	fontDrawString (iGLVirtualX+iAdjustX, iGLVirtualY+iAdjustY, "FLOOR ACTUATORS");
 	moveSize (0, 1.25f, size);
-	for (id = 0; id <= actuator_floor_carried_item; id++)
+	for (id = 0; id <= iFTypeMax; id++)
 	{
-		if (id%8 == 0 && id != 0)
+		if (id%percol == 0 && id != 0)
 		{
-			moveSize (3, -8, size);
+			moveSize (3, -percol, size);
 		}
 		drawSizeSquare (iGLSkullkeepOffset + gl_FActuators + id, size, 1.0f);
 		moveSize (1, 0, size);

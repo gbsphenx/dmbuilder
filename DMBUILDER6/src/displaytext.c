@@ -173,7 +173,7 @@ static const char* txt_complete_wall_actuators[] =
 {
 	"CHAMPION MIRROR",
 	"DISABLED (NOTHING)",	"PUSH BUTTON",	"ALCOVE ITEM",	"ITEM",
-	"ITEM EATER",	"TRIGGER",	"COUNTING PAD",	"7?",
+	"ITEM EATER",	"TRIGGER",	"COUNTING PAD",	"ITEM SHOOTER?",
 	"SPELL SHOOTER",	"WEAPON SHOOTER",	"DOUBLE SPELL SHOOTER",	"ITEM EATER TOGGLER 1",
 	"MOUSE LAST TOGGLER",	"REMOVE ITEM TOGGLER",	"GENERAL ITEM SHOOTER",	"DOUBLE GENERAL ITEM SHOOTER",
 	"ACT. TOGGLER",	"EATER TOGGLER 2",	"END PAD",
@@ -1391,30 +1391,24 @@ text_frame_simple_actuator (reference_p reference, int x, int y, float l)
 
 	//if (reference->category == category_Weapon)
 	{
-		setTextProperties (iInfoFntSize, .9*l, .9*l, .8*l);
+		setTextProperties (iInfoFntSize, 0.9*l, 0.8*l, 0.9*l);
 		fontDrawString (x, y, "SIMPLE ACTUATOR");
 		setTextProperties (iInfoFntSize, 1*l, .5*l, .4*l);
 		fontDrawString (x + 15*iInfoFntSize, y, "-HEX: %04X", sSAct);
 
-		setTextProperties (iLocalFntSize, 1*l, .5*l, .4*l);
+		setTextProperties (iLocalFntSize, .5*l, .7*l, .7*l);
 		y -= iLocalFntSize;
 		fontDrawString (x, y, "ACTIVATED: %02d", xSimpleActuator->Activated);
-		setTextProperties (iLocalFntSize, 1*l, .5*l, .4*l);
+		setTextProperties (iLocalFntSize, .5*l, .7*l, .7*l);
 		y -= iLocalFntSize;
 		fontDrawString (x, y, "MODE:      %02d", xSimpleActuator->Mode);
-		setTextProperties (iLocalFntSize, 1*l, .5*l, .4*l);
+		setTextProperties (iLocalFntSize, .5*l, .7*l, .7*l);
 		y -= iLocalFntSize;
 		fontDrawString (x, y, "GFX:       %02d (%02x)", xSimpleActuator->Graphism, xSimpleActuator->Graphism);
-		setTextProperties (iLocalFntSize, 1*l, .5*l, .4*l);
+		setTextProperties (iLocalFntSize, .5*l, .7*l, .7*l);
 		y -= iLocalFntSize;
 		fontDrawString (x, y, "EXTENDED:  %02d (%s)", xSimpleActuator->ExtendedUsage, txt_dm2_sact_extuse[xSimpleActuator->ExtendedUsage]);
 	}
-	/*
-		unsigned short	Activated:1;	// And for Text Visibility
-	unsigned short 	Mode:2;			// 0 = text / 1 = active decoration / 2 = complex
-	unsigned short	Graphism:8;	//2^7 = 128 (range: 0-7F)
-	unsigned short	ExtendedUsage:5;
-	*/
 }
 
 
@@ -1487,7 +1481,7 @@ void
 text_frame_container (reference_p reference, int x, int y, float l)
 {
 	chest_p chest = (chest_p) getItem (reference);
-	x = winW-370; 
+	x = iInfoX;
 	y = (winH - iInfoYNeg) - (y*__STD_STACK_SIZE__/2);
 
 	if (reference->category == category_Chest)

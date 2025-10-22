@@ -783,11 +783,17 @@ cycleActivatorGeneral (reference_p refp, int step)
 		}
 		else if (!wall && function == 1)
 		{
+			int flimit = 9;
 			actuator_p act = (actuator_p) getItem (refp);
+			if (SKULLKEEP)
+				flimit = 73;
 			act->type += step;
-			if (act->type >= 9)
-				act->type = ( ((((int)act->type)-128)+9)%9 );
-			act->type = (act->type+9)%9;
+			if (act->type >= flimit)
+				if (act->type >= 127)
+					act->type = ( (((int)act->type-128)+flimit)%flimit );
+				else
+					act->type = ( ((((int)act->type)-flimit)+flimit)%flimit );
+			act->type = (act->type+flimit)%flimit;
 		}
 		else if (!wall && function == 2)
 		{
