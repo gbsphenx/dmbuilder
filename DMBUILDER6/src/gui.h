@@ -16,15 +16,14 @@
 enum GLGROUP
 {
  gl_Doors			=	0x0100,
-
+ gl_FActuators		=	0x0200,
+ gl_WActuators		=	0x0300,
  gl_Monsters		=	0x0400,
  gl_Weapons			=	0x0500,
  gl_Clothes			=	0x0600,
  gl_Potions			=	0x0700,
  gl_Miscs			=	0x0A00,
  gl_Containers		=	0x0B00,
- gl_FActuators		=	0x0C00,
- gl_WActuators		=	0x0D00,
 
  gl_SpecialTiles	=	0x0F00,	// specially used for DM2 special floor tiles
  gl_Gui				=	0x1000,
