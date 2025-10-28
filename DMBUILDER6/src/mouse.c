@@ -111,17 +111,17 @@ Mouse_Handler (int button, int state, int x, int y)
 				tile_p cell = getTile ((char)Mouse.tile_x, (char)Mouse.tile_y, getEditCursor (cursor_L));
 				if (Mouse.button == MOUSE_BUTTON_LEFT) // left button
 				{
-					if (cell->type == 0)
+					if (cell->type == 0)	// wall
 					cell->type = 1; // floor
-					else if (cell->type == 2)
-						((tile_pit_p) cell)->open += 8;
-					else if (cell->type == 3)
+					else if (cell->type == 2)	// pit
+						((tile_pit_p) cell)->open += 1;
+					else if (cell->type == 3)	// stairs
 						((tile_stairs_p) cell)->leading += 1;
-					else if (cell->type == 4)
+					else if (cell->type == 4)	// door
 						((tile_door_p) cell)->closed += 1;
-					else if (cell->type == 5)
+					else if (cell->type == 5)	// teleporter
 						((tile_teleport_p) cell)->open += 1;
-					else if (cell->type == 6)
+					else if (cell->type == 6)	// trick wall
 						((tile_trickwall_p) cell)->open += 1;
 				}
 				else if (Mouse.button == MOUSE_BUTTON_RIGHT) // right button
