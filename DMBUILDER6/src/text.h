@@ -69,6 +69,7 @@ extern void exportText ();
 extern void importText ();
 
 extern int createEmptyText();
+extern int createEmptyTextChampion();
 extern int addText(const char* sTextStrings);
 extern int addTextContext(int iContext, const char* sTextStrings);
 
@@ -78,6 +79,8 @@ extern void putEditBufferToText (unsigned int number);
 extern void initTextToChampion (dm_text_champion* sChampionStruct);
 extern void convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct);
 extern void convertTextToPlain (unsigned int number, dm_text_plain* sPlainText);
+
+
 
 extern void convertChampionToText (unsigned int number, dm_text_champion* sChampionStruct);
 

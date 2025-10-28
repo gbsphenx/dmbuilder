@@ -606,6 +606,8 @@ void keyboard (unsigned char key, int x, int y)
 								getDungeon()->f_start ++;
 					else getCurrentTile ()->type = tile_Pit;
 					break;
+				case 'w':
+					getCurrentTile ()->type = tile_Wall; break;
 				case 'f':
 					getCurrentTile ()->type = tile_Floor; break;
 				case 's':

@@ -1135,7 +1135,6 @@ displaySelectionBar (int bank, int value, float scale)
 					drawSizeSquare (gfx_activation_items[(i + value - half + max)%max], __STD_STACK_SIZE__*scale, 1.0f);
 				else
 					drawSizeSquare (graphisms[bank][0] + (i + value - half + max)%max, __STD_STACK_SIZE__*scale, 1.0f);
-				//printf("TEXTURE: %d\n", graphisms[bank][0] + (i + value - half + max)%max);
 				moveSize (1, 0, __STD_STACK_SIZE__*scale);
 			}	
 			moveToUpperScreen ();
@@ -1492,49 +1491,11 @@ drawStack (char x, char y, unsigned char level)
 		}
 		else if (selected->category == category_Teleport)
 			text_frame_teleport (selected, 0, iEditStackIndex, fLightScale);
-		/*
-		else if (selected->category == category_Weapon)
+		else if (selected->category == category_Door)
 		{
-			text_frame_weapon (selected, 0, iEditStackIndex, fLightScale);
 			displaySelectionBar (conversion[selected->category],
 			getItemType[selected->category] (item), 1);
 		}
-		else if (selected->category == category_Clothing)
-		{
-			text_frame_clothing (selected, 0, iEditStackIndex, fLightScale);
-			displaySelectionBar (conversion[selected->category],
-			getItemType[selected->category] (item), 1);
-		}
-		else if (selected->category == category_Scroll)
-		{
-			text_frame_potion (selected, 0, 0);
-			displaySelectionBar (conversion[selected->category],
-			getItemType[selected->category] (item), 1);
-		}
-		else if (selected->category == category_Potion)
-		{
-			text_frame_potion (selected, 0, iEditStackIndex, fLightScale);
-			displaySelectionBar (conversion[selected->category],
-			getItemType[selected->category] (item), 1);
-		}
-		else if (selected->category == category_Chest)
-		{
-			text_frame_container (selected, 0, iEditStackIndex, fLightScale);
-			displaySelectionBar (conversion[selected->category],
-			getItemType[selected->category] (item), 1);
-		}
-		else if (selected->category == category_Miscs)
-		{
-			text_frame_misc (selected, 0, iEditStackIndex, fLightScale);
-			displaySelectionBar (conversion[selected->category],
-			getItemType[selected->category] (item), 1);
-		}
-		else if (selected->category == category_Monster)
-		{	
-			text_frame_monster (selected, 0, iEditStackIndex, fLightScale);
-			displaySelectionBar (conversion[selected->category],
-			getItemType[selected->category] (item), 1);
-		}*/
 		else if (selected->category == category_Scroll)
 		{	
 			displaySelectedTextList ( ((scroll_p) (item))->offset);
