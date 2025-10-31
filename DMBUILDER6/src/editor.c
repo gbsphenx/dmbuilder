@@ -630,10 +630,15 @@ setTextCursor (enum cursorText type, int new_value)
 
 	if (type == cursor_RowText)
 	{
+		int slen = 1;
 		if (new_value <= 0)
 			txtcursors[type] = 0;
 		else if (new_value >= 8)
 			txtcursors[type] = 8;
+		// check better the x cursor depending on the size of the text line
+		slen = strlen(edit_plain_text.textline[txtcursors[type]]);
+		if (slen > 20) slen = 20;
+		txtcursors[cursor_InlineText] = slen/2;
 	}
 	else if (type == cursor_InlineText)
 	{

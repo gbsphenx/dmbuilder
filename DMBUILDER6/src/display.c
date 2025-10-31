@@ -2079,7 +2079,7 @@ displayTextEditor ()
 	x = 1050;
 	y = winH - 120; y += ystep;
 	setTextProperties (textcatsize, .5, 1, .8); 
-	fontDrawString (x, y, "TEXT : #%03d", seltext);
+	fontDrawString (x, y, "TEXT : #%03d / %d", seltext, getTextCursor (cursor_InlineText));
 
 
 	// display frame for champion text edit
