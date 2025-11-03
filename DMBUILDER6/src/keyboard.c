@@ -1081,7 +1081,11 @@ void arrow_keys (int a_keys, int x, int y)
 			setScreen (screen_LoadFile);
 			break;
 		//case GLUT_KEY_F10: exportText (); break;
-		case GLUT_KEY_F10: setScreen (screen_TextEditor); break;
+		case GLUT_KEY_F10: setScreen (screen_TextEditor); 
+			setTextCursor (cursor_RowText, 0);
+			setTextCursor (cursor_SubText, 0);
+			setTextCursor (cursor_InlineText, 0);
+			break;
 		//case GLUT_KEY_F11: importText (); break;
 		case GLUT_KEY_F11: setScreen (screen_ListsActuators); break;
 		//case GLUT_KEY_F11: DMB_AutoEdit_DM1_to_DM2_DungeonMasterAgain (); break;
@@ -1330,12 +1334,26 @@ void arrow_keys (int a_keys, int x, int y)
 				}
 				else if (isEditingText () && TXTTYPE[getTextCursor(cursor_Text)] == text_champion)
 				{
-					switch (a_keys)
+					int selrow = getTextCursor (cursor_SubText);
+					if (selrow < 2)
 					{
-						case GLUT_KEY_DOWN: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) + 1)); break;
-						case GLUT_KEY_UP: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) - 1)); break;
-						case GLUT_KEY_LEFT: controlTextAttributeValue (getTextCursor (cursor_SubText), -1); break;
-						case GLUT_KEY_RIGHT: controlTextAttributeValue (getTextCursor (cursor_SubText), 1); break;
+						switch (a_keys)
+						{
+							case GLUT_KEY_DOWN: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) + 1)); break;
+							case GLUT_KEY_UP: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) - 1)); break;
+							case GLUT_KEY_LEFT: setTextCursor (cursor_InlineText, (getTextCursor (cursor_InlineText) - 1)); break;
+							case GLUT_KEY_RIGHT: setTextCursor (cursor_InlineText, (getTextCursor (cursor_InlineText) + 1)); break;
+						}
+					}
+					else
+					{
+						switch (a_keys)
+						{
+							case GLUT_KEY_DOWN: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) + 1)); break;
+							case GLUT_KEY_UP: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) - 1)); break;
+							case GLUT_KEY_LEFT: controlTextAttributeValue (getTextCursor (cursor_SubText), -1); break;
+							case GLUT_KEY_RIGHT: controlTextAttributeValue (getTextCursor (cursor_SubText), 1); break;
+						}
 					}
 					break;
 				}

@@ -64,11 +64,11 @@ static int versionDebug = 1;
 static int versionDebug = 0;
 #endif
 
-static const char *shorttitle = "DMBuilder";
-static const char *apptitle = "Dungeon Master Builder";
-static const char *writtenby = "written by Guillaume Bastard";
-static const char *author = "Sphenx";
-static const char *codeversion = "code version 6";
+const char *shorttitle = "DMBuilder";
+const char *apptitle = "Dungeon Master Builder";
+const char *writtenby = "written by Guillaume Bastard";
+const char *author = "Sphenx";
+const char *codeversion = "code version 6";
 
 // Full HD minus borders
 int winW = 1912;

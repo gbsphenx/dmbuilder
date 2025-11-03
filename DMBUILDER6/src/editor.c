@@ -616,6 +616,7 @@ getTextCursor (enum cursorText type)
 void
 setTextCursor (enum cursorText type, int new_value)
 {
+	int selrow = getTextCursor (cursor_SubText);
 	assert ((size_t) type < text_cursor_number);
 	txtcursors[type] = new_value;
 
@@ -625,8 +626,10 @@ setTextCursor (enum cursorText type, int new_value)
 		txtcursors[type] = totalTexts-1;
 	else if (type == cursor_SubText && new_value < 0)
 		txtcursors[type] = 0;
-	else if (type == cursor_SubText && new_value >= 28)	// champion text edit
+	else if (type == cursor_SubText && new_value >= 2+8)	// champion text edit
 		txtcursors[type] = 28;
+
+	selrow = getTextCursor (cursor_SubText);
 
 	if (type == cursor_RowText)
 	{
@@ -646,7 +649,28 @@ setTextCursor (enum cursorText type, int new_value)
 			txtcursors[type] = 0;
 		else if (new_value >= 20)
 			txtcursors[type] = 20;
+
+		// if editing hero stats, then max will depend
+		if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && selrow == 0) // champion's name
+			if (new_value > 6)
+				txtcursors[type] = 6;
+		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && selrow == 1) // champion's last name
+			if (new_value > 19)
+				txtcursors[type] = 19;
 	}
+
+	if (type == cursor_SubText)
+	{
+		if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && selrow == 0) // champion's name
+			if (txtcursors[cursor_InlineText] > 6)
+				txtcursors[cursor_InlineText] = 6;
+		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && selrow == 1) // champion's last name
+			if (txtcursors[cursor_InlineText] > 19)
+				txtcursors[cursor_InlineText] = 19;
+	}
+
+	//printf("CHNGLINE 0: %s\n", edit_plain_text.textline[0]);
+	//getch();
 }
 
 //------------------------------------------------------------------------------

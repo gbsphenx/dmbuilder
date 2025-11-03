@@ -29,6 +29,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include <version.h>
+
 extern int winW;
 extern int winH;
 
@@ -48,6 +50,14 @@ int iInfoYNeg = 1050 - 925 + 24;
 int iInfoFntSize = 15;
 	//x = winW-370;
 	//y = winH/2;
+
+
+
+extern const char *shorttitle;
+extern const char *apptitle;
+extern const char *writtenby;
+extern const char *author;
+extern const char *codeversion;
 
 //------------------------------------------------------------------------------
 
@@ -1165,6 +1175,14 @@ printGeneralHelpInfo ()
 	y -= iStepText;
 	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
 	fontDrawString (x, y, "HOW TO EXIT DMBUILDER ? JUST CLOSE THE WINDOW.\n");
+
+	y -= iStepText;
+	y -= iStepText;
+	y -= iStepText;
+	y -= iStepText;
+	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
+	fontDrawString (x, y, "%s (C) %d - %d %s\n", shorttitle, DMB_YEAR_FIRST, DMB_YEAR_CURRENT, author);
+
 }
 
 void

@@ -2086,22 +2086,31 @@ displayTextEditor ()
 	tt = getTextType (seltext);
 	if (tt == text_champion)
 	{
+		int selrow = 0;
+		int selchar = 0;
 		dm_text_champion basestxtchamp;
 		dm_text_champion* stxtchamp = NULL;
 		int subselect = isEditingText ()?getTextCursor (cursor_SubText):-1;
 		float l = 1.f;
+		int xs = x;
 		//globalfsinv
+
+		selrow = getTextCursor (cursor_SubText);
+		selchar = getTextCursor (cursor_InlineText);
 
 		moveToUpperScreen ();
 		moveSize (56, 12, 48);
 		drawFrameXY (1600, 1200, .9, .9, .7);
 
 		stxtchamp = &basestxtchamp;
-		initTextToChampion(stxtchamp);
-		convertTextToChampion (seltext, stxtchamp);
-
 		if ( isEditingText () )
 			stxtchamp = &edit_champion;
+		else
+		{
+			initTextToChampion(stxtchamp);
+			convertTextToChampion (seltext, stxtchamp);
+		}
+
 
 		// display champion values
 		globalfsinv = globalfsinv + 0.5f;
@@ -2109,11 +2118,33 @@ displayTextEditor ()
 		y = winH - 120;
 		l = (subselect==0)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .6*l, 0*l); 
-		fontDrawString (x, y, "FIRST NAME: %s", stxtchamp->firstname);
+		fontDrawString (x, y, "FIRST NAME:");
+		setTextProperties (textcatsize, .8, .6, 0); 
+		//printf("TEXTLINE 0: %s\n", edit_plain_text.textline[0]);
+		if (isEditingText ()) 
+			fontDrawString (x + (12*textcatsize), y, "%s", edit_plain_text.textline[0]);
+		else
+			fontDrawString (x + (12*textcatsize), y, "%s", stxtchamp->firstname);
+		if (selrow == 0 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((12 + selchar) * textcatsize); // 12 = "first name: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 		l = (subselect==1)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .6*l, 0*l); 
 		fontDrawString (x, y, "LAST NAME: %s", stxtchamp->lastname);
+		if (selrow == 1 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((11 + selchar) * textcatsize); // 11 = "last name: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 		l = (subselect==2)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .6*l, 0*l); 

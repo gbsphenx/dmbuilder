@@ -371,6 +371,11 @@ convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
 				sChampionStruct->attributes[i] = convertABToInt(&attr[i*2]);
 			for (i = 0; i < 16; i ++)
 				sChampionStruct->skills[i] = convertAToInt(&skills[i]);
+
+			// then for text edit, put parts into the standard text buffer
+			strcpy(edit_plain_text.textline[0], sChampionStruct->firstname);
+			strcpy(edit_plain_text.textline[1], sChampionStruct->lastname);
+			//strcpy(edit_plain_text[1], sChampionStruct->lastname);
 		}
 	}
 }
@@ -818,6 +823,11 @@ controlTextChar (int textnumber, int keyvalue)
 	int selrow = getTextCursor (cursor_RowText);
 	int selchar = getTextCursor (cursor_InlineText);
 
+	if (TXTTYPE[textnumber] == text_champion)
+		selrow = getTextCursor (cursor_SubText);
+
+	//printf("CHANGE CHAR AT %d,%d WITH %c\n", selrow, selchar, keyvalue);
+
 	if (keyvalue >= 'a' && keyvalue <= 'z')
 		edit_plain_text.textline[selrow][selchar] = keyvalue - 'a' + 'A';
 	else if (keyvalue >= 'A' && keyvalue <= 'Z')
@@ -844,6 +854,13 @@ controlTextChar (int textnumber, int keyvalue)
 		setTextCursor (cursor_InlineText, selchar-1);
 		return;
 	}
+
+	if (TXTTYPE[textnumber] == text_champion)
+	{
+		strcpy(edit_champion.firstname, edit_plain_text.textline[0]);
+		strcpy(edit_champion.lastname, edit_plain_text.textline[1]);
+	}
+
 
 	setTextCursor (cursor_InlineText, ++selchar);
 }
