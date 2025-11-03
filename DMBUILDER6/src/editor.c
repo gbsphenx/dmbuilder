@@ -626,7 +626,7 @@ setTextCursor (enum cursorText type, int new_value)
 		txtcursors[type] = totalTexts-1;
 	else if (type == cursor_SubText && new_value < 0)
 		txtcursors[type] = 0;
-	else if (type == cursor_SubText && new_value >= 2+8)	// champion text edit
+	else if (type == cursor_SubText && new_value >= 28)	// champion text edit
 		txtcursors[type] = 28;
 
 	selrow = getTextCursor (cursor_SubText);
