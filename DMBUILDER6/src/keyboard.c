@@ -1335,7 +1335,7 @@ void arrow_keys (int a_keys, int x, int y)
 				else if (isEditingText () && TXTTYPE[getTextCursor(cursor_Text)] == text_champion)
 				{
 					int selrow = getTextCursor (cursor_SubText);
-					if (selrow < 2)
+					if (selrow < 2 || (selrow >= 3 && selrow <= 12))
 					{
 						switch (a_keys)
 						{

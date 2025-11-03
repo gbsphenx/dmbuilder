@@ -616,6 +616,7 @@ getTextCursor (enum cursorText type)
 void
 setTextCursor (enum cursorText type, int new_value)
 {
+	static int oldselrow = 0;
 	int selrow = getTextCursor (cursor_SubText);
 	assert ((size_t) type < text_cursor_number);
 	txtcursors[type] = new_value;
@@ -652,21 +653,77 @@ setTextCursor (enum cursorText type, int new_value)
 
 		// if editing hero stats, then max will depend
 		if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && selrow == 0) // champion's name
+		{
 			if (new_value > 6)
 				txtcursors[type] = 6;
+		}
 		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && selrow == 1) // champion's last name
+		{
 			if (new_value > 19)
 				txtcursors[type] = 19;
+		}
+		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && (selrow > 2 && selrow <= 5)) // champion's main attributes
+		{
+			if (new_value > 3)
+				txtcursors[type] = 3;
+		}
+		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && (selrow > 5 && selrow < 12)) // champion's skills
+		{
+			if (new_value > 2)
+				txtcursors[type] = 2;
+		}
 	}
 
 	if (type == cursor_SubText)
 	{
+		// put buffer to champion attribute before changing
+		if (oldselrow != selrow)
+		{
+			if (oldselrow == 3)
+				edit_champion.health = atoi(edit_champion.editnumber);
+			else if (oldselrow == 4)
+				edit_champion.stamina = atoi(edit_champion.editnumber);
+			else if (oldselrow == 5)
+				edit_champion.mana = atoi(edit_champion.editnumber);
+			else if (oldselrow >= 6 && oldselrow <= 12)
+				edit_champion.attributes[oldselrow-6] = atoi(edit_champion.editnumber);
+		}
+
+		// change to new
 		if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && selrow == 0) // champion's name
+		{
 			if (txtcursors[cursor_InlineText] > 6)
 				txtcursors[cursor_InlineText] = 6;
+		}
 		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && selrow == 1) // champion's last name
+		{
 			if (txtcursors[cursor_InlineText] > 19)
 				txtcursors[cursor_InlineText] = 19;
+		}
+		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && (selrow > 2 && selrow <= 5)) // champion's main attributes
+		{
+			if (txtcursors[cursor_InlineText] > 3)
+				txtcursors[cursor_InlineText] = 3;
+		}
+		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && (selrow > 5 && selrow < 12)) // champion's skills
+		{
+			if (txtcursors[cursor_InlineText] > 2)
+				txtcursors[cursor_InlineText] = 2;
+		}
+		if (isEditingText () && TXTTYPE[getTextCursor (cursor_Text)] == text_champion)
+		{
+			if (selrow == 3)
+				sprintf(edit_champion.editnumber, "%04d", edit_champion.health);
+			else if (selrow == 4)
+				sprintf(edit_champion.editnumber, "%05d", edit_champion.stamina);
+			else if (selrow == 5)
+				sprintf(edit_champion.editnumber, "%04d", edit_champion.mana);
+
+			else if (selrow >= 6 && selrow <= 12)
+				sprintf(edit_champion.editnumber, "%03d", edit_champion.attributes[selrow-6]);
+		
+		
+		}
 	}
 
 	//printf("CHNGLINE 0: %s\n", edit_plain_text.textline[0]);

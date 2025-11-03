@@ -2153,44 +2153,159 @@ displayTextEditor ()
 		y -= ystep;
 		l = (subselect==3)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-		fontDrawString (x, y, "HEALTH : %04d", stxtchamp->health);
+		if (selrow == 3 && isEditingText ()) 
+			fontDrawString (x, y, "HEALTH : %s", stxtchamp->editnumber);
+		else
+			fontDrawString (x, y, "HEALTH : %04d", stxtchamp->health);
+		if (selrow == 3 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((9 + selchar) * textcatsize); // 9 = "xxxxxxx: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 		l = (subselect==4)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-		fontDrawString (x, y, "STAMINA: %05d", stxtchamp->stamina);
+		if (selrow == 4 && isEditingText ()) 
+			fontDrawString (x, y, "STAMINA: %s", stxtchamp->editnumber);
+		else
+			fontDrawString (x, y, "STAMINA: %05d", stxtchamp->stamina);
+		if (selrow == 4 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((9 + selchar) * textcatsize); // 9 = "xxxxxxx: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 		l = (subselect==5)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-		fontDrawString (x, y, "MANA   : %04d", stxtchamp->mana);
+		if (selrow == 5 && isEditingText ()) 
+			fontDrawString (x, y, "MANA   : %s", stxtchamp->editnumber);
+		else
+			fontDrawString (x, y, "MANA   : %04d", stxtchamp->mana);
+		if (selrow == 5 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((9 + selchar) * textcatsize); // 9 = "xxxxxxx: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 		y -= ystep;
 		l = (subselect==6)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		fontDrawString (x, y, "LUCK      : %04d", stxtchamp->attributes[0]);
+		if (selrow == 6 && isEditingText ()) 
+			fontDrawString (x, y, "LUCK      : %s", stxtchamp->editnumber);
+		else
+			fontDrawString (x, y, "LUCK      : %03d", stxtchamp->attributes[0]);
+		if (selrow == 6 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 		l = (subselect==7)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		fontDrawString (x, y, "STRENGTH  : %04d", stxtchamp->attributes[1]);
+		if (selrow == 7 && isEditingText ()) 
+			fontDrawString (x, y, "STRENGTH  : %s", stxtchamp->editnumber);
+		else
+			fontDrawString (x, y, "STRENGTH  : %03d", stxtchamp->attributes[1]);
+		if (selrow == 7 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 		l = (subselect==8)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		fontDrawString (x, y, "DEXTERITY : %04d", stxtchamp->attributes[2]);
+		if (selrow == 8 && isEditingText ()) 
+			fontDrawString (x, y, "DEXTERITY : %s", stxtchamp->editnumber);
+		else
+			fontDrawString (x, y, "DEXTERITY : %03d", stxtchamp->attributes[2]);
+
+		if (selrow == 8 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 		l = (subselect==9)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		fontDrawString (x, y, "WISDOM    : %04d", stxtchamp->attributes[3]);
+		if (selrow == 9 && isEditingText ()) 
+			fontDrawString (x, y, "WISDOM    : %s", stxtchamp->editnumber);
+		else
+			fontDrawString (x, y, "WISDOM    : %03d", stxtchamp->attributes[3]);
+
+		if (selrow == 9 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 		l = (subselect==10)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		fontDrawString (x, y, "VITALITY  : %04d", stxtchamp->attributes[4]);
+		if (selrow == 10 && isEditingText ()) 
+			fontDrawString (x, y, "VITALITY  : %s", stxtchamp->editnumber);
+		else
+			fontDrawString (x, y, "VITALITY  : %03d", stxtchamp->attributes[4]);
+
+		if (selrow == 10 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 		l = (subselect==11)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
-		fontDrawString (x, y, "ANTI-MAGIC: %04d", stxtchamp->attributes[5]);
+		if (selrow == 11 && isEditingText ()) 
+			fontDrawString (x, y, "ANTI-MAGIC: %s", stxtchamp->editnumber);
+		else
+			fontDrawString (x, y, "ANTI-MAGIC: %03d", stxtchamp->attributes[5]);
+
+		if (selrow == 11 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 		l = (subselect==12)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		fontDrawString (x, y, "ANTI-FIRE : %04d", stxtchamp->attributes[6]);
+		if (selrow == 12 && isEditingText ()) 
+			fontDrawString (x, y, "ANTI-FIRE : %s", stxtchamp->editnumber);
+		else
+			fontDrawString (x, y, "ANTI-FIRE : %03d", stxtchamp->attributes[6]);
+
+		if (selrow == 12 && isEditingText ()) 
+		{
+			l = globalfsinv;
+			xs = x;
+			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+			fontDrawString (xs, y, "%c", 0x08);
+		}
 		y -= ystep;
 
 		// skills

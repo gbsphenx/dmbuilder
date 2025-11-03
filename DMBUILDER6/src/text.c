@@ -190,6 +190,8 @@ initTextToChampion (dm_text_champion* sChampionStruct)
 			sChampionStruct->attributes[i] = 30;
 		for (i = 0; i < 16; i++)
 			sChampionStruct->skills[i] = 2;
+
+		memset(sChampionStruct->editnumber, '0', 8);
 	}
 }
 
@@ -376,6 +378,7 @@ convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
 			strcpy(edit_plain_text.textline[0], sChampionStruct->firstname);
 			strcpy(edit_plain_text.textline[1], sChampionStruct->lastname);
 			//strcpy(edit_plain_text[1], sChampionStruct->lastname);
+			sprintf(sChampionStruct->editnumber, "%04d", sChampionStruct->health);
 		}
 	}
 }
@@ -833,7 +836,10 @@ controlTextChar (int textnumber, int keyvalue)
 	else if (keyvalue >= 'A' && keyvalue <= 'Z')
 		edit_plain_text.textline[selrow][selchar] = keyvalue;
 	else if (keyvalue >= '0' && keyvalue <= '9')
+	{
 		edit_plain_text.textline[selrow][selchar] = keyvalue;
+		edit_champion.editnumber[selchar] = keyvalue;
+	}
 	else if (keyvalue == ' ' || keyvalue == '_')
 		edit_plain_text.textline[selrow][selchar] = ' ';
 	else if (keyvalue == '?' || keyvalue == '!')
@@ -859,6 +865,15 @@ controlTextChar (int textnumber, int keyvalue)
 	{
 		strcpy(edit_champion.firstname, edit_plain_text.textline[0]);
 		strcpy(edit_champion.lastname, edit_plain_text.textline[1]);
+
+		if (selrow == 3)
+			edit_champion.health = atoi(edit_champion.editnumber);
+		else if (selrow == 4)
+			edit_champion.stamina = atoi(edit_champion.editnumber);
+		else if (selrow == 5)
+			edit_champion.mana = atoi(edit_champion.editnumber);
+		else if (selrow >= 6 && selrow <= 12)
+			edit_champion.attributes[selrow-6] = atoi(edit_champion.editnumber);
 	}
 
 
@@ -875,9 +890,9 @@ controlTextAttributeValue (int subattribute, int deltavalue)
 	if (subattribute == 2)
 	{
 		if (edit_champion.gender == 'M' || edit_champion.gender == 'm')
-			edit_champion.gender = 'f';
+			edit_champion.gender = 'F';
 		else
-			edit_champion.gender = 'm';
+			edit_champion.gender = 'M';
 	}
 	else if (subattribute >= 3 && subattribute <= 5)
 	{

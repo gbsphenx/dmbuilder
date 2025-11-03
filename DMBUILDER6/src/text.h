@@ -37,6 +37,8 @@ typedef struct
 	char txthealth[4];
 	char txtstamina[4];
 	char txtmana[4];
+	//
+	char editnumber[8];
 
 } dm_text_champion;
 
@@ -45,8 +47,10 @@ typedef struct
 	char textline[9][100];
 } dm_text_plain;
 
+
 extern dm_text_champion	edit_champion;
 extern dm_text_plain	edit_plain_text;
+
 
 extern int SKULLKEEP;
 extern int THERONSQUEST;
