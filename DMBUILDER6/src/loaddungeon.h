@@ -25,6 +25,9 @@ int loadDungeonFromDir (char *dungeonname);
 int loadDungeonData (char* dungeonname);
 int loadMusicList (char* sFilenameSongListDat);
 
+int assumeDungeonTypeFromDir (char *dungeonname);
+int assumeDungeonType (char* dungeonname);
+
 void updateActivationItems(int iDM2Mode);
 
 #endif

@@ -188,6 +188,7 @@ extern void switchModifyLevelSpecs ();
 extern dm_dungeon_header* getDungeon ();
 
 extern void updatePriorityColors ();
+extern void assumeMonstersForMaps ();
 
 void DMB_AutoEdit_CreateTestDungeon ();
 void DMB_AutoEdit_LoadSkullExe();

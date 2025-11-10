@@ -110,6 +110,9 @@ extern int dt_Clothing_Max;
 extern int dt_Misc_Max;
 extern int dt_Containers_Max;
 
+char dngtype_letter_tab[] = { '?', 'D', 'C', 'T', 'S' };
+static const char* dngtype_letter = &dngtype_letter_tab[1];
+
 //------------------------------------------------------------------------------
 //	Image Graphics to display for each Item of the "Activation Item" List
 //------------------------------------------------------------------------------
@@ -3360,12 +3363,24 @@ redrawScreen ()
 
 			for (i = 0; i < nFiles; i++)
 			{
+				char fnbuffer[300];
+				int dungeonType = getFileDungeonType (i);
 				if (i == (unsigned) selectFile)
 					setTextProperties (fontsize, 1, 1, 0); 
 				else
-					setTextProperties (fontsize, .7, .8, 1); 
-				
-				outputTextLineAt (100, winH-150-step*i, getFileName (i));
+				{
+					setTextProperties (fontsize, .7, .5, .5); 
+					if (dungeonType == dungeon_Master)
+						setTextProperties (fontsize, .7, .8, 1); 
+					else if (dungeonType == dungeon_Chaos)
+						setTextProperties (fontsize, .7, .9, .7); 
+					else if (dungeonType == dungeon_TheronQuest)
+						setTextProperties (fontsize, .9, .9, .7); 
+					else if (dungeonType == dungeon_Skullkeep)
+						setTextProperties (fontsize, .5, .7, 1); 
+				}
+				sprintf(fnbuffer, "%c %s", dngtype_letter[dungeonType], getFileName (i));
+				outputTextLineAt (100, winH-150-step*i, fnbuffer);
 			}
 		}
 		break;

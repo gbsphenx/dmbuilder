@@ -942,9 +942,16 @@ checksum (FILE* fp) // checksum DM, 2 bytes big end
 int DM1_tbl_ColorPriorities[27] = {
 	6, 5, 7, 6, 4, 4, 7, 7,
 	7, 7, 7, 7, 7, 5, 4, 3,
-	2, 7, 7, 1, 2, 1, 0, 7, // 8 Chaos? ou 1?
+	2, 7, 7, 1, 2, 1, 0, 7,
 	0, 0, 0
 };
+
+void
+printMonster (monster_p monster)
+{
+	printf("M: %04X %d #%d P%d H=%d,%d,%d,%d\n", 
+		monster->chested, monster->type, monster->number, monster->position, monster->health[0], monster->health[1], monster->health[2], monster->health[3]);
+}
 
 void
 updatePriorityColors ()
@@ -963,6 +970,102 @@ updatePriorityColors ()
 			{
 				MColors[i] = color;
 				break;
+			}
+		}
+	}
+}
+
+void
+assumeMonstersForMaps ()
+{
+	int m = 0;
+	int i = 0;
+	int j = 0;
+	int iNbMaps = 0;
+	dm_dungeon_header* xDungeonHeader = NULL;
+	level_p xCurrentMap = NULL;
+	monster_p monster = NULL;
+	actuator_p actuator = NULL;
+
+	//--- There, search through the entire dungeon for all creatures and creatures generator
+	xDungeonHeader = getDungeon();
+	iNbMaps = xDungeonHeader->nLevels;
+
+	for (m = 0; m < iNbMaps; m++)
+	{
+		short xRefItem = -2;
+		short xCurRefItem = -2;
+		int iTileType = 0;
+		reference_p ref = NULL;
+		int cm = 0;
+		int monsterindexset = 0;
+
+		xCurrentMap = getLevel (m);
+
+		for (i = 0; i < 32; i++)
+		{
+			for (j = 0; j < 32; j++)
+			{
+				iTileType = getTile (i,j,m)->type;
+				ref = getGroundReference (i, j, m);
+				xRefItem = *((short*)ref);
+				while (xRefItem != -2 && xRefItem != -1)
+				{
+					int iItemValue = 0;
+					int iListBase = 0;
+					int iActivatorID = 0;
+					int iItemCategory = 0;
+					int iItemIndexInCat = 0;
+					int mfound = 0;
+
+					if (ref->category == category_Monster)
+					{
+						monster = (monster_p) getItem (ref);
+						xCurRefItem = getReferenceItem (ref);
+
+						if (xCurRefItem != -2 && xCurRefItem != -1)
+						{
+							//printf("(#%0d @%d|%d,%d) MONSTER TYPE = %d\n", ref->id, m, i, j, monster->type);
+							//printMonster (monster);
+							//--- check if this monster type exist in list, if not, add it
+							for (cm = 0; cm < xCurrentMap->header.nMonsters; cm++)
+								if (xCurrentMap->monsters[cm] == monster->type)
+									mfound = 1;
+							if (mfound == 0)
+							{
+								//printf("MAP %d => SET MONSTER %d at %d\n", m, monster->type, monsterindexset);
+								xCurrentMap->monsters[monsterindexset] = monster->type;
+								monsterindexset++;
+							}
+						}
+					}
+					else if (ref->category == category_Actuator && iTileType != tile_Wall)
+					{
+						int monster_type = 0;
+						actuator = (actuator_p) getItem (ref);
+						xCurRefItem = getReferenceItem (ref);
+						if (actuator->type == actuator_floor_monster_generator && xCurRefItem != -2 && xCurRefItem != -1)
+						{
+							monster_type = actuator->value;
+							//--- check if this monster type exist in list, if not, add it
+							for (cm = 0; cm < xCurrentMap->header.nMonsters; cm++)
+								if (xCurrentMap->monsters[cm] == monster_type)
+									mfound = 1;
+							if (mfound == 0)
+							{
+								if (monsterindexset < 15)
+								{	
+									if (monsterindexset >= xCurrentMap->header.nMonsters)
+										xCurrentMap->header.nMonsters++;
+									xCurrentMap->monsters[monsterindexset] = monster_type;
+									monsterindexset++;
+								}
+							}
+						}
+					}
+					ref = getNextItem (ref);
+					xRefItem = *((short*)ref);
+				}
 			}
 		}
 	}

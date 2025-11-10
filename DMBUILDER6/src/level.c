@@ -52,6 +52,18 @@ getLevel(int m)
 }
 
 void
+setLevelDims (char level, int dimx, int dimy)
+{
+	level_p map;
+	map = getLevel(level);
+	if (map != NULL)
+	{
+		map->header.xDim = dimx - 1;
+		map->header.yDim = dimy - 1;
+	}
+}
+
+void
 flushLevelLayout (char level)
 {
 	char i, j;

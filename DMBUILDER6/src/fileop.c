@@ -82,19 +82,35 @@ updateFileNamesFromDirEntries ()
 
 		GetCurrentDirectory (127, currentDir);
 
+		//--- Standard DAT file
 		hfile = FindFirstFile ("dungeons\\*.dat", &fileinfo);
 		if (hfile == INVALID_HANDLE_VALUE)
-			return;
+			;
 		else
 		{	
 			do
 			{
 				buffer = fileinfo.cFileName;
-			//	printf ("%s\n", buffer);
 				Files[i].filename = (char*) calloc (strlen (buffer) + 1, sizeof (char));
-				//sprintf (Files[i].filename, "dungeons\\%s", buffer);
 				strcpy (Files[i].filename, buffer);
-			//	Files[i].dungeontype = supposeDungeon (buffer);
+				Files[i].dungeontype = assumeDungeonTypeFromDir (Files[i].filename);
+				i++;
+			}
+			while (FindNextFile (hfile, &fileinfo));
+		}
+
+		//--- Add "iso" file for TQ
+		hfile = FindFirstFile ("dungeons\\*.iso", &fileinfo);
+		if (hfile == INVALID_HANDLE_VALUE)
+			;
+		else
+		{	
+			do
+			{
+				buffer = fileinfo.cFileName;
+				Files[i].filename = (char*) calloc (strlen (buffer) + 1, sizeof (char));
+				strcpy (Files[i].filename, buffer);
+				Files[i].dungeontype = assumeDungeonTypeFromDir (Files[i].filename);
 				i++;
 			}
 			while (FindNextFile (hfile, &fileinfo));
@@ -133,6 +149,7 @@ updateFileNamesFromDirEntries ()
 				if (Files[i].filename) 
 				{
 					strcpy(Files[i].filename, name);
+					Files[i].dungeontype = assumeDungeonTypeFromDir (Files[i].filename);
 					i++;
 				}
 			}

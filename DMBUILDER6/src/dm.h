@@ -9,6 +9,15 @@
 #ifndef DUNGEON_TYPES_H
 #define DUNGEON_TYPES_H
 
+enum DUNGEONTYPE
+{
+	dungeon_Unknown = -1,
+	dungeon_Master = 0,
+	dungeon_Chaos = 1,
+	dungeon_TheronQuest = 2,
+	dungeon_Skullkeep = 3,
+};
+
 enum TILESETTYPE
 {
 	_DM2_Tileset_Void		= 0,
