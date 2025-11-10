@@ -61,6 +61,10 @@ extern const char *codeversion;
 
 //------------------------------------------------------------------------------
 
+char* txt_TQ_DungeonNames[7] = { "AK-TU-BA", "TOWER OF DRATOR", "THE CITY OF FORMICIA", "THE TOMB OF SARMON", "DEN OF SHADODAN", "VILLAGE OF THIEVES", "DEMON'S GATE" };
+
+//------------------------------------------------------------------------------
+
 static const char* txt_monsters[] = {
 	"Scorpion", "Slime", "Giggler", "Beholder",
 	"Rat", "Ruster", "Screamer", "Rockpile", "Ghost", 
@@ -530,7 +534,10 @@ printCoordinates ()
 	if (currentFileName != NULL) 
 	{
 		setTextProperties (iStdFntSize, 1, 1, .5);
-		fontDrawString (22 + (iStdFntSize*47), winH-iStdFntSize, "DUNGEON : [%s]", currentFileName);
+		if (THERONSQUEST_CD != 0)
+			fontDrawString (22 + (iStdFntSize*47), winH-iStdFntSize, "DUNGEON : [%s] (%s)", currentFileName, txt_TQ_DungeonNames[THERONSQUEST_CD-1]);
+		else
+			fontDrawString (22 + (iStdFntSize*47), winH-iStdFntSize, "DUNGEON : [%s]", currentFileName);
 	}
 	
 	setTextProperties (iStdFntSize, 1, 1, 1);
@@ -2182,6 +2189,62 @@ text_frame_actuator (reference_p reference, int wall, int x, int y, float l)
 	setTextProperties (iInfoFntSize, .4, .6, .8);
 	fontDrawString (x, y, "LAST BITS: %d.%d.%d.%d", target->bit1, target->bit2, target->bit3, target->bit4);
 	
+}
+
+//------------------------------------------------------------------------------
+
+void
+printSpecialTQDungeonSelection ()
+{
+	int basex = iTileInfo_OffsetX - 160;
+	int basey = winH-iTileInfo_OffsetY-220;
+	int helptfsize = 13;
+
+	int x = basex;
+	int y = basey;
+	int ystep = iStdFntSize+2;
+	int dn = 0;
+	float lfsinv = globalfsinv;
+
+	unsigned int iNewSelect = getEditCursor (cursor_NewItem);
+	unsigned int iSubDungeonSelect = getTextCursor (cursor_SubText);
+
+	{
+		double fsinv = globalfsinv;
+		double rad = 0;
+		if (angle > 360)
+			angle = angle%360;
+		rad = ((double)angle) / 360 * (2*3.1415f) * 1;
+		fsinv = (double)cos(rad);
+		fsinv = (fsinv/2) + 0.5f;
+		globalfsinv = fsinv;
+		lfsinv = globalfsinv;
+	}
+
+	setTextProperties (iStdFntSize, 1, .8, .8);
+	fontDrawString (x, y, "SELECTED FILE: %s", getFileName (selectFile));
+	y -= (ystep * 2);
+
+	setTextProperties (iStdFntSize, 1, 1, .8);
+	fontDrawString (x, y, "THIS FILE IS SPECIFIC TO THERON'S QUEST GAME");
+	y -= ystep;
+	setTextProperties (iStdFntSize, 1, 1, .8);
+	fontDrawString (x, y, "IT CONTAINS 7 DIFFERENT DUNGEONS.");
+	y -= ystep;
+	setTextProperties (iStdFntSize, 1, 1, .8);
+	fontDrawString (x, y, "PLEASE SELECT ONE:");
+
+	y -= (ystep*3);
+	for (dn = 0; dn < 7; dn++)
+	{
+		if (iSubDungeonSelect == dn)
+			setTextProperties (iStdFntSize, .5+.7*lfsinv, .5+.8*lfsinv, .5+1*lfsinv);
+		else
+			setTextProperties (iStdFntSize, .7, .8, 1);
+		fontDrawString (x, y, "DUNGEON %d : %s", dn+1, txt_TQ_DungeonNames[dn]);
+		y -= ystep;
+	}
+
 }
 
 //------------------------------------------------------------------------------

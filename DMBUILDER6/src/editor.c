@@ -39,6 +39,7 @@ dm_dungeon_header DUNGEON;
 
 extern int SKULLKEEP;
 extern int THERONSQUEST;
+extern int THERONSQUEST_CD;
 extern int TELOS;
 
 // Context
@@ -93,6 +94,7 @@ int editing_target = 0;
 int level_spec = 0;
 
 int selectFile = 0;
+int selectTQDungeon = 0;
 
 int tActivatorItemTranscoListDM1toDM2[][3] = {
 	{0, category_Miscs, 5},
@@ -573,6 +575,25 @@ switchSecondFunction ()
 
 
 int
+isSelectingTQFile ()
+{
+	return (selectTQDungeon != 0);
+}
+
+void
+switchSelectingTQFile ()
+{
+	selectTQDungeon = !selectTQDungeon;
+}
+
+void
+setSelectingTQFile (int val)
+{
+	selectTQDungeon = val;
+}
+
+
+int
 isSelectingNewItem ()
 {
 	return select_new;
@@ -620,6 +641,18 @@ setTextCursor (enum cursorText type, int new_value)
 	int selrow = getTextCursor (cursor_SubText);
 	assert ((size_t) type < text_cursor_number);
 	txtcursors[type] = new_value;
+
+	// special for selection TQ dungeon from file
+	if ( getScreen () == screen_LoadFile && type == cursor_SubText )
+	{
+		//printf("New value = %d\n", new_value);
+		if (new_value >= 7)
+			new_value = 6;
+		else if (new_value < 0)
+			new_value = 0;
+		txtcursors[type] = new_value;
+		return;
+	}
 
 	if (type == cursor_Text && (new_value < 0 || totalTexts == 0))
 		txtcursors[type] = 0;

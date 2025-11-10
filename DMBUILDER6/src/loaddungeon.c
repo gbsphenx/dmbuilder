@@ -27,6 +27,7 @@ unsigned short* FREESPACE;
 
 int SKULLKEEP = 0;			// It is a skullkeep map?
 int THERONSQUEST = 0;		// It is a Therons Quest map ? (special DM2+TQ tag)
+int THERONSQUEST_CD = 0;	// It is a Therons Quest from PC-Engine CD ?
 int TELOS = 0;				// It is a TELOS(SK) dungeon ?
 
 extern short* ITEMS[16];
@@ -304,7 +305,7 @@ int iTQMapsPerDungeon[] = { 4, 8, 5, 6, 3, 4, 4 };
 int iTQTextDataSize[] = { 0x13C, 0xD0, 0xE0, 0xE8, 0xE0, 0xD9, 0xE8};
 
 int
-loadTheronsQuestDungeonData(char* dungeonname)
+loadTheronsQuestDungeonData(char* dungeonname, int iTQDungeon)
 {
 	FILE* fp = NULL;
 	size_t i = 0;
@@ -312,7 +313,6 @@ loadTheronsQuestDungeonData(char* dungeonname)
 	fp = fopen (dungeonname, "rb");
 	if (fp != NULL)
 	{
-		int iTQDungeon = 0;
 		int m = 0;
 		int maps = iTQMapsPerDungeon[iTQDungeon];
 		char xdims[16];
@@ -320,6 +320,9 @@ loadTheronsQuestDungeonData(char* dungeonname)
 		char xbuffer[16];
 		unsigned short ibuffer[16];
 		int iItemDataPart2StartIndex = 4;	// depending on the dungeon, blocks are not the size same
+
+		THERONSQUEST_CD = iTQDungeon + 1;
+
 		/// read dimensions
 		getDungeon()->nLevels = maps;
 		fseek (fp, iTQMemOffset[iTQDungeon][0], SEEK_SET);	// 0x0002A0F1
@@ -447,13 +450,17 @@ loadDungeonData (char *dungeonname)
 	unsigned int adjustOffset = 0;	// special after item data (SK DMDC2 special case?)
 	char dummy = 0;
 	int z = 0;
+	int dngnum = 0;
 	
 	iDetectedDungeonType = assumeDungeonType (dungeonname);
 
 	printf("LOAD: Starts loading dungeon \"%s\" as : %s type.\n", dungeonname, txt_dungeon_types[iDetectedDungeonType]); 
 
 	if (iDetectedDungeonType == dungeon_TheronQuest)
-		return loadTheronsQuestDungeonData(dungeonname);
+	{
+		dngnum = getTextCursor (cursor_SubText);
+		return loadTheronsQuestDungeonData(dungeonname, dngnum);
+	}
 
 	fp = fopen (dungeonname, "rb");
 	//printf("LOAD: Starts loading dungeon \"%s\".\n", dungeonname); 

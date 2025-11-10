@@ -54,6 +54,7 @@ extern dm_text_plain	edit_plain_text;
 
 extern int SKULLKEEP;
 extern int THERONSQUEST;
+extern int THERONSQUEST_CD;
 extern int TELOS;
 
 extern char* TEXTS[1024];

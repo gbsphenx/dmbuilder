@@ -1665,6 +1665,18 @@ drawGenericHelpInfoPanel ()
 	}
 }
 
+static void
+drawSpecialTQDungeonSelection ()
+{
+	moveToUpperScreen ();
+	{
+		moveSize (45, 15, 48);
+		drawFrameXY (2000, 800, .9, .9, .7);
+		printSpecialTQDungeonSelection ();
+	}
+}
+
+
 //------------------------------------------------------------------------------
 //	
 //------------------------------------------------------------------------------
@@ -3346,6 +3358,11 @@ redrawScreen ()
 			unsigned int i;
 			int fontsize = 14;
 			int step = (fontsize + 2);
+			float fnlight = 1.f;
+
+			if (isSelectingTQFile ())
+				fnlight = 0.35f;
+
 			setTextProperties (32, .8, 1, .5); 
 			outputTextLineAt (200, winH-100, "SELECT A DUNGEON FILE TO LOAD");
 			if (nFiles <= 20)
@@ -3366,22 +3383,25 @@ redrawScreen ()
 				char fnbuffer[300];
 				int dungeonType = getFileDungeonType (i);
 				if (i == (unsigned) selectFile)
-					setTextProperties (fontsize, 1, 1, 0); 
+					setTextProperties (fontsize, 1*fnlight, 1*fnlight, 0*fnlight); 
 				else
 				{
-					setTextProperties (fontsize, .7, .5, .5); 
+					setTextProperties (fontsize, .7*fnlight, .5*fnlight, .5*fnlight); 
 					if (dungeonType == dungeon_Master)
-						setTextProperties (fontsize, .7, .8, 1); 
+						setTextProperties (fontsize, .7*fnlight, .8*fnlight, 1*fnlight); 
 					else if (dungeonType == dungeon_Chaos)
-						setTextProperties (fontsize, .7, .9, .7); 
+						setTextProperties (fontsize, .7*fnlight, .9*fnlight, .7*fnlight); 
 					else if (dungeonType == dungeon_TheronQuest)
-						setTextProperties (fontsize, .9, .9, .7); 
+						setTextProperties (fontsize, .9*fnlight, .9*fnlight, .7*fnlight); 
 					else if (dungeonType == dungeon_Skullkeep)
-						setTextProperties (fontsize, .5, .7, 1); 
+						setTextProperties (fontsize, .5*fnlight, .7*fnlight, 1*fnlight); 
 				}
 				sprintf(fnbuffer, "%c %s", dngtype_letter[dungeonType], getFileName (i));
 				outputTextLineAt (100, winH-150-step*i, fnbuffer);
 			}
+			// if TQ selection
+			if (isSelectingTQFile ())
+				drawSpecialTQDungeonSelection ();
 		}
 		break;
 	case screen_SaveFile:

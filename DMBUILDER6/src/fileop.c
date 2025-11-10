@@ -26,11 +26,7 @@
 
 #include <loaddungeon.h>
 
-typedef struct 
-{
-	char* filename;
-	char dungeontype;
-} file_t;
+
 
 char *filenames[128];
 static unsigned int nNames = 0;

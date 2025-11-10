@@ -172,6 +172,10 @@ extern void setSelectingNewItem (int boolean);
 extern int isSecondFunction ();
 extern void switchSecondFunction ();
 
+extern int isSelectingTQFile ();
+extern void switchSelectingTQFile ();
+extern void setSelectingTQFile (int val);
+
 extern int isEditingTarget ();
 extern void setEditingTarget (int boolean);
 

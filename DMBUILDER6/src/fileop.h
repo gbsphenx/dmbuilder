@@ -9,6 +9,12 @@
 #ifndef FILE_OP_H
 #define FILE_OP_H
 
+typedef struct 
+{
+	char* filename;
+	char dungeontype;
+} file_t;
+
 extern void updateFileNames ();
 extern unsigned numberOfFilesToLoad ();
 extern char *getFileName (unsigned n);

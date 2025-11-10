@@ -83,6 +83,7 @@ extern int msg_flag;
 #define GLUT_KEY_INSERT			108
 */
 
+extern file_t Files[128];
 
 extern int editing_gfx;
 extern int level_spec;
@@ -382,6 +383,7 @@ Call_ChangeScreen (int newscreen)
 	screen = newscreen;
 	if (screen == screen_Map)
 		updatePriorityColors ();
+	setSelectingTQFile (0);
 };
 
 static void
@@ -1028,11 +1030,25 @@ void keyboard (unsigned char key, int x, int y)
 		case screen_LoadFile:
 		{
 			if (key == KEY_ESCAPE)
-					Call_ChangeScreen (screen_Map);
+				Call_ChangeScreen (screen_Map);
 			else if (key == KEY_RETURN)
 			{	
-				Call_ChangeScreen (screen_Map);
-				Call_LoadDungeon (getFileName (selectFile));
+				if ( isSelectingTQFile () )
+				{
+					setSelectingTQFile (0);
+					Call_ChangeScreen (screen_Map);
+					Call_LoadDungeon (getFileName (selectFile));
+					break;
+				}
+				// if file is TQ, then display first a special dungeon selection screen, then loads the requested dungeon
+				if ( Files[selectFile].dungeontype == dungeon_TheronQuest)
+					switchSelectingTQFile();
+				else
+				{
+					Call_ChangeScreen (screen_Map);
+					Call_LoadDungeon (getFileName (selectFile));
+				}
+				
 			}
 		} break;
 		case screen_SaveFile:
@@ -1371,15 +1387,27 @@ void arrow_keys (int a_keys, int x, int y)
 			}
 		case screen_LoadFile:
 			{
-				switch (a_keys)
+				if ( isSelectingTQFile () )
 				{
-//				case KEY_ESCAPE:
-//					Call_ChangeScreen (screen_Map); break;
-				case GLUT_KEY_DOWN: selectFile += 1;
-					 break;
-				case GLUT_KEY_UP: selectFile -= 1;
-					 break;
+					switch (a_keys)
+					{
+					case GLUT_KEY_DOWN: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) + 1));
+						 break;
+					case GLUT_KEY_UP: setTextCursor (cursor_SubText, (getTextCursor (cursor_SubText) - 1));
+						 break;
+					}
 				}
+				else 
+				{
+					switch (a_keys)
+					{
+					case GLUT_KEY_DOWN: selectFile += 1;
+						 break;
+					case GLUT_KEY_UP: selectFile -= 1;
+						 break;
+					}
+				}
+				// select fix
 				if (selectFile < 0) selectFile = 0;
 				else if (selectFile > (char) (numberOfFilesToLoad()-1)) selectFile = numberOfFilesToLoad()-1;
 
