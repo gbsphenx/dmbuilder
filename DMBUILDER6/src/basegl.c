@@ -129,7 +129,7 @@ int main (int argc, char** argv)
 	printf("Application Core %1d (%s) Kernel %1d.%02d",
 		DMB_CORE, DMB_MONSTER, DMB_MAJOR, DMB_MINOR);
 #if defined(DMB_REVISION)
-	sprintf(revision, "%c", DMB_REVISION);
+	sprintf(revision, "%s", DMB_REVISION);
 #endif
 	if (revision[0] != '\0')
 		printf(".%s", revision);

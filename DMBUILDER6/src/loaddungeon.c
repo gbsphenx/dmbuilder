@@ -15,6 +15,7 @@
 #include <editor.h>
 #include <level.h>
 #include <text.h>
+#include <actuator.h>
 
 #include <gui.h>	// for gl_xxxx values
 
@@ -287,15 +288,16 @@ loadDungeonFromDir (char *dungeonname)
 // [1] = start of map data layout
 // [2] = start of ground references
 // [3] = start of item data (0 to 3)
-// [4] = start of item data (4 to 11)
+// [4] = start of item data (4 to 11)	-- always aligned to xB800
 // [5] = start of text data
-int iTQMemOffset[][6] = { {0x0002A0F1, 0x0002A2D7, 0x0002A831, 0x0002AD0F, 0x0002B800, 0x0002C9D8},  // Ak-Tu-Ba
+int iTQMemOffset[][6] = { 
+						{0x0002A0F1, 0x0002A2D7, 0x0002A831, 0x0002AD0F, 0x0002B800, 0x0002C9D8},	// Ak-Tu-Ba
 						{0x0006A333, 0x0006A5E9, 0x0006ABA5, 0x0006B031, 0x0006B800, 0x0006CECC},	// Tower of Drator
 
-						{0x0006A333, 0x0006A5E9, 0x0006ABA5, 0x0006B031, 0x000AB800, 0x0006CECC},	// Tower of Drator
-						{0x0006A333, 0x0006A5E9, 0x0006ABA5, 0x0006B031, 0x000EB800, 0x0006CECC},	// Tower of Drator
-						{0x0006A333, 0x0006A5E9, 0x0006ABA5, 0x0006B031, 0x0012B800, 0x0006CECC},	// Tower of Drator
-						{0x0006A333, 0x0006A5E9, 0x0006ABA5, 0x0006B031, 0x0016B800, 0x0006CECC},	// Tower of Drator
+						{0x000AA9BC, 0x000AAB7D, 0x000AB035, 0x000AB4C9, 0x000AB800, 0x000ACCC8},	// City of Formicia
+						{0x000EA31B, 0x000EA4A8, 0x000EA95C, 0x000EADCE, 0x000EB800, 0x000ED22C},	// Tomb of Sarmon
+						{0x0012AB3C, 0x0012ACB5, 0x0012B22F, 0x0012B6DD, 0x0012B800, 0x0012D106},	// Den of Shadodan
+						{0x0016A034, 0x0016A220, 0x0016A8EC, 0x0016ADEC, 0x0016B800, 0x0016C884},	// Village of Thieves
 
 						{0x001AA831, 0x001AA9EC, 0x001AB045, 0x001AB4BD, 0x001AB800, 0x001ACC0E}	// Demon's Gate
 
@@ -303,6 +305,197 @@ int iTQMemOffset[][6] = { {0x0002A0F1, 0x0002A2D7, 0x0002A831, 0x0002AD0F, 0x000
 
 int iTQMapsPerDungeon[] = { 4, 8, 5, 6, 3, 4, 4 };
 int iTQTextDataSize[] = { 0x13C, 0xD0, 0xE0, 0xE8, 0xE0, 0xD9, 0xE8};
+
+// I do not find where wall/floor decorations are stored.
+// Hence I put them here hard coded
+void
+FIX_TQDecorations (int iTQDungeon)
+{
+	level_p level = NULL;
+	int m = 0;
+
+	level = (level_p) &(getLevels()[0]);
+	level->header.nWalls = 1;
+	level->walls[0] = 0x2B; // mirror
+
+	for (m = 0; m < getDungeon()->nLevels; m++)
+	{
+		level = getLevel(m);
+		if (m == 0)
+			continue;
+
+		printf("FIXING Floor Decorations for map %d\n", m);
+
+		level->header.nFloors = 1;
+		level->floors[0] = 0x01;	// square pad
+		if (iTQDungeon == 6 && m == 2)
+		{
+			level->header.nFloors = 2;
+			level->floors[0] = 0x05;	// fire pot
+			level->floors[1] = 0x01;	// square pad
+		}
+	}
+
+	switch (iTQDungeon)
+	{
+	case 0:	// Ak-Tu-Ba
+		{
+			level = (level_p) &(getLevels()[1]);
+			level->header.nWalls = 14;
+			level->walls[1] = 0x2D; // lever down
+			level->walls[2] = 0x2C; // lever up
+			level->walls[5] = 0x1A; // gold lock
+			level->walls[11] = 0x02; // vi altar
+			level->walls[3] = 0x01; // alcove
+			level->walls[4] = 0x31;	// brick
+			level->walls[9] = 0x37; // hidden switch pushed
+			level->walls[10] = 0x32; // hidden switch
+			level->walls[0] = 0x05; // iron lock
+			level->walls[12] = 0x26; // torch holder empty
+			level->walls[13] = 0x2E; // torch holder full
+			level->walls[6] = 0x36; // brick pushed
+			level->walls[7] = 0x35; // red button pushed
+			level->walls[8] = 0x2F; // red button
+
+
+			level = (level_p) &(getLevels()[2]);
+			level->header.nWalls = 14;
+			level->walls[0] = 0x11; // coin slot
+			level->walls[13] = 0x10;	// cyan button
+			level->walls[3] = 0x02; // vi altar
+			level->walls[9] = 0x29; // spell holes
+			level->walls[8] = 0x25; // demon's face
+			level->walls[4] = 0x35; // red button pushed
+			level->walls[5] = 0x2F; // red button
+			level->walls[1] = 0x2D; // lever down
+			level->walls[2] = 0x2C; // lever up
+			level->walls[11] = 0x36; // brick pushed
+			level->walls[12] = 0x31; // brick
+			level->walls[10] = 0x07; // small switch
+			level->walls[6] = 0x26; // torch holder empty
+			level->walls[7] = 0x2E; // torch holder full
+
+
+			level = (level_p) &(getLevels()[3]);
+			level->header.nWalls = 6;
+			level->walls[0] = 0x01; // alcove
+			level->walls[4] = 0x1E; // ra lock
+			level->walls[5] = 0x05;	// iron lock
+			level->walls[2] = 0x23; // fountain
+			level->walls[1] = 0x02; // vi altar
+			level->walls[3] = 0x07; // small switch
+
+			
+		}
+		break;
+	case 1:	// Tower of Drator
+		break;
+	case 2:	// The City of Formicia
+		break;
+	case 3:	// The Tomb of Sarmon
+		break;
+	case 4:	// Den of Shadodan
+		break;
+	case 5:	// Village of Thieves
+		break;
+	case 6:	// Demon's Gate
+		break;
+	}
+}
+
+void
+FIX_TQActuatorList(int iTQDungeon)
+{
+	// Ak-Tu-Ba
+	// 7F/127 = gold coin
+	// B0/176 = iron key
+	// B8/184 = gold key
+	// BE/190 = ra key
+	// In TQ-US:
+		// 38 = gold coin
+		// 55 = iron key
+		// 56 = gold key
+		// 57 = ra key
+
+	dm_dungeon_header* xDungeonHeader = NULL;
+	int iNbMaps = 0;
+	int m = 0;
+	int i = 0;
+	int j = 0;
+	int iTileWall = 0;
+	level_p xCurrentMap = NULL;
+	dm_level_header* xDMLevelHeader = NULL;
+	sk_level_header* xSKLevelHeader = NULL;
+
+	//--- There, search through the entire dungeon for all actuators
+	xDungeonHeader = getDungeon();
+	iNbMaps = xDungeonHeader->nLevels;
+
+	for (m = 0; m < iNbMaps; m++)
+	{
+		short xRefItem = -2;
+		int iTileType = 0;
+		reference_p ref = NULL;
+		for (j = 0; j < 32; j++)
+		{
+			for (i = 0; i < 32; i++)
+			{
+				iTileWall = 0;
+				iTileType = getTile (i,j,m)->type;
+				ref = getGroundReference (i, j, m);
+				xRefItem = *((short*)ref);
+				//printf("REF = %04x / %08x\n", xRefItem, ref);
+				while (xRefItem != -2)
+				{
+					actuator_p actuator = NULL;
+					int iItemValue = 0;
+					int iListBase = 0;
+					int iActivatorID = 0;
+					int iItemCategory = 0;
+					int iItemIndexInCat = 0;
+
+					//printf("CAT = %d\n", ref->category);
+
+					if (ref->category == category_Actuator)
+					{
+						short* item = getItem (ref);
+						actuator_p act = (actuator_p) item;
+						actuator_effect_p effect = (actuator_effect_p) (item + 1);
+						actuator_target_p target = (actuator_target_p) (item + 2);
+						//printf("ITEM = %x\n", item);
+
+						if (iTileType == tile_Wall)	// convert Wall actuators
+							iTileWall = 1;
+						else	// floor and other tiles
+							iTileWall = 0;
+
+						if (iTileWall == 1 && (act->type == actuator_wall_alcove_item ||
+							act->type == actuator_wall_item_eater || act->type == actuator_wall_item || act->type == actuator_wall_item_eater_toggler))
+						{
+							// translate TQ value ID to standard DM value ID
+							if (act->value == 0x32) act->value = 0x6E;	// shield defiant (shield of lyte)
+							if (act->value == 0x38) act->value = 0x7F;	// gold coin
+							if (act->value == 0x55) act->value = 0xB0;	// iron key
+							if (act->value == 0x56) act->value = 0xB8;	// gold key
+							if (act->value == 0x57) act->value = 0xBE;	// ra key
+						}
+						if (iTileWall == 0 && (act->type == actuator_floor_carried_item))
+						{
+							// translate TQ value ID to standard DM value ID
+							if (act->value == 0x32) act->value = 0x6E;	// shield defiant (shield of lyte)
+						}
+					}
+					//printf("GOING TO NEXT. Cat = %d\n", ref->category);
+					ref = getNextItem (ref);
+					xRefItem = *((short*)ref);
+					//printf("NEXT REF = %04x\n", xRefItem);
+				}
+			}
+		}
+	}
+}
+
+
 
 int
 loadTheronsQuestDungeonData(char* dungeonname, int iTQDungeon)
@@ -322,6 +515,8 @@ loadTheronsQuestDungeonData(char* dungeonname, int iTQDungeon)
 		int iItemDataPart2StartIndex = 4;	// depending on the dungeon, blocks are not the size same
 
 		THERONSQUEST_CD = iTQDungeon + 1;
+		/* flush all references */
+		startGroundReferences ();
 
 		/// read dimensions
 		getDungeon()->nLevels = maps;
@@ -375,11 +570,31 @@ loadTheronsQuestDungeonData(char* dungeonname, int iTQDungeon)
 			currentmap->header.door1 = xbuffer[0];
 			currentmap->header.door2 = xbuffer[1];
 		}
+
+		// get other data
+		fread(ibuffer, 2, maps, fp);
+		printf("SOME DATA LIST 1 : ");
+		for (m = 0; m < maps; m++)
+		{
+			printf("%04X ", ibuffer[m]);
+		}
+
+		fread(ibuffer, 2, maps, fp);
+		printf("\nSOME DATA LIST 2 : ");
+		for (m = 0; m < maps; m++)
+		{
+			printf("%04X ", ibuffer[m]);
+		}
+		printf("\n");
+
+		// then there are the cumulated number of items per column, but we don't really need to read this
+
+		// Move to map data
 		fseek (fp, iTQMemOffset[iTQDungeon][1], SEEK_SET);	// 0x0002A2D7
-		
 		loadLevelsData (fp, dungeon_TheronQuest);
 
 		// auto add floor gfx for all maps
+		/*
 		for (m = 0; m < maps; m++)
 		{
 			int d = 0;
@@ -387,20 +602,25 @@ loadTheronsQuestDungeonData(char* dungeonname, int iTQDungeon)
 			currentmap->header.nFloors = 8;
 			for (d = 0; d < 8; d++)
 				currentmap->floors[d] = d;
-		}
+		}*/
 
 		// ground references
 		fseek (fp, iTQMemOffset[iTQDungeon][2], SEEK_SET); // 0x0002A831
-		getDungeon()->itemListSize = 183;
-		printf("LOAD: Ground Refs @ %08x\n", ftell(fp)); 
+		getDungeon()->itemListSize = computeGroundRefNumber();
+		printf("LOAD: Ground Refs @ %08x (#%d)\n", ftell(fp), getDungeon()->itemListSize); 
 		REFERENCES = (unsigned short*) calloc (getDungeon()->itemListSize, sizeof (short));
 		loadRawData (fp, REFERENCES, 2, getDungeon()->itemListSize);
 
 		// doors, teleporters, texts, actuators
 		fseek (fp, iTQMemOffset[iTQDungeon][3], SEEK_SET);	// 0x0002AD0F
 
-		if (iTQDungeon == 1 || iTQDungeon == 6)
-			iItemDataPart2StartIndex = 3;	// 0 to 2, then 3 to 10
+		iItemDataPart2StartIndex = 3;
+		if (iTQDungeon == 0)
+			iItemDataPart2StartIndex = 4;
+		else if (iTQDungeon == 4)
+			iItemDataPart2StartIndex = 1;
+		else if (iTQDungeon == 5)
+			iItemDataPart2StartIndex = 4;
 
 		for (i = 0; i < iItemDataPart2StartIndex; i++)
 		{
@@ -424,7 +644,6 @@ loadTheronsQuestDungeonData(char* dungeonname, int iTQDungeon)
 		RAWTEXTS = (unsigned short*) calloc (getDungeon()->textsDataSize, sizeof (short));
 		loadRawData (fp, RAWTEXTS, 2, getDungeon()->textsDataSize);
 		
-
 		fclose (fp);
 
 		printf("INIT OBJECTS NUMBERS\n");
@@ -435,6 +654,9 @@ loadTheronsQuestDungeonData(char* dungeonname, int iTQDungeon)
 		printf("UPDATE COLORS\n");
 		assumeMonstersForMaps ();
 		updatePriorityColors ();
+
+		FIX_TQDecorations (iTQDungeon);
+		FIX_TQActuatorList (iTQDungeon);
 
 	}
 	return 0;
@@ -673,16 +895,31 @@ assumeDungeonType (char* dungeonname)
 				fseek(fp, 0x9B3C2, SEEK_SET);
 				memset(buffer, 0, 128);
 				fread(buffer, 1, 30, fp);
-				if (!strcmp(buffer, "GO AWAY AND RESURRECT THERON"))
+				if (!strcmp(buffer, "GO AWAY AND RESURRECT THERON"))	// TQ02.iso (version ???)
 					iDetectedDungeonType = dungeon_TheronQuest;
-				else 
-				{
-					fseek(fp, 0, SEEK_SET);
-					fseek(fp, 0x193AF, SEEK_SET);
-					memset(buffer, 0, 128);
-					fread(buffer, 1, 10, fp);
-					if (!strcmp(buffer, "ARCHMASTER"))
+				else
+				{	
+					fseek(fp, 0x1B3C2, SEEK_SET);
+					if (!strcmp(buffer, "GO AWAY AND RESURRECT THERON"))	// TQUS19
 						iDetectedDungeonType = dungeon_TheronQuest;
+					else 
+					{
+						fseek(fp, 0, SEEK_SET);
+						fseek(fp, 0x193AE, SEEK_SET);
+						memset(buffer, 0, 128);
+						fread(buffer, 1, 10, fp);
+						if (!strcmp(buffer, "ARCHMASTER"))
+							iDetectedDungeonType = dungeon_TheronQuest;	// TQJP19
+					}
+
+					{
+						fseek(fp, 0x9D91E, SEEK_SET);
+						memset(buffer, 0, 128);
+						fread(buffer, 1, 10, fp);
+						if (!strcmp(buffer, "ARCHMASTER"))
+							iDetectedDungeonType = dungeon_TheronQuest;	// TQJP19 bin or TQJP02 bin
+					}
+
 				}
 
 			}

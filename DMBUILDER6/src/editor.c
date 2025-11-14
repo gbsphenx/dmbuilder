@@ -781,6 +781,37 @@ setEditCursor (enum cursorType type, int new_value)
 	updateCursor (type);
 }
 
+
+int
+computeGroundRefNumber()
+{
+	dm_dungeon_header* xDungeonHeader = NULL;
+	int iNbMaps = 0;
+	int m = 0;
+	int i = 0;
+	int j = 0;
+	int iGroundRefCount = 0;
+
+	xDungeonHeader = getDungeon();
+	iNbMaps = xDungeonHeader->nLevels;
+
+	for (m = 0; m < iNbMaps; m++)
+	{
+		int iTileType = 0;
+		for (j = 0; j < 32; j++)
+		{
+			for (i = 0; i < 32; i++)
+			{
+				if (getTile (i,j,m)->object);
+					iGroundRefCount++;
+			}
+		}
+	}
+	return iGroundRefCount;
+}
+
+
+
 int
 recomputeActuatorsUsage()
 {

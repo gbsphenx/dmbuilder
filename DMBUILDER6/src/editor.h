@@ -190,6 +190,7 @@ extern void goTarget (reference_p ref);
 extern void switchModifyLevelSpecs ();
 
 extern dm_dungeon_header* getDungeon ();
+extern int computeGroundRefNumber();
 
 extern void updatePriorityColors ();
 extern void assumeMonstersForMaps ();

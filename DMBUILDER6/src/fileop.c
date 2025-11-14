@@ -95,7 +95,22 @@ updateFileNamesFromDirEntries ()
 			while (FindNextFile (hfile, &fileinfo));
 		}
 
-		//--- Add "iso" file for TQ
+		//--- Add "iso"+"bin" files for TQ
+		hfile = FindFirstFile ("dungeons\\*.bin", &fileinfo);
+		if (hfile == INVALID_HANDLE_VALUE)
+			;
+		else
+		{	
+			do
+			{
+				buffer = fileinfo.cFileName;
+				Files[i].filename = (char*) calloc (strlen (buffer) + 1, sizeof (char));
+				strcpy (Files[i].filename, buffer);
+				Files[i].dungeontype = assumeDungeonTypeFromDir (Files[i].filename);
+				i++;
+			}
+			while (FindNextFile (hfile, &fileinfo));
+		}
 		hfile = FindFirstFile ("dungeons\\*.iso", &fileinfo);
 		if (hfile == INVALID_HANDLE_VALUE)
 			;

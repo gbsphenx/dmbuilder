@@ -7,6 +7,7 @@
 **
 *	DMB Version History
 *
+*	0.88.g2		2025-11-14		Intermediate version for Theron's Quest direct load support
 *	0.88.g		2025-09-05		Special revision for publishing code to GitHub
 *	0.88.d		2024-12-15		Minor improvements for text info display
 *	0.88.c		2023-05-09		Revision of interface for standard 1920x1080 + precisions on actuator infos
@@ -44,7 +45,7 @@
 #define DMB_MONSTER			"Ruster"
 #define DMB_MAJOR			0
 #define DMB_MINOR			88
-#define DMB_REVISION		'g'
+#define DMB_REVISION		"g2"
 
 #define PUBLIC
 #define CHECKOFF
@@ -67,14 +68,6 @@
 	#define ALL_FEATURES 0
 #endif
 
-
-/*******************************************************************************
-*	0.87.a Features
-*******************************************************************************/
-
-#if ( (ALL_FEATURES == 1) || (DMB_MINOR > 87) || (DMB_MINOR == 87 && DMB_REVISION >= 'a') )
-#define DMBF_ON_MAP_DOOR_COLORED	1
-#endif
 
 /*******************************************************************************
 *	0.87.b Features

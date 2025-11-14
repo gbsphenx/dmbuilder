@@ -191,9 +191,7 @@ drawDoor (char direction, char button, char opened, char bashed, int type, float
 	glLineWidth(2.0f*__TILE_SCALE__);
 	glBindTexture (GL_TEXTURE_2D, 0);
 
-#if DMBF_ON_MAP_DOOR_COLORED == 1
 	usecolors = 1;
-#endif
 
 	if (!opened) // paint door
 	{
