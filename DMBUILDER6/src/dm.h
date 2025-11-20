@@ -16,6 +16,7 @@ enum DUNGEONTYPE
 	dungeon_Chaos = 1,
 	dungeon_TheronQuest = 2,
 	dungeon_Skullkeep = 3,
+	dungeon_AmigaDemoWinUAE = 4,
 };
 
 enum TILESETTYPE

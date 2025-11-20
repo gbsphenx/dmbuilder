@@ -126,6 +126,21 @@ updateFileNamesFromDirEntries ()
 			}
 			while (FindNextFile (hfile, &fileinfo));
 		}
+		hfile = FindFirstFile ("dungeons\\*.uss", &fileinfo);	// WinUAE save state -- experimental for Amiga DM demo
+		if (hfile == INVALID_HANDLE_VALUE)
+			;
+		else
+		{	
+			do
+			{
+				buffer = fileinfo.cFileName;
+				Files[i].filename = (char*) calloc (strlen (buffer) + 1, sizeof (char));
+				strcpy (Files[i].filename, buffer);
+				Files[i].dungeontype = assumeDungeonTypeFromDir (Files[i].filename);
+				i++;
+			}
+			while (FindNextFile (hfile, &fileinfo));
+		}
 
 		nNames = i;
 		checked = 1;

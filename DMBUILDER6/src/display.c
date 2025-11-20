@@ -110,7 +110,7 @@ extern int dt_Clothing_Max;
 extern int dt_Misc_Max;
 extern int dt_Containers_Max;
 
-char dngtype_letter_tab[] = { '?', 'D', 'C', 'T', 'S' };
+char dngtype_letter_tab[] = { '?', 'D', 'C', 'T', 'S', 'W' };
 static const char* dngtype_letter = &dngtype_letter_tab[1];
 
 //------------------------------------------------------------------------------
@@ -1356,6 +1356,8 @@ drawStack (char x, char y, unsigned char level)
 		fontDrawString (iGLVirtualX, iGLVirtualY, "%02d", iStackIndex + iStackStartOffset);
 		moveStack (1, 0);
 		drawPositionStack (gl_Gui + wall, (char) refp->position, fLightScale);
+		setTextProperties (17, .5, .7, 1);
+		fontDrawString (iGLVirtualX-2*17, iGLVirtualY, "%04X", *((unsigned short*) refp));
 		moveStack (1, 0);
 		objectStats[refp->category](refp, fLightScale);
 
@@ -2574,6 +2576,7 @@ displayItemsLists ()
 	unsigned int iNbTotalItems = 0;
 	unsigned int iNbMaxCols = 16;
 	unsigned int iNbPerCol = 16;
+	reference_p refalive;
 	float fNbPerCol = 16.f;
 	int iCounterPerType[128];
 	float size = __STD_STACK_SIZE__*0.75f;
@@ -2619,11 +2622,14 @@ displayItemsLists ()
 		{
 			scroll_p item;
 			ref.id = id+j*iNbPerCol;
+			refalive = getNextItem (&ref);
 			if (ref.id <= 1023)
 			{
 				item = (scroll_p) getItem (&ref);
 				//iCounterPerType[item->type]++;
 				drawSizeSquare (gl_Special + special_Scroll, size, ((ref.id>=iNbScrolls)?.01f:1.0f));
+				if (refalive->raw == 0xFFFF)
+					drawSizeSquare (gl_Gui + gui_Poisoned, size/2, .5f);
 			}
 			moveSize (0, 1, size);
 		}
@@ -2645,12 +2651,18 @@ displayItemsLists ()
 		{
 			weapon_p item;
 			ref.id = id+j*iNbPerCol;
-			if (ref.id <= 1023)
+			refalive = getNextItem (&ref);
+			if (ref.id < iNbWeapons)
 			{
 				item = (weapon_p) getItem (&ref);
 				iCounterPerType[item->type]++;
-				drawSizeSquare (gl_x_Weapons + item->type, size, ((ref.id>=iNbWeapons)?.01f:1.0f));
+				//drawSizeSquare (gl_x_Weapons + item->type, size, ((ref.id>=iNbWeapons)?.01f:1.0f));
+				drawSizeSquare (gl_x_Weapons + item->type, size, ((refalive->raw == 0xFFFF)?0.25f:1.0f));
+				if (refalive->raw == 0xFFFF)
+					drawSizeSquare (gl_Gui + gui_Poisoned, size/2, .5f);
 			}
+			else
+				drawFrame (size, .10, .10, .10);
 			moveSize (0, 1, size);
 		}
 		moveSize (1, -fNbPerCol, size);
@@ -2671,13 +2683,18 @@ displayItemsLists ()
 		{
 			clothing_p item;
 			ref.id = id+j*iNbPerCol;
-			if (ref.id <= 1023)
+			refalive = getNextItem (&ref);
+			if (ref.id < iNbClothings)
 			{
 				item = (clothing_p) getItem (&ref);
 				iCounterPerType[item->type]++;
-				drawSizeSquare (gl_x_Clothes + item->type, size, ((ref.id>=iNbClothings)?.01f:1.0f));
-				moveSize (0, 1, size);
+				drawSizeSquare (gl_x_Clothes + item->type, size, ((refalive->raw == 0xFFFF)?0.25f:1.0f));
+				if (refalive->raw == 0xFFFF)
+					drawSizeSquare (gl_Gui + gui_Poisoned, size/2, .5f);
 			}
+			else
+				drawFrame (size, .10, .10, .10);
+			moveSize (0, 1, size);
 		}
 		moveSize (1, -fNbPerCol, size);
 	}
@@ -2697,13 +2714,18 @@ displayItemsLists ()
 		{
 			misc_p item;
 			ref.id = id+j*iNbPerCol;
-			if (ref.id <= 1023)
+			refalive = getNextItem (&ref);
+			if (ref.id < iNbMiscs)
 			{
 				item = (misc_p) getItem (&ref);
 				iCounterPerType[item->type]++;
-				drawSizeSquare (gl_x_Miscs + item->type, size, ((ref.id>=iNbMiscs)?.01f:1.0f));
-				moveSize (0, 1, size);
+				drawSizeSquare (gl_x_Miscs + item->type, size, ((refalive->raw == 0xFFFF)?0.25f:1.0f));
+				if (refalive->raw == 0xFFFF)
+					drawSizeSquare (gl_Gui + gui_Poisoned, size/2, .5f);
 			}
+			else
+				drawFrame (size, .10, .10, .10);
+			moveSize (0, 1, size);
 		}
 		moveSize (1, -fNbPerCol, size);
 	}
@@ -2723,11 +2745,14 @@ displayItemsLists ()
 		{
 			potion_p item;
 			ref.id = id+j*iNbPerCol;
+			refalive = getNextItem (&ref);
 			if (ref.id <= 1023)
 			{
 				item = (potion_p) getItem (&ref);
 				iCounterPerType[item->type]++;
 				drawSizeSquare (gl_x_Potions + item->type, size, ((ref.id>=iNbPotions)?.01f:1.0f));
+				if (refalive->raw == 0xFFFF)
+					drawSizeSquare (gl_Gui + gui_Poisoned, size/2, .5f);
 				moveSize (0, 1, size);
 			}
 		}
@@ -2754,6 +2779,7 @@ displayItemsLists ()
 			int type = 0;
 
 			ref.id = id+j*iNbPerCol;
+			refalive = getNextItem (&ref);
 			if (ref.id <= 1023)
 			{
 				item = (chest_p) getItem (&ref);
@@ -2767,6 +2793,9 @@ displayItemsLists ()
 					drawSizeSquare (gl_x_Containers + type, size, ((ref.id>=iNbChests)?.01f:1.0f));
 				else
 					drawSizeSquare (gl_Special + special_Chest, size, ((ref.id>=iNbChests)?.01f:1.0f));
+				if (refalive->raw == 0xFFFF)
+					drawSizeSquare (gl_Gui + gui_Poisoned, size/2, .5f);
+
 				moveSize (0, 1, size);
 			}
 		}
@@ -3395,6 +3424,8 @@ redrawScreen ()
 						setTextProperties (fontsize, .9*fnlight, .9*fnlight, .7*fnlight); 
 					else if (dungeonType == dungeon_Skullkeep)
 						setTextProperties (fontsize, .5*fnlight, .7*fnlight, 1*fnlight); 
+					else if (dungeonType == dungeon_AmigaDemoWinUAE)
+						setTextProperties (fontsize, .9*fnlight, .6*fnlight, 9*fnlight); 
 				}
 				sprintf(fnbuffer, "%c %s", dngtype_letter[dungeonType], getFileName (i));
 				outputTextLineAt (100, winH-150-step*i, fnbuffer);

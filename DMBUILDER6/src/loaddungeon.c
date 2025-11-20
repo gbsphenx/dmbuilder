@@ -38,11 +38,13 @@ extern size_t itemBytes [16];
 extern unsigned int gfx_activation_items[];
 
 static const char* txt_dungeon_types_all [] = {
-	"UNKNOWN", "MASTER", "CHAOS", "THERON'S QUEST", "SKULLKEEP" };
+	"UNKNOWN", "MASTER", "CHAOS", "THERON'S QUEST", "SKULLKEEP", "WINUAE AMIGA DEMO" };
 
 static const char** txt_dungeon_types = &txt_dungeon_types_all[1];
 
 tCompanionActuator xActuatorTable[1024];
+
+int iAmigaSTEndian = 0;
 
 void
 updateActivationItems(int iDM2Mode)
@@ -71,6 +73,91 @@ updateActivationItems(int iDM2Mode)
 	}
 
 }
+
+void
+swapItemData(int idbcat, void* pdata, int nItems)
+{
+	int z = 0;
+	char* xdata = (char*) pdata;
+	char tmp = 0;
+	int x = 0;
+	printf("SWAP: Item Data [%02d] for %d items\n", idbcat, nItems); 
+	for (z = 0; z < nItems; z++)
+	{
+		// invert ref, for all, except for texts for some reason
+		//if (idbcat != category_Text)
+		{
+			tmp = xdata[1];
+			xdata[1] = xdata[0];
+			xdata[0] = tmp;
+		}
+		//printf("%02d/%03d) R:%04X\n", idbcat, z, *((unsigned short*) xdata));
+		xdata += 2;
+		if (idbcat == category_Text)
+		{
+			tmp = xdata[1];
+			xdata[1] = xdata[0];
+			xdata[0] = tmp;
+			xdata += 2;
+		}
+		if (idbcat == category_Door || idbcat == category_Monster || (idbcat >= category_Weapon && idbcat <= category_Clothing) || idbcat >= category_Miscs)
+		{
+			// invert data too
+			tmp = xdata[1];
+			xdata[1] = xdata[0];
+			xdata[0] = tmp;
+			xdata += 2;
+		}
+		if (idbcat == category_Teleport)
+		{
+			for (x = 0; x < 2; x++)
+			{
+				tmp = xdata[1];
+				xdata[1] = xdata[0];
+				xdata[0] = tmp;
+				xdata += 2;
+			}
+		}
+		if (idbcat == category_Actuator)
+		{
+			for (x = 0; x < 3; x++)
+			{
+				tmp = xdata[1];
+				xdata[1] = xdata[0];
+				xdata[0] = tmp;
+				xdata += 2;
+			}
+		}
+		if (idbcat == category_Monster)
+		{
+			xdata += 2;
+			for (x = 0; x < 4; x++)
+			{
+				tmp = xdata[1];
+				xdata[1] = xdata[0];
+				xdata[0] = tmp;
+				xdata += 2;
+			}
+			xdata += 2;
+		}
+	}
+}
+
+void
+swapData(void* pdata, int swapsize, int nItems)
+{
+	int z = 0;
+	char* xdata = (char*) pdata;
+	char tmp = 0;
+	for (z = 0; z < nItems; z++)
+	{
+		tmp = xdata[1];
+		xdata[1] = xdata[0];
+		xdata[0] = tmp;
+		xdata += swapsize;
+	}
+}
+
 
 
 static void
@@ -106,6 +193,44 @@ loadGeneralInfo (FILE* fp)
 		updateActivationItems(SKULLKEEP);
 
 	}
+	else if (getDungeon()->randomGraphicsSeed == 0x0063)
+	{
+		printf("Looks like PC-DOS format!\n");
+		iAmigaSTEndian = 0;
+	}
+
+	else if (getDungeon()->randomGraphicsSeed == 0x6300)
+	{
+		int idb = 0;
+		printf("Looks like AMIGA/ST format!\n");
+		iAmigaSTEndian = 1;
+		swapData(&(getDungeon()->randomGraphicsSeed), 2, 1);
+		swapData(&(getDungeon()->mapDataSize), 2, 1);
+		swapData(&(getDungeon()->textsDataSize), 2, 1);
+		swapData((short*)&(getDungeon()->textsDataSize)+1, 2, 1); // starting position
+		swapData(&(getDungeon()->itemListSize), 2, 1);
+
+		for (idb = 0; idb < 16; idb++)
+			swapData(&(getDungeon()->nObjects[idb]), 2, 1);
+
+/*
+typedef struct
+{
+	short randomGraphicsSeed; // 2 bytes for the randomized graphics for floors and walls.
+	unsigned short mapDataSize;
+	unsigned char nLevels;
+	unsigned char null; // is 0 in DM, Prison and CSB. Has a role?
+	unsigned short textsDataSize; // number of bytes used for the dungeon coded texts
+	unsigned short x_start:5;
+	unsigned short y_start:5;
+	unsigned short f_start:2; // starting facing
+	unsigned short l_start:4; // I suppose this was for the level start, but it doesn't work
+	unsigned short itemListSize;
+	unsigned short nObjects[16];
+} dm_dungeon_header;
+  */
+
+	}
 	else
 		SKULLKEEP = 0;
 }
@@ -121,6 +246,12 @@ loadLevelSpecifications (FILE* fp)
 	for (i = 0; i < getDungeon()->nLevels; i++)
 	{
 		fread (&(getLevels()[i].header), 16, 1, fp);
+		if (iAmigaSTEndian)
+		{
+			short* xLevelHeader = (short*) &(getLevels()[i].header);
+			swapData(xLevelHeader, 2, 8);	// 16 bytes to be extended
+			swapData(xLevelHeader+3, 2, 1);	// actually bytes 6-7 are not swapped
+		}
 		tssum += getLevels()[i].header.tileset;
 	}
 	//-- Check if it would seem to be a DM2 dungeon : if tilesets are not all zeros
@@ -663,6 +794,143 @@ loadTheronsQuestDungeonData(char* dungeonname, int iTQDungeon)
 }
 
 int
+loadAmigaDemoWinUAEDungeonData(char* dungeonname)
+{
+	FILE* fp = NULL;
+	size_t i = 0;
+	int iDBCategory = 0;
+
+	fp = fopen (dungeonname, "rb");
+	if (fp != NULL)
+	{
+		int maps = 1;
+
+		startGroundReferences ();
+
+		getDungeon()->x_start = 7;
+		getDungeon()->y_start = 1;
+		getDungeon()->f_start = 2;
+		getDungeon()->l_start = 0;
+
+		getDungeon()->nLevels = maps;
+		setLevelDims(0, 13, 15);
+		getLevel(0)->header.nMonsters = 1;
+		getLevel(0)->header.nWalls = 12;
+		getLevel(0)->header.nFloors = 2;
+		getLevel(0)->header.nOrnates = 3;
+
+		fseek(fp, 0x0A6694, SEEK_SET); // map data
+		loadLevelsData (fp, dungeon_AmigaDemoWinUAE);
+
+		// fix
+		getLevel(0)->header.nMonsters = 1;
+		getLevel(0)->monsters[0] = 0x0C;
+
+		// ground references
+		fseek (fp, 0xA7871, SEEK_SET);
+		getDungeon()->itemListSize = computeGroundRefNumber();
+		printf("LOAD: Ground Refs @ %08x (#%d)\n", ftell(fp), getDungeon()->itemListSize); 
+		REFERENCES = (unsigned short*) calloc (getDungeon()->itemListSize, sizeof (short));
+		loadRawData (fp, REFERENCES, 2, getDungeon()->itemListSize);
+		//swapData(REFERENCES, 2, getDungeon()->itemListSize);  // because Amiga
+		//printf("%02x %02x %02x %02x %02x\n", REFERENCES[0], REFERENCES[1], REFERENCES[2], REFERENCES[3], REFERENCES[4]);
+
+
+		iDBCategory = 10;	// miscs
+		fseek (fp, 0xA6A12, SEEK_SET);
+		getDungeon()->nObjects[iDBCategory] = 12;
+		printf("LOAD: Item Data [%02d] @ %08x | Nb = %04d\n", i, ftell(fp), getDungeon()->nObjects[iDBCategory]); 
+		loadRawData (fp, (unsigned short*)ITEMS[iDBCategory], itemBytes[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+		swapItemData(iDBCategory, (unsigned short*)ITEMS[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+
+  		iDBCategory = 9;	// chests
+		fseek (fp, 0xA6C7A, SEEK_SET);
+		getDungeon()->nObjects[iDBCategory] = 0;
+		printf("LOAD: Item Data [%02d] @ %08x | Nb = %04d\n", i, ftell(fp), getDungeon()->nObjects[iDBCategory]); 
+		loadRawData (fp, (unsigned short*)ITEMS[iDBCategory], itemBytes[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+		swapItemData(iDBCategory, (unsigned short*)ITEMS[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+
+  		iDBCategory = 8;	// potions
+		fseek (fp, 0xA6C7A, SEEK_SET);
+		getDungeon()->nObjects[iDBCategory] = 0;
+		printf("LOAD: Item Data [%02d] @ %08x | Nb = %04d\n", i, ftell(fp), getDungeon()->nObjects[iDBCategory]); 
+		loadRawData (fp, (unsigned short*)ITEMS[iDBCategory], itemBytes[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+		swapItemData(iDBCategory, (unsigned short*)ITEMS[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+
+  		iDBCategory = 7;	// scrolls
+		fseek (fp, 0xA6C7A, SEEK_SET);
+		getDungeon()->nObjects[iDBCategory] = 1;
+		printf("LOAD: Item Data [%02d] @ %08x | Nb = %04d\n", i, ftell(fp), getDungeon()->nObjects[iDBCategory]); 
+		loadRawData (fp, (unsigned short*)ITEMS[iDBCategory], itemBytes[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+		swapItemData(iDBCategory, (unsigned short*)ITEMS[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+
+		iDBCategory = 6;	// clothings
+		fseek (fp, 0xA6C7E, SEEK_SET);
+		getDungeon()->nObjects[iDBCategory] = 22;
+		printf("LOAD: Item Data [%02d] @ %08x | Nb = %04d\n", i, ftell(fp), getDungeon()->nObjects[iDBCategory]); 
+		loadRawData (fp, (unsigned short*)ITEMS[iDBCategory], itemBytes[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+		swapItemData(iDBCategory, (unsigned short*)ITEMS[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+
+		iDBCategory = 5;	// weapons
+		fseek (fp, 0xA6EB6, SEEK_SET);
+		getDungeon()->nObjects[iDBCategory] = 8;
+		printf("LOAD: Item Data [%02d] @ %08x | Nb = %04d\n", i, ftell(fp), getDungeon()->nObjects[iDBCategory]); 
+		loadRawData (fp, (unsigned short*)ITEMS[iDBCategory], itemBytes[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+		swapItemData(iDBCategory, (unsigned short*)ITEMS[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+	
+	  // creatures
+		iDBCategory = 4;
+		fseek (fp, 0xA6F56, SEEK_SET);
+		//fseek (fp, 0xA7066, SEEK_SET);
+		getDungeon()->nObjects[iDBCategory] = 32;
+		printf("LOAD: Item Data [%02d] @ %08x | Nb = %04d\n", i, ftell(fp), getDungeon()->nObjects[iDBCategory]); 
+		loadRawData (fp, (unsigned short*)ITEMS[iDBCategory], itemBytes[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+		swapItemData(iDBCategory, (unsigned short*)ITEMS[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+
+		iDBCategory = 3;
+		fseek (fp, 0xA7526, SEEK_SET);
+		getDungeon()->nObjects[iDBCategory] = 28;
+		printf("LOAD: Item Data [%02d] @ %08x | Nb = %04d\n", i, ftell(fp), getDungeon()->nObjects[iDBCategory]); 
+		loadRawData (fp, (unsigned short*)ITEMS[iDBCategory], itemBytes[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+		swapItemData(iDBCategory, (unsigned short*)ITEMS[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+
+		iDBCategory = 2;
+		fseek (fp, 0xA75F6, SEEK_SET);
+		getDungeon()->nObjects[iDBCategory] = 23;	// 13 ?
+		printf("LOAD: Item Data [%02d] @ %08x | Nb = %04d\n", i, ftell(fp), getDungeon()->nObjects[iDBCategory]); 
+		loadRawData (fp, (unsigned short*)ITEMS[iDBCategory], itemBytes[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+		swapItemData(iDBCategory, (unsigned short*)ITEMS[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+
+		iDBCategory = 1;
+		fseek (fp, 0xA7652, SEEK_SET);
+		getDungeon()->nObjects[iDBCategory] = 5;
+		printf("LOAD: Item Data [%02d] @ %08x | Nb = %04d\n", i, ftell(fp), getDungeon()->nObjects[iDBCategory]); 
+		loadRawData (fp, (unsigned short*)ITEMS[iDBCategory], itemBytes[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+		swapItemData(iDBCategory, (unsigned short*)ITEMS[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+
+		iDBCategory = 0;
+		fseek (fp, 0xA7670, SEEK_SET);
+		getDungeon()->nObjects[iDBCategory] = 6;
+		printf("LOAD: Item Data [%02d] @ %08x | Nb = %04d\n", i, ftell(fp), getDungeon()->nObjects[iDBCategory]); 
+		loadRawData (fp, (unsigned short*)ITEMS[iDBCategory], itemBytes[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+		swapItemData(iDBCategory, (unsigned short*)ITEMS[iDBCategory], getDungeon()->nObjects[iDBCategory]);
+
+		fclose (fp);
+
+		printf("INIT OBJECTS NUMBERS\n");
+		itemInitObjectNumbersFromDungeon ();
+		printf("ORGANIZE STACKS\n");
+		organizeStacks ();
+		//loadTexts (RAWTEXTS);
+		printf("UPDATE COLORS\n");
+		assumeMonstersForMaps ();
+		updatePriorityColors ();
+
+	}
+	return 0;
+}
+
+int
 loadDungeonData (char *dungeonname)
 {
 	FILE* fp = NULL;
@@ -673,6 +941,7 @@ loadDungeonData (char *dungeonname)
 	char dummy = 0;
 	int z = 0;
 	int dngnum = 0;
+	iAmigaSTEndian = 0;
 	
 	iDetectedDungeonType = assumeDungeonType (dungeonname);
 
@@ -683,6 +952,8 @@ loadDungeonData (char *dungeonname)
 		dngnum = getTextCursor (cursor_SubText);
 		return loadTheronsQuestDungeonData(dungeonname, dngnum);
 	}
+	else if (iDetectedDungeonType == dungeon_AmigaDemoWinUAE)
+		return loadAmigaDemoWinUAEDungeonData(dungeonname);
 
 	fp = fopen (dungeonname, "rb");
 	//printf("LOAD: Starts loading dungeon \"%s\".\n", dungeonname); 
@@ -768,19 +1039,27 @@ loadDungeonData (char *dungeonname)
 	
 	mapcolumns = calculateOffsets ();
 	loadRawData (fp, OFFSETS, 2, mapcolumns);
+	if (iAmigaSTEndian)
+		swapData(OFFSETS, 2, mapcolumns);
 
 	printf("LOAD: Ground Refs @ %08x\n", ftell(fp)); 
 	REFERENCES = (unsigned short*) calloc (getDungeon()->itemListSize, sizeof (short));
 	loadRawData (fp, REFERENCES, 2, getDungeon()->itemListSize);
+	if (iAmigaSTEndian)
+		swapData(REFERENCES, 2, getDungeon()->itemListSize);
 	
 	printf("LOAD: Raw texts @ %08x\n", ftell(fp)); 
 	RAWTEXTS = (unsigned short*) calloc (getDungeon()->textsDataSize, sizeof (short));
 	loadRawData (fp, RAWTEXTS, 2, getDungeon()->textsDataSize);
+	if (iAmigaSTEndian)
+		swapData(RAWTEXTS, 2, getDungeon()->textsDataSize);
 
 	for (i = 0; i < 16; i++)
 	{
 		printf("LOAD: Item Data [%02d] @ %08x\n", i, ftell(fp)); 
 		loadRawData (fp, (unsigned short*)ITEMS[i], itemBytes[i], getDungeon()->nObjects[i]);
+		if (iAmigaSTEndian)
+			swapItemData(i, (unsigned short*)ITEMS[i], getDungeon()->nObjects[i]);
 	}
 
 	//--- Special adjustment
@@ -887,6 +1166,9 @@ assumeDungeonType (char* dungeonname)
 					iDetectedDungeonType = dungeon_Chaos;
 				if (dheader.randomGraphicsSeed == 0x0000 || dheader.nLevels > 16)
 					iDetectedDungeonType = dungeon_Skullkeep;
+				if ((dheader.randomGraphicsSeed == 0x0063 || dheader.randomGraphicsSeed == 0x6300) && dheader.nLevels <= 16)
+					iDetectedDungeonType = dungeon_Master;
+				// Note: write other cases that would say it is NOT a DM type
 			}
 			// check for Theron's Quest
 			if (iDetectedDungeonType == dungeon_Unknown)
@@ -921,7 +1203,15 @@ assumeDungeonType (char* dungeonname)
 					}
 
 				}
-
+			}
+			// check for Amiga DM Demo as WinUAE save state (uncompressed)
+			if (iDetectedDungeonType == dungeon_Unknown)
+			{
+				fseek(fp, 0xA83B5, SEEK_SET);
+				memset(buffer, 0, 128);
+				fread(buffer, 1, 8, fp);
+				if (!strcmp(buffer, "ZOKATHRA"))
+					iDetectedDungeonType = dungeon_AmigaDemoWinUAE;
 			}
 		}
 		fclose (fp);
