@@ -84,8 +84,7 @@ swapItemData(int idbcat, void* pdata, int nItems)
 	printf("SWAP: Item Data [%02d] for %d items\n", idbcat, nItems); 
 	for (z = 0; z < nItems; z++)
 	{
-		// invert ref, for all, except for texts for some reason
-		//if (idbcat != category_Text)
+		// invert ref, for all
 		{
 			tmp = xdata[1];
 			xdata[1] = xdata[0];
@@ -100,7 +99,7 @@ swapItemData(int idbcat, void* pdata, int nItems)
 			xdata[0] = tmp;
 			xdata += 2;
 		}
-		if (idbcat == category_Door || idbcat == category_Monster || (idbcat >= category_Weapon && idbcat <= category_Clothing) || idbcat >= category_Miscs)
+		if (idbcat == category_Door || idbcat == category_Monster || (idbcat >= category_Weapon && idbcat <= category_Potion) || idbcat >= category_Miscs)
 		{
 			// invert data too
 			tmp = xdata[1];
@@ -118,7 +117,7 @@ swapItemData(int idbcat, void* pdata, int nItems)
 				xdata += 2;
 			}
 		}
-		if (idbcat == category_Actuator)
+		if (idbcat == category_Actuator || idbcat == category_Chest)
 		{
 			for (x = 0; x < 3; x++)
 			{
@@ -130,7 +129,7 @@ swapItemData(int idbcat, void* pdata, int nItems)
 		}
 		if (idbcat == category_Monster)
 		{
-			xdata += 2;
+			xdata += 2;	// special 2 bytes not to be swapped
 			for (x = 0; x < 4; x++)
 			{
 				tmp = xdata[1];
@@ -212,27 +211,35 @@ loadGeneralInfo (FILE* fp)
 
 		for (idb = 0; idb < 16; idb++)
 			swapData(&(getDungeon()->nObjects[idb]), 2, 1);
-
-/*
-typedef struct
-{
-	short randomGraphicsSeed; // 2 bytes for the randomized graphics for floors and walls.
-	unsigned short mapDataSize;
-	unsigned char nLevels;
-	unsigned char null; // is 0 in DM, Prison and CSB. Has a role?
-	unsigned short textsDataSize; // number of bytes used for the dungeon coded texts
-	unsigned short x_start:5;
-	unsigned short y_start:5;
-	unsigned short f_start:2; // starting facing
-	unsigned short l_start:4; // I suppose this was for the level start, but it doesn't work
-	unsigned short itemListSize;
-	unsigned short nObjects[16];
-} dm_dungeon_header;
-  */
-
 	}
 	else
 		SKULLKEEP = 0;
+
+	/// check endianess
+	{
+		int idb = 0;
+		int hmswap = 0;
+		
+		// check the DB numbers and check if we need to swap
+		for (idb = 0; idb < 16; idb++)
+		{
+			if (getDungeon()->nObjects[idb] > 1024)
+				hmswap++;
+		}
+		if (hmswap > 0)
+		{
+			printf("Looks like AMIGA/ST format!\n");
+			iAmigaSTEndian = 1;
+			swapData(&(getDungeon()->randomGraphicsSeed), 2, 1);
+			swapData(&(getDungeon()->mapDataSize), 2, 1);
+			swapData(&(getDungeon()->textsDataSize), 2, 1);
+			swapData((short*)&(getDungeon()->textsDataSize)+1, 2, 1); // starting position
+			swapData(&(getDungeon()->itemListSize), 2, 1);
+
+			for (idb = 0; idb < 16; idb++)
+				swapData(&(getDungeon()->nObjects[idb]), 2, 1);
+		}
+	}
 }
 
 

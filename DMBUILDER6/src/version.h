@@ -7,6 +7,7 @@
 **
 *	DMB Version History
 *
+*	0.88.g3		2025-11-21		Proper read of ST/Amiga/AppleIIgs/Mac (endianess) dungeons
 *	0.88.g2		2025-11-14		Intermediate version for Theron's Quest direct load support
 *	0.88.g		2025-09-05		Special revision for publishing code to GitHub
 *	0.88.d		2024-12-15		Minor improvements for text info display
@@ -45,7 +46,7 @@
 #define DMB_MONSTER			"Ruster"
 #define DMB_MAJOR			0
 #define DMB_MINOR			88
-#define DMB_REVISION		"g2"
+#define DMB_REVISION		"g3"
 
 #define PUBLIC
 #define CHECKOFF
