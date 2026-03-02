@@ -122,6 +122,19 @@ static float text_cat_colors[][3] =
 };
 
 
+static const char* txt_dm2_scroll_gdat[] = 
+{
+	"", "", "", "",  "", "", "", "",
+	"", "", "", "",  "", "", "", "",
+
+	"", "No watercheck", "Reflector Practice", "Before using Boiler",
+	"Furnace on level below", "", "Invoke Zo Ew Ku to create minion", "Invoke Zo Ew Neta to create a guardian",
+	"", "Renew the life of a fallen champion", "", "Snake staff add 1 mana blossom and 1 staff",
+	"To open the castle door you must get a key piece from each of the four clan", "", "", "",
+	"", "", "", "",  "", "", "", "", // 0x20 - 0x27
+	"Invoke Zo to close portals", "?", "?", "?"
+};
+
 static const char* txt_dm2_ai_attributes[] =
 {
 	"FLAGS 00", "FLAGS 01", "ARMOR CLASS", "B03",
@@ -1137,9 +1150,9 @@ printGeneralHelpInfo ()
 
 	y -= iStepText;
 	y -= iStepText; setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
-	fontDrawString (x, y, " F3 : LIST OF ITEMS\n");
+	fontDrawString (x, y, " F3 : LIST OF CREATURES\n");
 	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
-	fontDrawString (x, y, " F4 : LIST OF CREATURES\n");
+	fontDrawString (x, y, " F4 : LIST OF ITEMS\n");
 	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
 	fontDrawString (x, y, " F6 : MAIN DUNGEON HEADER PROPERTIES\n");
 	y -= iStepText;	setTextProperties (iStdFntSize, ct[0], ct[1], ct[2]);
@@ -1558,25 +1571,45 @@ void
 text_frame_scroll (reference_p reference, int x, int y, float l)
 {
 	scroll2_p scroll = (scroll2_p) getItem (reference);
+	scroll_p scroll1 = (scroll_p) getItem (reference);
 	int iUseGDATText = 0;
+	char* sOpenClose[2] = { "OPEN", "CLOSED" };
 	x = iInfoX;
 	y = (winH - iInfoYNeg) - (y*__STD_STACK_SIZE__/2);
 
 	if (reference->category == category_Scroll)
 	{
-		if (scroll->reftxt > 0)
+		if (scroll->type > 0)
 			iUseGDATText = 1;
 
 		setTextProperties (iInfoFntSize, 0.8*l, 1.0*l, 1.0*l);
 		fontDrawString (x, y, "SCROLL (%03d | x%02x)", scroll->type, scroll->type);
 		setTextProperties (iInfoFntSize, .2*l, .8*l, .8*l);
 		y -= iInfoFntSize;
-		fontDrawString (x, y, "USE GDAT TXT : %02d (mode = M)", iUseGDATText);
+		if (SKULLKEEP)
+			fontDrawString (x, y, "USE GDAT TXT : %02d (mode = M)", iUseGDATText);
+		else
+			fontDrawString (x, y, "IS CLOSED : %02d (%s)", scroll1->closed, sOpenClose[scroll1->closed]);
 		setTextProperties (iInfoFntSize, .2*l, .8*l, .8*l);
 		if (iUseGDATText == 0)
 			setTextProperties (iInfoFntSize, .1*l, .4*l, .4*l);
 		y -= iInfoFntSize;
-		fontDrawString (x, y, "TEXT REF     : %02d", scroll->reftxt);
+		fontDrawString (x, y, "TEXT REF     : %02d (x%02x)", scroll->reftxt, scroll->reftxt);
+
+		// Display part of text
+		if (SKULLKEEP == 0)
+		{	
+			y -= iInfoFntSize;
+			setTextProperties (iInfoFntSize, .7*l, .8*l, 1.0*l);
+			fontDrawString (x, y, "SCROLL: \"%s\"", convertTextToLimitedBuffer (getText(scroll1->offset)));
+		}
+		else if (SKULLKEEP == 1)
+		{	
+			y -= iInfoFntSize;
+			setTextProperties (iInfoFntSize, .7*l, .8*l, 1.0*l);
+			if (scroll->type <= 0x28)
+				fontDrawString (x, y, "SCROLL: \"%s\"", txt_dm2_scroll_gdat[scroll->type]);
+		}
 	}
 }
 
@@ -1605,8 +1638,16 @@ text_frame_text (reference_p reference, int x, int y, float l)
 		//	setTextProperties (iInfoFntSize, .1*l, .4*l, .4*l);
 		y -= iInfoFntSize;
 		fontDrawString (x, y, "FLAGS 2/3  : %d %d", text->flag2, text->flag3);
-		y -= iInfoFntSize;
-		yreftextinfo = y;
+		//y -= iInfoFntSize;
+		//yreftextinfo = y;
+
+		// Display part of text
+		if (SKULLKEEP == 0)
+		{	
+			y -= iInfoFntSize;
+			setTextProperties (iInfoFntSize, .7*l, .8*l, 1.0*l);
+			fontDrawString (x, y, "TEXT: \"%s\"", convertTextToLimitedBuffer (getText(text->offset)));
+		}
 	}
 }
 
@@ -1682,6 +1723,7 @@ convertTextToLimitedBuffer (char* s)
 }
 
 
+// obsolete
 void
 printSelectedText (reference_p refp)
 {
@@ -1702,18 +1744,30 @@ printSelectedText (reference_p refp)
 }
 
 void
-displaySelectedTextList (unsigned int select)
+displaySelectedTextList (unsigned int select, unsigned int gdatmode)
 {
 	int t = 0;
 	float textsize = 18; // was 11 before
-	int size = (getTextsNumber()>=48)?48:getTextsNumber();
+	int iTextsNumber = getTextsNumber();
+	int size = 0;
+
+	if (SKULLKEEP && gdatmode)
+		iTextsNumber = 0x29;
+
+	size = (iTextsNumber>=48)?48:iTextsNumber;
+
 	for (t = -24; t < 24; t++)
 	{
-		setTextProperties (textsize, .7, .8, .9);
+		setTextProperties (textsize, .6, .7, .8);
 		if (t == 0)
-			setTextProperties (textsize, 1, .9, .7);
-		if (select + t >= 0 && select + t < getTextsNumber())
-		fontDrawString (32, winH - (64 + (textsize-1)*(t+24)), "(%s)", convertTextToLimitedBuffer (getText(select + t)));
+			setTextProperties (textsize, 1, .95, .8);
+		if (select + t >= 0 && select + t < iTextsNumber)
+		{
+			if (SKULLKEEP && gdatmode && (select + t) < 0x28)
+				fontDrawString (64, winH - (64 + (textsize-1)*(t+24)), "(%s)", txt_dm2_scroll_gdat[select + t]);
+			else if (gdatmode == 0)
+				fontDrawString (64, winH - (64 + (textsize-1)*(t+24)), "(%s)", convertTextToLimitedBuffer (getText(select + t)));
+		}
 	}
 }
 
@@ -2649,6 +2703,20 @@ printMainMapHelpInfo ()
 				y -= ystep;
 				setTextProperties (helptfsize, .7, .7, .7);
 				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH CLOTHING ID TYPE");
+			break;
+			case category_Scroll:
+				y -= ystep;
+				setTextProperties (helptfsize, .5, 1, 1);
+				fontDrawString (x, y, "SCROLL EDITING:");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				if (!SKULLKEEP)
+					fontDrawString (x, y, "'C'/'O': SWITCH OPEN OR CLOSED STATE");
+				else if (SKULLKEEP)
+					fontDrawString (x, y, "'M': SWITCH USING TEXT FROM GRAPHICS.DAT (GDAT MODE)");
+				y -= ystep;
+				setTextProperties (helptfsize, .7, .7, .7);
+				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH TEXT REFERENCE ID");
 			break;
 			case category_Potion:
 				y -= ystep;

@@ -290,6 +290,7 @@ initScroll (short *item, int type)
 {
 	scroll_p scroll = (scroll_p) item;
 	scroll->offset = 0;
+	scroll->closed = 1;
 }
 
 static void
@@ -682,7 +683,7 @@ cycleScroll (reference_p refp, int step)
 		scroll_p scroll = (scroll_p) getItem (refp);
 		scroll2_p scroll2 = (scroll2_p) getItem (refp);
 
-		if (scroll2->reftxt > 0)
+		if (SKULLKEEP && scroll2->type > 0)
 			iUseGDATText = 1;
 
 		if (iUseGDATText == 0) // DM1 mode, offset text
@@ -693,7 +694,16 @@ cycleScroll (reference_p refp, int step)
 				scroll->offset = 0;
 		}
 		else if (iUseGDATText == 1)
-			scroll2->type = ((scroll2->type + step)%64);
+		{
+			scroll2->type = ((scroll2->type + step)%64);	// 2^6
+			if (scroll2->type == 0)
+			{
+				if (step < 0)
+					scroll2->type = 63;
+				else
+					scroll2->type = 1;
+			}
+		}
 	}
 	return 1;
 }

@@ -665,6 +665,9 @@ setTextCursor (enum cursorText type, int new_value)
 
 	selrow = getTextCursor (cursor_SubText);
 
+	//printf("selrow = %d / newvalue = %d\n", selrow, new_value);
+
+
 	if (type == cursor_RowText)
 	{
 		int slen = 1;
@@ -679,6 +682,7 @@ setTextCursor (enum cursorText type, int new_value)
 	}
 	else if (type == cursor_InlineText)
 	{
+		//printf("New value = %d on %d\n", new_value, selrow);
 		if (new_value <= 0)
 			txtcursors[type] = 0;
 		else if (new_value >= 20)
@@ -697,7 +701,10 @@ setTextCursor (enum cursorText type, int new_value)
 		}
 		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && (selrow > 2 && selrow <= 5)) // champion's main attributes
 		{
-			if (new_value > 3)
+			// 4 digits to edit, except for stamina with 5 digits
+			if (type == cursor_InlineText && selrow == 4 && new_value >= 4)	// stamina
+				txtcursors[type] = 4;
+			else if (new_value > 3)
 				txtcursors[type] = 3;
 		}
 		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && (selrow > 5 && selrow < 12)) // champion's skills
@@ -735,7 +742,9 @@ setTextCursor (enum cursorText type, int new_value)
 		}
 		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && (selrow > 2 && selrow <= 5)) // champion's main attributes
 		{
-			if (txtcursors[cursor_InlineText] > 3)
+			/*if (type == cursor_InlineText && selrow == 4 && txtcursors[cursor_InlineText] >= 4)
+				txtcursors[cursor_InlineText] = 4;
+			else*/ if (txtcursors[cursor_InlineText] > 3)
 				txtcursors[cursor_InlineText] = 3;
 		}
 		else if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && (selrow > 5 && selrow < 12)) // champion's skills
@@ -759,8 +768,6 @@ setTextCursor (enum cursorText type, int new_value)
 		}
 	}
 
-	//printf("CHNGLINE 0: %s\n", edit_plain_text.textline[0]);
-	//getch();
 }
 
 //------------------------------------------------------------------------------

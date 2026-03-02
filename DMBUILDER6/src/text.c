@@ -378,7 +378,9 @@ convertTextToChampion (unsigned int number, dm_text_champion* sChampionStruct)
 			strcpy(edit_plain_text.textline[0], sChampionStruct->firstname);
 			strcpy(edit_plain_text.textline[1], sChampionStruct->lastname);
 			//strcpy(edit_plain_text[1], sChampionStruct->lastname);
-			sprintf(sChampionStruct->editnumber, "%04d", sChampionStruct->health);
+			//sprintf(sChampionStruct->editnumber, "%04d", sChampionStruct->health);	// actually, this must depend on the current row, else the edited number will be wrongly written on another stats
+			setTextCursor(cursor_SubText, -1);
+
 		}
 	}
 }

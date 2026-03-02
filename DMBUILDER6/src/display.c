@@ -1480,7 +1480,7 @@ drawStack (char x, char y, unsigned char level)
 			//--- If DM1/CSB/TQ, this is a normal text
 			if (SKULLKEEP == 0)
 			{
-				displaySelectedTextList (((text_p) (item))->offset);
+				displaySelectedTextList (((text_p) (item))->offset, 0);
 				shadowmap = 1;
 			}
 			//--- If DM2/SK, it can be a Simple Actuator
@@ -1503,7 +1503,16 @@ drawStack (char x, char y, unsigned char level)
 		}
 		else if (selected->category == category_Scroll)
 		{	
-			displaySelectedTextList ( ((scroll_p) (item))->offset);
+			if (!SKULLKEEP)
+				displaySelectedTextList ( ((scroll_p) (item))->offset, 0);
+			else if (SKULLKEEP)
+			{
+				// check if current scroll is in GDAT mode or ref mode
+				if ( ((scroll2_p) (item))->type > 1 )
+					displaySelectedTextList ( ((scroll2_p) (item))->type, 1);
+				else
+					displaySelectedTextList ( ((scroll_p) (item))->offset, 0);
+			}
 			shadowmap = 1;
 		}
 		else
@@ -2024,6 +2033,57 @@ displayAIInfos ()
 //------------------------------------------------------------------------------
 
 void
+displayTextEditorStatsBasic (int iStaticTextRowID, int x, int y, const char* sDisplayTextStat, int iStatValue, int selrow, int subselect, float globalfsinv, float textcatsize, int selchar, char cEditCursor)
+{
+	float l = 1.f;
+	int xs = 0;
+	l = (subselect==iStaticTextRowID)?globalfsinv:1.f;
+	setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
+	/*		if (selrow == 5 && isEditingText ()) 
+			fontDrawString (x, y, "MANA   : %s", stxtchamp->editnumber);
+		else
+			fontDrawString (x, y, "MANA   : %04d", stxtchamp->mana);*/
+	//fontDrawString (x, y, "HEALTH : ");
+	fontDrawString (x, y, "%s", sDisplayTextStat);
+	setTextProperties (textcatsize, .6, .9, .9);
+	if (iStaticTextRowID == 4)
+		fontDrawString (x + (9*textcatsize), y, "%05d", iStatValue);
+	else
+		fontDrawString (x + (9*textcatsize), y, "%04d", iStatValue);
+
+	if (selrow == iStaticTextRowID && isEditingText ()) 
+	{
+		l = globalfsinv;
+		xs = x;
+		xs += ((9 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
+		setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+		fontDrawString (xs, y, "%c", cEditCursor);
+	}	
+}
+
+void
+displayTextEditorStats (int iStaticTextRowID, int x, int y, const char* sDisplayTextStat, int iStatValue, int selrow, int subselect, float globalfsinv, float textcatsize, int selchar, char cEditCursor)
+{
+	float l = 1.f;
+	int xs = 0;
+	l = (subselect==iStaticTextRowID)?globalfsinv:1.f;
+	setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
+	/*if (selrow == 6 && isEditingText ()) 
+		fontDrawString (x, y, "LUCK      : %s", stxtchamp->editnumber);
+	else
+		fontDrawString (x, y, "LUCK      : %03d", stxtchamp->attributes[0]);*/
+	fontDrawString (x, y, "%s %03d", sDisplayTextStat, iStatValue);
+	if (selrow == iStaticTextRowID && isEditingText ()) 
+	{
+		l = globalfsinv;
+		xs = x;
+		xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
+		setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+		fontDrawString (xs, y, "%c", cEditCursor);
+	}	
+}
+
+void
 displayTextEditor ()
 {
 	unsigned int id = 0;
@@ -2049,6 +2109,9 @@ displayTextEditor ()
 	int iMaxDisplayText = (totalTexts>50)?50:totalTexts;
 	int iDisplayTextOffset = 0;
 
+	// There is a special char on the current cursor
+	char cEditCursor = 0x08;	// special plain square
+
 	setTextProperties (iFntSizeBigTitle, .5, 1, .8); 
 	outputTextLineAt (200, winH-40, "F10:   TEXT EDITOR : #%03d", totalTexts);
 
@@ -2065,6 +2128,8 @@ displayTextEditor ()
 		fsinv = (fsinv/2) + 0.5f;
 		globalfsinv = fsinv;
 	}
+	if (angle > 180)
+		cEditCursor = 0x20;		// space
 
 	// left, available texts (shortened) // right, visualisation for wall, scroll, or champion
 
@@ -2097,6 +2162,7 @@ displayTextEditor ()
 	y = winH - 120; y += ystep;
 	setTextProperties (textcatsize, .5, 1, .8); 
 	fontDrawString (x, y, "TEXT : #%03d / %d", seltext, getTextCursor (cursor_InlineText));
+
 
 
 	// display frame for champion text edit
@@ -2136,7 +2202,7 @@ displayTextEditor ()
 		l = (subselect==0)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .6*l, 0*l); 
 		fontDrawString (x, y, "FIRST NAME:");
-		setTextProperties (textcatsize, .8, .6, 0); 
+		setTextProperties (textcatsize, .8, .6, 0);
 		//printf("TEXTLINE 0: %s\n", edit_plain_text.textline[0]);
 		if (isEditingText ()) 
 			fontDrawString (x + (12*textcatsize), y, "%s", edit_plain_text.textline[0]);
@@ -2144,47 +2210,59 @@ displayTextEditor ()
 			fontDrawString (x + (12*textcatsize), y, "%s", stxtchamp->firstname);
 		if (selrow == 0 && isEditingText ()) 
 		{
-			l = globalfsinv;
+			l = (globalfsinv/2);
 			xs = x;
 			xs += ((12 + selchar) * textcatsize); // 12 = "first name: "
-			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
+			setTextProperties (textcatsize, .5f+.7*l, .5f+.7*l, .5f+.7*l);
+			fontDrawString (xs, y, "%c", cEditCursor);
 		}
+		//......................................................................
 		y -= ystep;
 		l = (subselect==1)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .6*l, 0*l); 
-		fontDrawString (x, y, "LAST NAME: %s", stxtchamp->lastname);
+		fontDrawString (x, y, "LAST NAME:");
+		setTextProperties (textcatsize, .8, .6, 0);
+		fontDrawString (x + (11*textcatsize), y, "%s", stxtchamp->lastname);
 		if (selrow == 1 && isEditingText ()) 
 		{
 			l = globalfsinv;
 			xs = x;
 			xs += ((11 + selchar) * textcatsize); // 11 = "last name: "
 			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
+			fontDrawString (xs, y, "%c", cEditCursor);
 		}
+		//......................................................................
 		y -= ystep;
 		l = (subselect==2)?globalfsinv:1.f;
 		setTextProperties (textcatsize, .8*l, .6*l, 0*l); 
 		fontDrawString (x, y, "GENDER: %c", stxtchamp->gender);
+		//......................................................................
 		y -= ystep;
 		y -= ystep;
+		/*
 		l = (subselect==3)?globalfsinv:1.f;
-		setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+		setTextProperties (textcatsize, .7*l, .7*l, .7*l);
 		if (selrow == 3 && isEditingText ()) 
 			fontDrawString (x, y, "HEALTH : %s", stxtchamp->editnumber);
 		else
 			fontDrawString (x, y, "HEALTH : %04d", stxtchamp->health);
+		fontDrawString (x, y, "HEALTH : ");
+		setTextProperties (textcatsize, .6, .9, .9);
+		fontDrawString (x + (9*textcatsize), y, "%04d", stxtchamp->health);
 		if (selrow == 3 && isEditingText ()) 
 		{
-			l = globalfsinv;
+			l = (globalfsinv/2);
 			xs = x;
 			xs += ((9 + selchar) * textcatsize); // 9 = "xxxxxxx: "
-			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
-		}
+			setTextProperties (textcatsize, .5f+.7*l, .5f+.7*l, .5f+.7*l);
+			fontDrawString (xs, y, "%c", cEditCursor);
+		}*/
+		displayTextEditorStatsBasic (3, x, y, "HEALTH :", stxtchamp->health, selrow, subselect, globalfsinv, textcatsize, selchar, cEditCursor);
+		//......................................................................
 		y -= ystep;
+		/*
 		l = (subselect==4)?globalfsinv:1.f;
-		setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+		setTextProperties (textcatsize, .7*l, .7*l, .7*l);
 		if (selrow == 4 && isEditingText ()) 
 			fontDrawString (x, y, "STAMINA: %s", stxtchamp->editnumber);
 		else
@@ -2194,12 +2272,14 @@ displayTextEditor ()
 			l = globalfsinv;
 			xs = x;
 			xs += ((9 + selchar) * textcatsize); // 9 = "xxxxxxx: "
-			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
-		}
+			setTextProperties (textcatsize, .7*l, .7*l, .7*l);
+			fontDrawString (xs, y, "%c", cEditCursor);
+		}*/
+		displayTextEditorStatsBasic (4, x, y, "STAMINA:", stxtchamp->stamina, selrow, subselect, globalfsinv, textcatsize, selchar, cEditCursor);
+		//......................................................................
 		y -= ystep;
 		l = (subselect==5)?globalfsinv:1.f;
-		setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
+		/*setTextProperties (textcatsize, .7*l, .7*l, .7*l);
 		if (selrow == 5 && isEditingText ()) 
 			fontDrawString (x, y, "MANA   : %s", stxtchamp->editnumber);
 		else
@@ -2210,119 +2290,34 @@ displayTextEditor ()
 			xs = x;
 			xs += ((9 + selchar) * textcatsize); // 9 = "xxxxxxx: "
 			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
-		}
+			fontDrawString (xs, y, "%c", cEditCursor);
+		}*/
+		displayTextEditorStatsBasic (5, x, y, "MANA   :", stxtchamp->mana, selrow, subselect, globalfsinv, textcatsize, selchar, cEditCursor);
+		//......................................................................
 		y -= ystep;
 		y -= ystep;
-		l = (subselect==6)?globalfsinv:1.f;
-		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		if (selrow == 6 && isEditingText ()) 
-			fontDrawString (x, y, "LUCK      : %s", stxtchamp->editnumber);
-		else
-			fontDrawString (x, y, "LUCK      : %03d", stxtchamp->attributes[0]);
-		if (selrow == 6 && isEditingText ()) 
-		{
-			l = globalfsinv;
-			xs = x;
-			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
-			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
-		}
+//		l = (subselect==6)?globalfsinv:1.f;
+//		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
+		displayTextEditorStats (6, x, y, "LUCK      :", stxtchamp->attributes[0], selrow, subselect, globalfsinv, textcatsize, selchar, cEditCursor);
+		//......................................................................
 		y -= ystep;
-		l = (subselect==7)?globalfsinv:1.f;
-		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		if (selrow == 7 && isEditingText ()) 
-			fontDrawString (x, y, "STRENGTH  : %s", stxtchamp->editnumber);
-		else
-			fontDrawString (x, y, "STRENGTH  : %03d", stxtchamp->attributes[1]);
-		if (selrow == 7 && isEditingText ()) 
-		{
-			l = globalfsinv;
-			xs = x;
-			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
-			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
-		}
+		displayTextEditorStats (7, x, y, "STRENGTH  :", stxtchamp->attributes[1], selrow, subselect, globalfsinv, textcatsize, selchar, cEditCursor);
+		//......................................................................
 		y -= ystep;
-		l = (subselect==8)?globalfsinv:1.f;
-		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		if (selrow == 8 && isEditingText ()) 
-			fontDrawString (x, y, "DEXTERITY : %s", stxtchamp->editnumber);
-		else
-			fontDrawString (x, y, "DEXTERITY : %03d", stxtchamp->attributes[2]);
-
-		if (selrow == 8 && isEditingText ()) 
-		{
-			l = globalfsinv;
-			xs = x;
-			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
-			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
-		}
+		displayTextEditorStats (8, x, y, "DEXTERITY :", stxtchamp->attributes[2], selrow, subselect, globalfsinv, textcatsize, selchar, cEditCursor);
+		//......................................................................
 		y -= ystep;
-		l = (subselect==9)?globalfsinv:1.f;
-		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		if (selrow == 9 && isEditingText ()) 
-			fontDrawString (x, y, "WISDOM    : %s", stxtchamp->editnumber);
-		else
-			fontDrawString (x, y, "WISDOM    : %03d", stxtchamp->attributes[3]);
-
-		if (selrow == 9 && isEditingText ()) 
-		{
-			l = globalfsinv;
-			xs = x;
-			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
-			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
-		}
+		displayTextEditorStats (9, x, y, "WISDOM    :", stxtchamp->attributes[3], selrow, subselect, globalfsinv, textcatsize, selchar, cEditCursor);
+		//......................................................................
 		y -= ystep;
-		l = (subselect==10)?globalfsinv:1.f;
-		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		if (selrow == 10 && isEditingText ()) 
-			fontDrawString (x, y, "VITALITY  : %s", stxtchamp->editnumber);
-		else
-			fontDrawString (x, y, "VITALITY  : %03d", stxtchamp->attributes[4]);
-
-		if (selrow == 10 && isEditingText ()) 
-		{
-			l = globalfsinv;
-			xs = x;
-			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
-			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
-		}
+		displayTextEditorStats (10, x, y, "VITALITY  :", stxtchamp->attributes[4], selrow, subselect, globalfsinv, textcatsize, selchar, cEditCursor);
+		//......................................................................
 		y -= ystep;
-		l = (subselect==11)?globalfsinv:1.f;
-		setTextProperties (textcatsize, .8*l, .8*l, .8*l);
-		if (selrow == 11 && isEditingText ()) 
-			fontDrawString (x, y, "ANTI-MAGIC: %s", stxtchamp->editnumber);
-		else
-			fontDrawString (x, y, "ANTI-MAGIC: %03d", stxtchamp->attributes[5]);
-
-		if (selrow == 11 && isEditingText ()) 
-		{
-			l = globalfsinv;
-			xs = x;
-			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
-			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
-		}
+		displayTextEditorStats (11, x, y, "ANTI-MAGIC:", stxtchamp->attributes[5], selrow, subselect, globalfsinv, textcatsize, selchar, cEditCursor);
+		//......................................................................
 		y -= ystep;
-		l = (subselect==12)?globalfsinv:1.f;
-		setTextProperties (textcatsize, .8*l, .8*l, .8*l); 
-		if (selrow == 12 && isEditingText ()) 
-			fontDrawString (x, y, "ANTI-FIRE : %s", stxtchamp->editnumber);
-		else
-			fontDrawString (x, y, "ANTI-FIRE : %03d", stxtchamp->attributes[6]);
-
-		if (selrow == 12 && isEditingText ()) 
-		{
-			l = globalfsinv;
-			xs = x;
-			xs += ((12 + selchar) * textcatsize); // 9 = "xxxxxxxxxx: "
-			setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-			fontDrawString (xs, y, "%c", 0x08);
-		}
+		displayTextEditorStats (12, x, y, "ANTI-FIRE :", stxtchamp->attributes[6], selrow, subselect, globalfsinv, textcatsize, selchar, cEditCursor);
+		//......................................................................
 		y -= ystep;
 
 		// skills
@@ -2461,11 +2456,14 @@ displayTextEditor ()
 			fontDrawString (xs, y, "%s", stxtplain->textline[i]);
 			if (i == selrow && isEditingText ())
 			{
-				setTextProperties (textcatsize, 1.*(1-l), 1.*(1-l), 1.*(1-l)); 
+				if (cEditCursor == 0x20) // then display the plain char with no blinking light
+					setTextProperties (textcatsize, 1, 1, 1); 
+				else
+					setTextProperties (textcatsize, 1.*(1-l), 1.*(1-l), 1.*(1-l)); 
 				xs += (selchar * textcatsize);
 				fontDrawString (xs, y, "%c", stxtplain->textline[i][selchar]);
 				setTextProperties (textcatsize, .7*l, .7*l, .7*l); 
-				fontDrawString (xs, y, "%c", 0x08);
+				fontDrawString (xs, y, "%c", cEditCursor);
 				//fontDrawString (xs, y, "%c", stxtplain.textline[i][selchar] + 0x80);
 				
 			}
@@ -3326,9 +3324,10 @@ redrawScreen ()
 			{
 				reference_p refp = getStackReference (getEditCursor (cursor_Stack));
 
-				if (refp->category == category_Text || refp->category == category_Scroll)
-					printSelectedText (refp);
-				else if (refp->category == category_Actuator && isEditingTile ()){
+				/*if (refp->category == category_Text || refp->category == category_Scroll)
+					printSelectedText (refp);*/
+				//else
+				if (refp->category == category_Actuator && isEditingTile ()){
 				//	printActivator (refp, (getCurrentTile ()->type == tile_Wall));
 					text_frame_actuator (refp, (getCurrentTile ()->type == tile_Wall), 0, 0, 1);
 				}

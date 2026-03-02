@@ -836,25 +836,36 @@ void keyboard (unsigned char key, int x, int y)
 						int iUseGDATText = 0;
 						int iTextValue = 0;
 						scroll2_p scroll = (scroll2_p) getItem (refp);
+						scroll_p scroll1 = (scroll_p) getItem (refp);
 
-						if (scroll->reftxt > 0)
+						if (SKULLKEEP && scroll->type > 0)
 							iUseGDATText = 1;
 
-						if (key == 'm') // switch to GDAT or REF text
+						if (!SKULLKEEP) 
 						{
-							if (iUseGDATText == 0)
+							if (key == 'o' || key == 'c') // switch scroll to open or closed
 							{
-								iTextValue = scroll->type;
-								if (iTextValue == 0)
-									iTextValue = 1; // that allows next to cycle the value
-								scroll->type = 0;
-								scroll->reftxt = iTextValue;
+								scroll1->closed = !scroll1->closed;
 							}
-							else
+						}
+
+						if (SKULLKEEP)
+						{
+							if (key == 'm') // switch to GDAT or REF text
 							{
-								iTextValue = scroll->reftxt;
-								scroll->reftxt = 0;
-								scroll->type = iTextValue;
+								if (iUseGDATText == 0)
+								{
+									iTextValue = scroll->type;
+									if (iTextValue == 0)
+										scroll->type = 1;	// that allows next to cycle the value through the type value
+									//scroll->reftxt = iTextValue;
+								}
+								else	// switching gdat to ref
+								{
+									iTextValue = scroll->reftxt;
+									//scroll->reftxt = 0;
+									scroll->type = 0;
+								}
 							}
 						}
 						break;

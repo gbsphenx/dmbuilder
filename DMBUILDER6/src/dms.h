@@ -195,7 +195,9 @@ typedef dm_potion* potion_p;
 
 typedef struct
 {
-	unsigned int offset:8;	// 8 or 16 ?..
+	unsigned int offset:10;	// 8 or 16 ?..
+	unsigned int closed:1;	// if not set, the scroll appears as "open scroll"
+	unsigned int type:5;
 } dm_scroll;
 
 typedef dm_scroll* scroll_p;
@@ -204,6 +206,7 @@ typedef dm_scroll* scroll_p;
 typedef struct
 {
 	unsigned int reftxt:10;
+	//unsigned int usegdat:1;
 	unsigned int type:6;
 } sk_scroll;
 

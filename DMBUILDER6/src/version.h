@@ -1,12 +1,15 @@
 //------------------------------------------------------------------------------
 //  DMBuilder
-//  Copyright (c) 2001 - 2025 Sphenx
+//  Copyright (c) 2001 - 2026 Sphenx
 //  Licensed under the MIT License (see LICENSE file for details)
 //------------------------------------------------------------------------------
 /*******************************************************************************
 **
 *	DMB Version History
 *
+*	0.88.g4		2026-02-28		Fix bug on scroll text ID cycling
+*								+ allow to change the 5th digit of stamina stat
+*								(cf. https://www.dungeon-master.com/forum/viewtopic.php?p=165664#p165664)		
 *	0.88.g3		2025-11-21		Proper read of ST/Amiga/AppleIIgs/Mac (endianess) dungeons
 *	0.88.g2		2025-11-14		Intermediate version for Theron's Quest direct load support
 *	0.88.g		2025-09-05		Special revision for publishing code to GitHub
@@ -41,12 +44,12 @@
 #define VERSION_H
 
 #define DMB_YEAR_FIRST		2001
-#define DMB_YEAR_CURRENT	2025
+#define DMB_YEAR_CURRENT	2026
 #define DMB_CORE			6
 #define DMB_MONSTER			"Ruster"
 #define DMB_MAJOR			0
 #define DMB_MINOR			88
-#define DMB_REVISION		"g3"
+#define DMB_REVISION		"g4"
 
 #define PUBLIC
 #define CHECKOFF

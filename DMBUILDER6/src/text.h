@@ -34,9 +34,9 @@ typedef struct
 	short attributes[7];
 	int skills[16];
 	//
-	char txthealth[4];
-	char txtstamina[4];
-	char txtmana[4];
+//	char txthealth[4];
+//	char txtstamina[4];
+//	char txtmana[4];
 	//
 	char editnumber[8];
 

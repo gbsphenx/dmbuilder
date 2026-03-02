@@ -30,8 +30,9 @@ extern void printSelectedText (reference_p refp);
 extern void printNewItemStats ();
 
 //extern void printActivator (reference_p refp, int wall);
+extern void printSpecialTQDungeonSelection ();
 
-extern void displaySelectedTextList (unsigned int select);
+extern void displaySelectedTextList (unsigned int select, unsigned int gdatmode);
 
 void text_frame_container (reference_p reference, int x, int y, float l);
 void text_frame_teleport (reference_p reference, int x, int y, float l);

@@ -196,6 +196,10 @@ loadGeneralInfo (FILE* fp)
 	{
 		printf("Looks like PC-DOS format!\n");
 		iAmigaSTEndian = 0;
+		SKULLKEEP = 0;
+		THERONSQUEST = 0;
+		TELOS = 0;
+		updateActivationItems(0);
 	}
 
 	else if (getDungeon()->randomGraphicsSeed == 0x6300)
@@ -211,6 +215,12 @@ loadGeneralInfo (FILE* fp)
 
 		for (idb = 0; idb < 16; idb++)
 			swapData(&(getDungeon()->nObjects[idb]), 2, 1);
+
+		SKULLKEEP = 0;
+		THERONSQUEST = 0;
+		TELOS = 0;
+		updateActivationItems(0);
+
 	}
 	else
 		SKULLKEEP = 0;
