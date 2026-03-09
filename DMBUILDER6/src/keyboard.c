@@ -150,6 +150,10 @@ execTestDungeon ()
 {
 	char sExecPath[256];
 
+	// make conversion for texts back into hex offsets for TEXTS and SCROLLS
+	convertToMasterTexts ();
+	convertToInternTexts ();
+
 	if (SKULLKEEP || TELOS)
 	{
 		//--- Copy current dungeon as "dungeon.dat" in the test folder
@@ -606,7 +610,14 @@ void keyboard (unsigned char key, int x, int y)
 						&& (getEditCursor (cursor_X) == getDungeon()->x_start)
 							&& (getEditCursor (cursor_Y) == getDungeon()->y_start))
 								getDungeon()->f_start ++;
-					else getCurrentTile ()->type = tile_Pit;
+					else 
+					{
+						getCurrentTile ()->type = tile_Pit;
+						((dm_tile_pit*)getCurrentTile ())->imaginary = 0;
+						((dm_tile_pit*)getCurrentTile ())->unk1 = 0;
+						((dm_tile_pit*)getCurrentTile ())->invisible = 0;
+						((dm_tile_pit*)getCurrentTile ())->open = 1;
+					}
 					break;
 				case 'w':
 					getCurrentTile ()->type = tile_Wall; break;
@@ -1010,7 +1021,7 @@ void keyboard (unsigned char key, int x, int y)
 				{
 					int iselect = getTextCursor (cursor_NewTextType);
 					if (iselect == 0)
-						iselect = addText ("NEW TEXT");
+						iselect = addText ("NEW TEXT", text_scroll);
 					else if (iselect == 1)
 						iselect = createEmptyTextChampion ();
 					setSelectingNewItem (0);
@@ -1155,22 +1166,36 @@ void arrow_keys (int a_keys, int x, int y)
 		else if (isEditingTile())
 		{
 			
-			
-			switch (a_keys)
+			if (getEditStackSize() > 0)
 			{
-			case GLUT_KEY_DOWN: setEditCursor (cursor_Stack, (char) (getEditCursor (cursor_Stack) + 1)); break;
-			case GLUT_KEY_UP: setEditCursor (cursor_Stack, (char) (getEditCursor (cursor_Stack) - 1)); break;
-			case GLUT_KEY_RIGHT:
-				cycleItem (getStackReference (getEditCursor (cursor_Stack)), 1);
-				break;
-			case GLUT_KEY_LEFT:
-				cycleItem (getStackReference (getEditCursor (cursor_Stack)), -1);
-				break;
-			case GLUT_KEY_PAGE_DOWN: stackSwitch (getEditCursor (cursor_Stack), getEditCursor (cursor_Stack)+1);
-				setEditCursor (cursor_Stack,(char) (getEditCursor (cursor_Stack) +1));break;
-			case GLUT_KEY_PAGE_UP: stackSwitch (getEditCursor (cursor_Stack), getEditCursor (cursor_Stack)-1);
-				if (getEditCursor (cursor_Stack) > 0) setEditCursor (cursor_Stack, (char) (getEditCursor (cursor_Stack) -1));break;
-			
+				switch (a_keys)
+				{
+				case GLUT_KEY_DOWN: setEditCursor (cursor_Stack, (char) (getEditCursor (cursor_Stack) + 1)); break;
+				case GLUT_KEY_UP: setEditCursor (cursor_Stack, (char) (getEditCursor (cursor_Stack) - 1)); break;
+				case GLUT_KEY_RIGHT:
+					cycleItem (getStackReference (getEditCursor (cursor_Stack)), 1);
+					break;
+				case GLUT_KEY_LEFT:
+					cycleItem (getStackReference (getEditCursor (cursor_Stack)), -1);
+					break;
+				case GLUT_KEY_PAGE_DOWN: stackSwitch (getEditCursor (cursor_Stack), getEditCursor (cursor_Stack)+1);
+					setEditCursor (cursor_Stack,(char) (getEditCursor (cursor_Stack) +1));break;
+				case GLUT_KEY_PAGE_UP: stackSwitch (getEditCursor (cursor_Stack), getEditCursor (cursor_Stack)-1);
+					if (getEditCursor (cursor_Stack) > 0) setEditCursor (cursor_Stack, (char) (getEditCursor (cursor_Stack) -1));break;
+				
+				}
+			}
+			else if (getEditStackSize() == 0)	// no item on tile, so just edit the basic tile value
+			{
+				switch (a_keys)
+				{
+				case GLUT_KEY_RIGHT:
+					cycleTile (getCurrentTile (), 1);
+					break;
+				case GLUT_KEY_LEFT:
+					cycleTile (getCurrentTile (), -1);
+					break;
+				}
 			}
 		}
 			

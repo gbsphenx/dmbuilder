@@ -128,7 +128,7 @@ typedef struct
 	unsigned short visible:1;
 	unsigned short flag2:1;
 	unsigned short flag3:1;
-	unsigned short offset:13;
+	unsigned short offset:13;	// address from 0x0000 up to 0x1FFF (DM goes up to ~0x06C9)
 } dm_text;
 
 typedef dm_text* text_p;
@@ -195,7 +195,7 @@ typedef dm_potion* potion_p;
 
 typedef struct
 {
-	unsigned int offset:10;	// 8 or 16 ?..
+	unsigned int reftxt:10;	// up to 1024 texts
 	unsigned int closed:1;	// if not set, the scroll appears as "open scroll"
 	unsigned int type:5;
 } dm_scroll;
@@ -205,7 +205,7 @@ typedef dm_scroll* scroll_p;
 
 typedef struct
 {
-	unsigned int reftxt:10;
+	unsigned int reftxt:10;	// up to 1024 texts
 	//unsigned int usegdat:1;
 	unsigned int type:6;
 } sk_scroll;

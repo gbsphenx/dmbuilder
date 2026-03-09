@@ -963,6 +963,7 @@ loadDungeonData (char *dungeonname)
 	iDetectedDungeonType = assumeDungeonType (dungeonname);
 
 	printf("LOAD: Starts loading dungeon \"%s\" as : %s type.\n", dungeonname, txt_dungeon_types[iDetectedDungeonType]); 
+	startTexts ();	// restart internal text table
 
 	if (iDetectedDungeonType == dungeon_TheronQuest)
 	{
@@ -1100,6 +1101,7 @@ loadDungeonData (char *dungeonname)
 	free (RAWTEXTS);
 
 	//mark "keep" bits for all present items.
+	/*
 	itemnumber = getDungeon()->nObjects[5];
 	for (i = 0; i < (unsigned int)itemnumber; i++)
 	{
@@ -1124,6 +1126,7 @@ loadDungeonData (char *dungeonname)
 		misc_p misc = (misc_p) ((short*)(ITEMS[10] + i*(itemBytes[10]>>1) + 1));
 		misc->keep = 1;
 	}
+	*/
 	
 	//assumeMonstersForMaps ();
 	updatePriorityColors ();
@@ -1172,7 +1175,7 @@ assumeDungeonType (char* dungeonname)
 		unsigned short mapcolumns;
 		size_t i;
 
-		printf("CHECK: Checking dungeon type for \"%s\".\n", dungeonname); 
+		//printf("CHECK: Checking dungeon type for \"%s\".\n", dungeonname); 
 		{
 			char nlevs;
 			fread (&dheader, 44, 1, fp);

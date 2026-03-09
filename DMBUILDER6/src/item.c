@@ -289,7 +289,7 @@ static void
 initScroll (short *item, int type)
 {
 	scroll_p scroll = (scroll_p) item;
-	scroll->offset = 0;
+	scroll->reftxt = 0;
 	scroll->closed = 1;
 }
 
@@ -689,9 +689,9 @@ cycleScroll (reference_p refp, int step)
 		if (iUseGDATText == 0) // DM1 mode, offset text
 		{
 			if (getTextsNumber())
-				scroll->offset = (scroll->offset + step + getTextsNumber())%getTextsNumber();
+				scroll->reftxt = (scroll->reftxt + step + getTextsNumber())%getTextsNumber();
 			else
-				scroll->offset = 0;
+				scroll->reftxt = 0;
 		}
 		else if (iUseGDATText == 1)
 		{

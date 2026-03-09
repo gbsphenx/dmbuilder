@@ -379,7 +379,7 @@ void Context_PushCurrentToStore(int iContext)
 		{
 			xTblDunSaveContexts[iContext].xTextStrings[i] = TEXTS[i];
 			xTblDunSaveContexts[iContext].iTblTextTypes[i] = TXTTYPE[i];
-			xTblDunSaveContexts[iContext].iTblOffsetsAddresses[i] = adresses[i];
+			xTblDunSaveContexts[iContext].iTblOffsetsAddresses[i] = TXTOFFSETS[i];
 		}
 
 		xTblDunSaveContexts[iContext].iIsSkullkeep = SKULLKEEP;
@@ -440,7 +440,7 @@ void Context_GetToCurrent(int iContext)
 		{
 			TEXTS[i] = xTblDunSaveContexts[iContext].xTextStrings[i];
 			TXTTYPE[i] = xTblDunSaveContexts[iContext].iTblTextTypes[i];
-			adresses[i] = xTblDunSaveContexts[iContext].iTblOffsetsAddresses[i];
+			TXTOFFSETS[i] = xTblDunSaveContexts[iContext].iTblOffsetsAddresses[i];
 		}
 
 		SKULLKEEP = xTblDunSaveContexts[iContext].iIsSkullkeep;
@@ -521,6 +521,24 @@ void updateAll ()
 	size_t i;
 	for (i = 0; i < cursor_number; i++)
 		updateCursor (i);
+}
+
+int
+getEditStackSize ()
+{
+	int iStackSize = 0;
+	if (isEditingTile())
+	{
+		reference_p refp = getGroundReference (cursors[cursor_X], cursors[cursor_Y], cursors[cursor_L]);
+		short** currentref = (short **) &refp;
+		while (**currentref != -2 && **currentref != -1)
+		{
+			short *item = getItem(refp);
+			refp = getNextItem (refp);
+			iStackSize++;
+		}
+	}
+	return iStackSize;
 }
 
 int
@@ -950,8 +968,15 @@ goTarget (reference_p ref)
 
 
 
+//------------------------------------------------------------------------------
 
 
+int
+cycleTile (tile_p tilep, int step)
+{
+	tilep->type = (tilep->type + step)%8;
+	return 1;
+}
 
 
 

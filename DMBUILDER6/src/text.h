@@ -60,11 +60,12 @@ extern int TELOS;
 extern char* TEXTS[1024];
 extern short TXTTYPE[1024];
 extern size_t totalTexts;
-extern short adresses[1024];
+extern short TXTOFFSETS[1024];
 
 extern void loadTexts (unsigned short *rawtexts);
 extern char* getText (unsigned int number);
 extern short getTextType (unsigned int number);
+extern short getTextOffset (unsigned int number);
 extern char* getTextContext (int iContext, unsigned int number);
 extern unsigned int getTextsNumber ();
 

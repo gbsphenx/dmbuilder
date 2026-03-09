@@ -508,6 +508,29 @@ loadTextFont ()
 
 //------------------------------------------------------------------------------
 
+void
+printSpecialTextHelp(int x, int* y, int ystep, int fontsize, float r, float g, float b, const char* sTriggerKeyName, const char* sActionDescription)
+{
+	int sLenString1 = 0;
+	int sLenString2 = 0;
+
+	sLenString1 = strlen(sTriggerKeyName);
+	sLenString2 = strlen(sActionDescription);
+
+	if (sLenString1 > 0)
+		sLenString1++; // add 1 for a blank, else keep it at zero, as it should be used for a title
+
+	setTextProperties (fontsize, r+.2, g+.2, b+.2);
+	fontDrawString (x, *y, sTriggerKeyName);
+	setTextProperties (fontsize, r, g, b);
+	fontDrawString (x + (fontsize*sLenString1), *y, sActionDescription);
+
+	*y -= ystep;
+}
+
+
+//------------------------------------------------------------------------------
+
 // monster priority colors
 static double monsterColors[][3] =
 {
@@ -1594,14 +1617,14 @@ text_frame_scroll (reference_p reference, int x, int y, float l)
 		if (iUseGDATText == 0)
 			setTextProperties (iInfoFntSize, .1*l, .4*l, .4*l);
 		y -= iInfoFntSize;
-		fontDrawString (x, y, "TEXT REF     : %02d (x%02x)", scroll->reftxt, scroll->reftxt);
+		fontDrawString (x, y, "TEXT REF : %02d [%02X] (TXT-OFFSET x%02X)", scroll->reftxt, scroll->reftxt, getTextOffset (scroll->reftxt));
 
 		// Display part of text
 		if (SKULLKEEP == 0)
 		{	
 			y -= iInfoFntSize;
 			setTextProperties (iInfoFntSize, .7*l, .8*l, 1.0*l);
-			fontDrawString (x, y, "SCROLL: \"%s\"", convertTextToLimitedBuffer (getText(scroll1->offset)));
+			fontDrawString (x, y, "SCROLL: \"%s\"", convertTextToLimitedBuffer (getText (scroll1->reftxt)));
 		}
 		else if (SKULLKEEP == 1)
 		{	
@@ -1739,7 +1762,7 @@ printSelectedText (reference_p refp)
 	else if (SKULLKEEP == 0 && refp->category == category_Scroll)
 	{	
 		scroll_p scroll = (scroll_p) getItem (refp);
-		fontDrawString (x, y, "SCROLL: \"%s\"", convertTextToLimitedBuffer (getText(scroll->offset)));
+		fontDrawString (x, y, "SCROLL: \"%s\"", convertTextToLimitedBuffer (getText(scroll->reftxt)));
 	}
 }
 
@@ -2493,6 +2516,7 @@ printMapPropertiesHelpInfo ()
 }
 
 
+
 void
 printMainMapHelpInfo ()
 {
@@ -2514,60 +2538,34 @@ printMainMapHelpInfo ()
 	if (! isEditingTile ())	// navigating through map, no object locked for edit
 	{
 		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "LEFT CLICK:  PAINT TILE WITH OPEN FLOOR");
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "RIGHT CLICK: PAINT TILE WITH SOLID WALL");
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "ENTER: LOCK OBJECT/STACK ON TILE FOR EDIT");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "LEFT CLICK: ", "PAINT TILE WITH OPEN FLOOR");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "RIGHT CLICK:", "PAINT TILE WITH SOLID WALL");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'P':", "PLACE A PIT TILE");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'S':", "PLACE A STAIRS TILE");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'I':", "PLACE AN ILLUSIONARY WALL TILE");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'W/F':", "PLACE A WALL OR OPEN FLOOR TILE");
 
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "'+': ADD NEW OBJECT ON TILE");
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "'-': CANCEL NEW OBJECT");
-//		isSelectingNewItem
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "ENTER:", "LOCK OBJECT/STACK ON TILE FOR EDIT");
 
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "PAGE UP - PAGE DOWN: NAVIGATE THROUGH MAPS");
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "SHIFT-'S': PLACE STARTING LOCATION (ONLY ON MAP 0)");
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "' ': SWITCH WHAT IS ON TILE");
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "SHIFT-'B'/'N': DECREASE/INCREASE NUMBER OF MAPS");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'+':", "ADD NEW OBJECT ON TILE");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'-':", "CANCEL NEW OBJECT");
 
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "SHIFT-'E'/'R': DECREASE/INCREASE X DIMENSION OF MAP");
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "SHIFT-'D'/'C': DECREASE/INCREASE Y DIMENSION OF MAP");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "PAGE UP - PAGE DOWN:", "NAVIGATE THROUGH MAPS");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "SHIFT-'S':", "PLACE STARTING LOCATION (ONLY ON MAP 0)");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "' ':", "SWITCH WHAT IS ON TILE");
+
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "SHIFT-'B'/'N':", "DECREASE/INCREASE NUMBER OF MAPS");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "SHIFT-'E'/'R':", "DECREASE/INCREASE X DIMENSION OF MAP");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "SHIFT-'D'/'C':", "DECREASE/INCREASE Y DIMENSION OF MAP");
 
 
-		y -= ystep;
-		y -= ystep;
-		setTextProperties (helptfsize, 1, 1, 1);
-		fontDrawString (x, y, "OBJECT/STACK EDITING:");
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH ITEM ID TYPE");
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "UP - DOWN ARROW: CYCLE THROUGH ITEMS IN STACK");
-		y -= ystep;
-		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "PAGE UP - PAGE DOWN: MOVE ITEM WITHIN STACK");
+//		printSpecialTextHelp(x, &y, ystep, helptfsize, 1, 1, 1, "", "OBJECT/STACK EDITING:");
+//		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "LEFT - RIGHT ARROW:", "CYCLE THROUGH ITEM ID TYPE");
+//		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "UP - DOWN ARROW:", "CYCLE THROUGH ITEMS IN STACK");
+//		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "PAGE UP - PAGE DOWN:", "MOVE ITEM WITHIN STACK");
 
 		y -= ystep;
-		y -= ystep;
+		/*
 		setTextProperties (helptfsize, 1, 1, 1);
 		fontDrawString (x, y, "TILE EDITING (RAW):");
 		y -= ystep;
@@ -2575,7 +2573,13 @@ printMainMapHelpInfo ()
 		fontDrawString (x, y, "'1'/'2'/'4'/'8': SWITCH BITS ON TILE");
 		y -= ystep;
 		setTextProperties (helptfsize, .7, .7, .7);
-		fontDrawString (x, y, "'9': CYCLE THROUGH TILE TYPE");
+		fontDrawString (x, y, "'9': CYCLE THROUGH TILE TYPE");*/
+
+		printSpecialTextHelp(x, &y, ystep, helptfsize, 1, 1, 1, "", "TILE EDITING (RAW):");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'1'/'2'/'4'/'8':", "SWITCH BITS ON TILE");
+		printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'9':", "CYCLE THROUGH TILE TYPE");
+
+
 	}
 
 //--- If editing door, bring this help
@@ -2586,7 +2590,7 @@ printMainMapHelpInfo ()
 		{
 			case category_Door:
 				y -= ystep;
-				setTextProperties (helptfsize, .85, .85, .85);
+/*				setTextProperties (helptfsize, .85, .85, .85);
 				fontDrawString (x, y, "DOOR EDITING:");
 				y -= ystep;
 				setTextProperties (helptfsize, .7, .7, .7);
@@ -2606,6 +2610,16 @@ printMainMapHelpInfo ()
 				y -= ystep;
 				setTextProperties (helptfsize, .7, .7, .7);
 				fontDrawString (x, y, "LEFT - RIGHT ARROW: CYCLE THROUGH AVAILABLE DOOR ORNATES");
+*/
+				printSpecialTextHelp(x, &y, ystep, helptfsize, .85, .85, .85, "", "DOOR EDITING:");
+				printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'B':", "SWITCH BUTTON");
+				printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'D':", "DESTROYABLE BY SPELLS");
+				printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'S':", "BASHABLE BY WEAPONS");
+				printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "'O':", "OPENING (VERTICAL OR HORIZONTAL)");
+				printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "' ':", "DOOR TYPE (1 OR 2)");
+				printSpecialTextHelp(x, &y, ystep, helptfsize, .7, .7, .7, "LEFT - RIGHT ARROW:", "CYCLE THROUGH AVAILABLE DOOR ORNATES");
+
+
 			break;
 			case category_Text:
 				y -= ystep;

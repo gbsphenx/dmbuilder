@@ -1409,11 +1409,14 @@ drawStack (char x, char y, unsigned char level)
 		globalfsinv = fsinv;
 
 		shadowmapbar = 1;
-
+		
 		moveToStackUpper ();
 		moveStack ((char) isSecondFunction(), getEditCursor (cursor_Stack) - iStackStartOffset);
-		drawFrameLW (__STD_STACK_SIZE__, 1, 1, .1, 3.f);
-		drawFrameLW (__STD_STACK_SIZE__, -.25*fsinv, 1.*fsinv, 1.*fsinv, 4.f);
+		if (iGlobalStackSize > 0)
+		{
+			drawFrameLW (__STD_STACK_SIZE__, 1, 1, .1, 3.f);
+			drawFrameLW (__STD_STACK_SIZE__, -.25*fsinv, 1.*fsinv, 1.*fsinv, 4.f);
+		}
 		if (selected->category == category_Actuator)
 		{
 			if (isSecondFunction())
@@ -1504,20 +1507,23 @@ drawStack (char x, char y, unsigned char level)
 		else if (selected->category == category_Scroll)
 		{	
 			if (!SKULLKEEP)
-				displaySelectedTextList ( ((scroll_p) (item))->offset, 0);
+				displaySelectedTextList ( ((scroll_p) (item))->reftxt, 0);
 			else if (SKULLKEEP)
 			{
 				// check if current scroll is in GDAT mode or ref mode
 				if ( ((scroll2_p) (item))->type > 1 )
 					displaySelectedTextList ( ((scroll2_p) (item))->type, 1);
 				else
-					displaySelectedTextList ( ((scroll_p) (item))->offset, 0);
+					displaySelectedTextList ( ((scroll_p) (item))->reftxt, 0);
 			}
 			shadowmap = 1;
 		}
-		else
+		else if (selected->category > 0 && selected->category < 15)
 			displaySelectionBar (conversion[selected->category],
-			getItemType[selected->category] (item), 1);
+				getItemType[selected->category] (item), 1);
+		else if (selected->category == 15 && (selected->raw == 0xFFFF || selected->raw == 0xFFFE))	// probably no item, so just a tile
+			displaySelectionBar (conversion[16],	// -> bank_Tiles
+				getCurrentTile ()->type, 1);
 	}
 }
 

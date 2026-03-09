@@ -152,6 +152,8 @@ extern int iGlbCurrentContext;
 
 //------------------------------------------------------------------------------
 
+extern int getEditStackSize ();
+
 extern void startEditor ();
 
 extern char getEditCursor (enum cursorType type);

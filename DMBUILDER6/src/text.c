@@ -24,7 +24,7 @@ static char* txtDump[] = {"null{text!!"};
 char* TEXTS[1024];
 short TXTTYPE[1024];
 size_t totalTexts = 0;
-short adresses[1024];
+short TXTOFFSETS[1024];
 
 #define KEY_BACKSPACE 8
 #define KEY_DELETE 127
@@ -65,12 +65,22 @@ startTexts ()
 //	Functions for converting text object field
 //------------------------------------------------------------------------------
 
+void
+printReferenceTexts ()
+{
+	size_t i = 0;
+	for (i = 0; i < 1024; i++)
+	{
+		printf("TXT%04d -- %04X = [%d] %s\n", i, TXTOFFSETS[i], TXTTYPE[i], TEXTS[i]);
+	}
+}
+
 unsigned short
 findTextNumber (unsigned short offset)
 {
 	size_t i = 0;
-	for (i = 0; i < 2048; i++)
-		if (offset == adresses[i]) // offset must always refers to the BEGINNING of a text
+	for (i = 0; i < 1024; i++)
+		if (offset == TXTOFFSETS[i]) // offset must always refers to the BEGINNING of a text
 			return i;
 	return 0;
 }
@@ -80,7 +90,7 @@ void
 convertToInternTexts ()
 {
 	size_t i;
-	if (SKULLKEEP == 0)
+	//if (SKULLKEEP == 0)
 	{
 		for (i = 0; i < getDungeon()->nObjects[category_Text]; i++)
 		{
@@ -92,14 +102,29 @@ convertToInternTexts ()
 			text = (text_p) getItem (&ref);
 			text->offset = findTextNumber (text->offset);
 		}
+		// no id to offset transformation for scroll
+		/*
+		for (i = 0; i < getDungeon()->nObjects[category_Scroll]; i++)
+		{
+			scroll_p scroll;
+			dm_reference ref;
+
+			ref.category = category_Scroll;
+			ref.id = i;
+			scroll = (scroll_p) getItem (&ref);
+			//scroll->offset = findTextNumber (scroll->offset);
+		}*/
 	}
 }
 
 void
 convertToMasterTexts ()
 {
-	size_t i;
-	if (SKULLKEEP == 0)
+	size_t i = 0;
+	
+	printReferenceTexts ();	// debug
+
+	//if (SKULLKEEP == 0)
 	{
 		for (i = 0; i < getDungeon()->nObjects[category_Text]; i++)
 		{
@@ -108,8 +133,19 @@ convertToMasterTexts ()
 			ref.category = category_Text;
 			ref.id = i;
 			text = (text_p) getItem (&ref);
-			text->offset = adresses[text->offset];
+			text->offset = TXTOFFSETS[text->offset];
 		}
+		// no id to offset transformation for scroll
+		/*
+		for (i = 0; i < getDungeon()->nObjects[category_Scroll]; i++)
+		{
+			scroll_p scroll;
+			dm_reference ref;
+			ref.category = category_Scroll;
+			ref.id = i;
+			scroll = (scroll_p) getItem (&ref);
+			scroll->offset = TXTOFFSETS[scroll->offset];
+		}*/
 	}
 }
 
@@ -638,38 +674,47 @@ setLetter (codon_p codon, size_t letter, char value)
 void
 extractLines (unsigned short* rawtexts)
 {
-	static char buffer[255];
+	static char xDecodedTextBuffer[255];
 	codon_p codon;
-	size_t read = 0; // Number of read codons
-	size_t text_i = 0; // Index of current row to be written
+	size_t iCodonNo = 0; // Number of codons read
+	size_t iTextNo = 0; // Index of current row to be written
 	unsigned short *textp = (unsigned short*) rawtexts; // Codon pointer
+	size_t iRawAddress = 0;
 
-	while (read < getDungeon()->textsDataSize)
+	while (iCodonNo < getDungeon()->textsDataSize)
 	{
 		int end = 0;
 		size_t i = 0; // Index within the buffer
-		adresses[text_i] = read; // Address table of encoded texts!
+		TXTOFFSETS[iTextNo] = iCodonNo; // Address table of encoded texts!
 		while (!end)
 		{
 			size_t k;
 			codon = (codon_p) textp++;
+			//printf("DECODE-TEXT: [%04X] %04x => ", iRawAddress, codon);
 			for (k = 0; k < 3; k++)
 			{
 				char letter = getLetter (codon, k);
 				if (letter != EndOfBlock)
-					buffer[i++] = letter + 'a';
+					xDecodedTextBuffer[i] = letter + 'a';
 				else
 				{
-					buffer[i++] = 0;
+					xDecodedTextBuffer[i] = 0;
 					end = 1;
 				}
+				//printf("%02x %c |", letter, xDecodedTextBuffer[i]);
+				i++;
 			}
-			read++;
+			iCodonNo++;
+			iRawAddress++;
+			printf("\n");
 		}
-		TEXTS[text_i] = (char*) calloc (strlen (buffer)+1, sizeof (char));
-		strcpy (TEXTS[text_i++], buffer);
+		//printf("|END\n");
+		TEXTS[iTextNo] = (char*) calloc (strlen (xDecodedTextBuffer)+1, sizeof (char));
+		//printf("=> (%s)\n", xDecodedTextBuffer);
+		strcpy (TEXTS[iTextNo++], xDecodedTextBuffer);
+
 	}
-	totalTexts = text_i;
+	totalTexts = iTextNo;
 }
 
 size_t
@@ -687,7 +732,7 @@ encodeTexts (unsigned short *rawtexts)
 	{
 		size_t k = 0;
 		
-		adresses[i] = wrote;
+		TXTOFFSETS[i] = wrote;
 		
 		buffer = TEXTS[i];
 		while (buffer[k] != 0)
@@ -724,8 +769,9 @@ loadTexts (unsigned short *rawtexts)
 	extractLines (rawtexts);
 	resetTypes ();
 	findHeros ();
-	if (SKULLKEEP == 0)
-		convertToInternTexts ();
+	printReferenceTexts (); // debug
+//	if (SKULLKEEP == 0)
+	convertToInternTexts ();
 }
 
 
@@ -770,7 +816,7 @@ importText ()
 int
 createEmptyTextChampion()
 {
-	int itxt = addText ("bogus}illegal{hero}}m}aabbaabbaabb}ababababababab}cccccccccccccccc");
+	int itxt = addText ("bogus}illegal{hero}}m}aabbaabbaabb}ababababababab}cccccccccccccccc", text_champion);
 	TXTTYPE[itxt] = text_champion;
 	return itxt;
 }
@@ -779,19 +825,22 @@ int
 createEmptyText()
 {
 	return createEmptyTextChampion ();
-	//return addText ("edit}new}text");
+	//return addText ("edit}new}text", text_scroll);
 }
 
 
 int
-addText(const char* sTextStrings)
+addText(const char* sTextStrings, int iTextType)
 {
 	int iTextNum = -1;
 	if (totalTexts < 1024)
 	{
 		TEXTS[totalTexts] = (char*) calloc (strlen (sTextStrings)+1, sizeof (char));
 		strcpy (TEXTS[totalTexts], sTextStrings);
+		TXTTYPE[totalTexts] = iTextType;
 		iTextNum = totalTexts;
+		putTextToEditBuffer(iTextNum);	// convert the new text to proper letters so that it displays correctly in the text list (instead of ".%7")
+		putEditBufferToText(iTextNum);
 		totalTexts++;
 	}
 	return iTextNum;
@@ -940,6 +989,7 @@ controlTextAttributeValue (int subattribute, int deltavalue)
 char*
 getText (unsigned int number)
 {
+	//printf("ASK for TEXT number %d => %s\n", number, TEXTS[number]);
 	return TEXTS[number];
 }
 
@@ -948,6 +998,13 @@ getTextType (unsigned int number)
 {
 	return TXTTYPE[number];
 }
+
+short
+getTextOffset (unsigned int number)
+{
+	return TXTOFFSETS[number];
+}
+
 
 char*
 getTextContext (int iContext, unsigned int number)

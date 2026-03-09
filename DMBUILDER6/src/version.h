@@ -7,6 +7,7 @@
 **
 *	DMB Version History
 *
+*	0.88.g5		2026-03-xx		
 *	0.88.g4		2026-02-28		Fix bug on scroll text ID cycling
 *								+ allow to change the 5th digit of stamina stat
 *								(cf. https://www.dungeon-master.com/forum/viewtopic.php?p=165664#p165664)		
@@ -49,7 +50,7 @@
 #define DMB_MONSTER			"Ruster"
 #define DMB_MAJOR			0
 #define DMB_MINOR			88
-#define DMB_REVISION		"g4"
+#define DMB_REVISION		"g5"
 
 #define PUBLIC
 #define CHECKOFF
