@@ -10,7 +10,7 @@
 #define KEYBOARD_H
 
 extern void keyboard (unsigned char key, int x, int y);
-extern void arrow_keys (int a_keys, int x, int y);
+extern void special_keyboard (int a_keys, int x, int y);
 
 extern void fastInit ();
 

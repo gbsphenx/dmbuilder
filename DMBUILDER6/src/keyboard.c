@@ -1047,6 +1047,7 @@ void keyboard (unsigned char key, int x, int y)
 					controlTextChar ( getTextCursor (cursor_Text), key);
 				else if (isEditingText () && (key == '!' || key == '?' || key == KEY_BACKSPACE))
 					controlTextChar ( getTextCursor (cursor_Text), key);
+
 					;
 			} break;
 		case screen_LoadFile:
@@ -1093,9 +1094,10 @@ void keyboard (unsigned char key, int x, int y)
 }
 
 
-void arrow_keys (int a_keys, int x, int y)
+void special_keyboard (int a_keys, int x, int y)
 {
-	//printf("a_keys/x/y = %d/%d/%d\n", a_keys, x, y);
+//	printf("a_keys/x/y = %d/%d/%d\n", a_keys, x, y);
+
 
 	//-- Test first for Fn keys that would change screen
 	switch (a_keys)
@@ -1364,6 +1366,9 @@ void arrow_keys (int a_keys, int x, int y)
 			break;
 		case screen_TextEditor:
 			{
+				if (a_keys == GLUT_KEY_INSERT)
+					text_insert_mode = !text_insert_mode;
+				
 				if (isSelectingNewItem ())
 				{
 					switch (a_keys)
@@ -1420,6 +1425,7 @@ void arrow_keys (int a_keys, int x, int y)
 					}
 					break;
 				}
+
 			}
 		case screen_LoadFile:
 			{

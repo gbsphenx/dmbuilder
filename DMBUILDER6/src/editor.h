@@ -110,6 +110,8 @@ extern int editing_target;
 extern int level_spec;
 extern int selectFile;
 
+extern int text_insert_mode;
+
 //extern tSkullExe xSkullExe;
 
 //------------------------------------------------------------------------------
@@ -186,6 +188,8 @@ extern void switchEditingGraphics ();
 
 extern int isEditingText ();
 extern void switchEditingText ();
+
+extern int cycleTile (tile_p tilep, int step);
 
 extern void goTarget (reference_p ref);
 

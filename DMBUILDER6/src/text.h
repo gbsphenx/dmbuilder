@@ -76,7 +76,7 @@ extern void importText ();
 
 extern int createEmptyText();
 extern int createEmptyTextChampion();
-extern int addText(const char* sTextStrings);
+extern int addText(const char* sTextStrings, int iTextType);
 extern int addTextContext(int iContext, const char* sTextStrings);
 
 extern void putTextToEditBuffer (unsigned int number);

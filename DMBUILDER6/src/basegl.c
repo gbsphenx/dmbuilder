@@ -148,7 +148,7 @@ int main (int argc, char** argv)
     glutReshapeFunc (glutResize);
     glutIdleFunc (glutIdle);
 	glutKeyboardFunc (keyboard);
-	glutSpecialFunc (arrow_keys);
+	glutSpecialFunc (special_keyboard);
 	glutMouseFunc (Mouse_Handler);
 	glutMotionFunc(Mouse_Motion);
 	glutPassiveMotionFunc (Mouse_Motion_Passive);

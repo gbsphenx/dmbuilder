@@ -122,7 +122,7 @@ convertToMasterTexts ()
 {
 	size_t i = 0;
 	
-	printReferenceTexts ();	// debug
+	//printReferenceTexts ();	// debug
 
 	//if (SKULLKEEP == 0)
 	{
@@ -706,7 +706,7 @@ extractLines (unsigned short* rawtexts)
 			}
 			iCodonNo++;
 			iRawAddress++;
-			printf("\n");
+			//printf("\n");
 		}
 		//printf("|END\n");
 		TEXTS[iTextNo] = (char*) calloc (strlen (xDecodedTextBuffer)+1, sizeof (char));
@@ -769,7 +769,7 @@ loadTexts (unsigned short *rawtexts)
 	extractLines (rawtexts);
 	resetTypes ();
 	findHeros ();
-	printReferenceTexts (); // debug
+	//printReferenceTexts (); // debug
 //	if (SKULLKEEP == 0)
 	convertToInternTexts ();
 }
@@ -881,6 +881,13 @@ controlTextChar (int textnumber, int keyvalue)
 		selrow = getTextCursor (cursor_SubText);
 
 	//printf("CHANGE CHAR AT %d,%d WITH %c\n", selrow, selchar, keyvalue);
+	if (text_insert_mode && keyvalue != KEY_DELETE && keyvalue != KEY_BACKSPACE)
+	{
+		int tcursor = selchar;
+		// push 
+		for (tcursor = 20; tcursor > selchar; tcursor--)
+			edit_plain_text.textline[selrow][tcursor] = edit_plain_text.textline[selrow][tcursor-1];
+	}
 
 	if (keyvalue >= 'a' && keyvalue <= 'z')
 		edit_plain_text.textline[selrow][selchar] = keyvalue - 'a' + 'A';
@@ -903,6 +910,8 @@ controlTextChar (int textnumber, int keyvalue)
 		setTextCursor (cursor_InlineText, selchar);
 		return;
 	}
+	else if (keyvalue == KEY_BACKSPACE && selchar <= 0)
+		return;
 	else if (keyvalue == KEY_BACKSPACE && selchar > 0)
 	{
 		size_t i = 0;

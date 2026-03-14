@@ -96,6 +96,8 @@ int level_spec = 0;
 int selectFile = 0;
 int selectTQDungeon = 0;
 
+int text_insert_mode = 0;
+
 int tActivatorItemTranscoListDM1toDM2[][3] = {
 	{0, category_Miscs, 5},
 	{1, category_Miscs, 5},
@@ -656,8 +658,10 @@ void
 setTextCursor (enum cursorText type, int new_value)
 {
 	static int oldselrow = 0;
+	int iOldCursorValue = txtcursors[type];
 	int selrow = getTextCursor (cursor_SubText);
 	assert ((size_t) type < text_cursor_number);
+	
 	txtcursors[type] = new_value;
 
 	// special for selection TQ dungeon from file
@@ -689,22 +693,34 @@ setTextCursor (enum cursorText type, int new_value)
 	if (type == cursor_RowText)
 	{
 		int slen = 1;
+		int oldInlineCursor = txtcursors[cursor_InlineText];
+		int oldslen = strlen(edit_plain_text.textline[iOldCursorValue]);
+		float posperct = (float) oldInlineCursor / (float) oldslen;	// do this to get a cursor approximatively at the same position when changing row
 		if (new_value <= 0)
 			txtcursors[type] = 0;
 		else if (new_value >= 8)
 			txtcursors[type] = 8;
 		// check better the x cursor depending on the size of the text line
 		slen = strlen(edit_plain_text.textline[txtcursors[type]]);
-		if (slen > 20) slen = 20;
-		txtcursors[cursor_InlineText] = slen/2;
+		if (slen > 100) slen = 100;
+		txtcursors[cursor_InlineText] = (int)((float) slen * posperct);
 	}
 	else if (type == cursor_InlineText)
 	{
+		int slen = 1;
+		if (TXTTYPE[getTextCursor (cursor_Text)] != text_champion)
+			slen = strlen(edit_plain_text.textline[txtcursors[cursor_RowText]]);
 		//printf("New value = %d on %d\n", new_value, selrow);
 		if (new_value <= 0)
 			txtcursors[type] = 0;
 		else if (new_value >= 20)
 			txtcursors[type] = 20;
+
+		if (TXTTYPE[getTextCursor (cursor_Text)] != text_champion)
+		{
+			if (new_value > slen)
+				txtcursors[type] = slen;
+		}
 
 		// if editing hero stats, then max will depend
 		if (TXTTYPE[getTextCursor (cursor_Text)] == text_champion && selrow == 0) // champion's name

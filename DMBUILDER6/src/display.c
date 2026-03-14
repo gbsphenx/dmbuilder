@@ -2166,8 +2166,11 @@ displayTextEditor ()
 	// display champion values
 	x = 1050;
 	y = winH - 120; y += ystep;
-	setTextProperties (textcatsize, .5, 1, .8); 
-	fontDrawString (x, y, "TEXT : #%03d / %d", seltext, getTextCursor (cursor_InlineText));
+	setTextProperties (textcatsize, .5, 1, .8);
+	if (text_insert_mode)
+		fontDrawString (x, y, "TEXT : #%03d / %02d / 20 [INSERT MODE]", seltext, getTextCursor (cursor_InlineText));
+	else
+		fontDrawString (x, y, "TEXT : #%03d / %02d / 20", seltext, getTextCursor (cursor_InlineText));
 
 
 
